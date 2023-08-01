@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  website:
+    image: node:19-alpine
+    container_name: website
+    working_dir: /app
+    hostname: website
+    volumes:
+      - ./nextJs:/app
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - shared-network
+
+  mainDb:
+    image: mongo
+    container_name: mainDb
+    restart: always
+    hostname: mainDb
+    volumes:
+      - ./mainDb:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=lazydev
+      - MONGO_INITDB_ROOT_PASSWORD=lazydev
+    ports:
+      - "27017:27017"
+    networks:
+      - shared-network
+
+networks:
+  default:
+    external:
+      name: shared-network

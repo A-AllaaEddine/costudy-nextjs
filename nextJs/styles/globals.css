@@ -1,0 +1,13 @@
+:root {
+  background-color: #fff;
+  box-sizing: border-box;
+  padding-inline: 70px;
+}
+
+a {
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}

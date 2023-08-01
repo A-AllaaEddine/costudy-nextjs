@@ -1,0 +1,37 @@
+.message {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  // gap: 1px;
+
+  .senderName {
+    color: #1d1d1f;
+    font-size: 10px;
+    font-family: Inter, sans serif;
+    font-weight: 300;
+    margin: 0;
+    padding-inline: 10px;
+  }
+  .body {
+    width: auto;
+    height: auto;
+    font-size: 14px;
+    font-family: Inter, sans serif;
+    font-weight: 500;
+    color: #fafafa;
+    padding: 10px 10px;
+    border-radius: 5px;
+    margin: 5px;
+  }
+
+  .status {
+    color: #1d1d1f;
+    font-size: 10px;
+    font-family: Inter, sans serif;
+    font-weight: 300;
+    margin: 0;
+    padding-inline: 10px;
+  }
+}

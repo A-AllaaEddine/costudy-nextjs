@@ -1,0 +1,40 @@
+$--bg-color: #fafafa;
+$--width: 35px;
+$--height: 35px;
+.spinner {
+  position: relative;
+  width: var(--width);
+  height: var(--height);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner::before,
+.spinner::after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
+}
+
+.spinner::before {
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(0deg, #bbbbbb 0%, #dddddd 100%);
+  animation: spin 0.5s infinite linear;
+}
+.spinner::after {
+  width: 65%;
+  height: 65%;
+  background-color: var(--bg-color);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
