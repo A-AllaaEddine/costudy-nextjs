@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { checkServerSession } from '@/utils/serserSideUtils';
-
 import Head from 'next/head';
-import Main from '@/components/modular/login/main';
+import Main from '@/components/modular/register/main';
+import { checkServerSession } from '@/utils/serserSideUtils';
 
 export const getServerSideProps = async ({
   req,
@@ -30,7 +29,7 @@ export const getServerSideProps = async ({
   };
 };
 
-const LogIn = () => {
+const SignUp = () => {
   return (
     <>
       <Head>
@@ -44,4 +43,4 @@ const LogIn = () => {
   );
 };
 
-export default LogIn;
+export default SignUp;

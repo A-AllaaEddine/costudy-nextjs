@@ -1,21 +1,23 @@
-import Layout from "../components/commun/layout";
-import { NotificationsProvider } from "@/contexts/notifications.context";
-import { UserProvider } from "@/contexts/user-context";
-import "@/styles/globals.css";
-import { AppProps } from "next/app";
-import NextTopLoader from "nextjs-toploader";
+import Layout from '../components/commun/layout/layout';
+import { UserProvider } from '@/contexts/user-context';
+import '@/styles/globals.css';
+import { AppProps, AppType } from 'next/app';
+import { SessionProvider } from 'next-auth/react';
+import { trpc } from '@/utils/trpc';
 
-export default function App({ Component, pageProps }: AppProps) {
+const App: AppType = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) => {
   return (
-    <>
-      <NextTopLoader color={"#e6a0ff"} />
+    <SessionProvider session={session} refetchOnWindowFocus={true}>
       <UserProvider>
-        <NotificationsProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </NotificationsProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </UserProvider>
-    </>
+    </SessionProvider>
   );
-}
+};
+
+export default trpc.withTRPC(App);

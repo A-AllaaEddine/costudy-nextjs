@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model authentication {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  accountStatus  String
+  createdAt      DateTime  @db.Date
+  email          String    @unique
+  emailVerified  Boolean
+  name           String
+  password       String
+  profilePicture String
+  type           String
+  role           String?
+  updatedAt      DateTime? @db.Date
+  username       String    @unique
+
+    @@map("authentication")
+}
+
+model Resource {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  type            String
+  class           String
+  major           String
+  degree          String
+  year            String
+  by              String
+  thumbnailUrl    String
+  createdAt       DateTime @db.Date
+  updatedAt       DateTime @db.Date
+  Bookmarks       Bookmark[]
+  Views           View[]
+
+  @@map("resources")
+}
+
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId 
+  accountStatus  String
+  createdAt      DateTime  @db.Date
+  email          String    @unique
+  emailVerified  Boolean
+  name           String
+  profilePicture String
+  type           String
+  bookmarks      String[]
+  updatedAt      DateTime? @db.Date
+  username       String    @unique
+  Bookmarks      Bookmark[]
+  Views           View[]
+ 
+
+  @@map("users")
+}
+
+model Bookmark {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+  user_id           String    @db.ObjectId @unique
+  resource_id       String    @db.ObjectId @unique
+  resource_class    String 
+  resource_major    String 
+  resource_degree   String
+  resource_year     String 
+  createdAt         DateTime  @db.Date
+  user              User      @relation(fields: [user_id ], references: [id])
+  resource          Resource  @relation(fields: [resource_id ], references: [id])
+
+  @@map("bookmarks")
+}
+
+model View {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+  user_id           String    @db.ObjectId @unique
+  resource_id       String    @db.ObjectId @unique
+  user              User      @relation(fields: [user_id ], references: [id])
+  resource          Resource  @relation(fields: [resource_id ], references: [id])
+
+  @@map("views")
+}
+
+model Review {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId 
+  userId         String  
+  username       String
+  rating         Float
+  review         String
+  createdAt      DateTime?  @db.Date
+
+  @@map("reviews")
+}
+
+
+
+model WebsiteReview {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String
+  username            String    
+  rating              Float    
+  review              String    
+  createdAt           DateTime  @db.Date
+  updatedAt           DateTime? @db.Date
+
+    @@map("websiteReviews")
+}
+
+model UsersReview {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String
+  username            String    
+  rating              Float    
+  review              String  
+  isRecommended       Boolean  
+  createdAt           DateTime  @db.Date
+  updatedAt           DateTime? @db.Date
+
+    @@map("usersReviews")
+}

@@ -1,10 +1,11 @@
-import Image from "next/image";
-import styles from "./InputBar.module.scss";
-import { ChangeEvent, SyntheticEvent, useContext, useState } from "react";
-import { useRouter } from "next/router";
-import { userContext } from "@/contexts/user-context";
-import { Socket } from "socket.io-client";
-import { notificationsContext } from "@/contexts/notifications.context";
+import Image from 'next/image';
+import styles from './InputBar.module.scss';
+import { ChangeEvent, SyntheticEvent, useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { userContext } from '@/contexts/user-context';
+import { Socket } from 'socket.io-client';
+
+import Toast from '@/components/commun/static/toast';
 
 type Props = {
   socket: Socket;
@@ -12,11 +13,9 @@ type Props = {
 };
 
 const InputBar = ({ scrollToLastMessage, socket }: Props) => {
-  const [newMessage, setNewMessage] = useState<string>("");
+  const [newMessage, setNewMessage] = useState<string>('');
 
   const { currentUser } = useContext(userContext);
-  const { addNotification } = useContext(notificationsContext);
-  const router = useRouter();
 
   const sendMessage = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -25,8 +24,8 @@ const InputBar = ({ scrollToLastMessage, socket }: Props) => {
     try {
       // setStatus("sending");
 
-      await socket.emit("chatMessage", router.query.sessionId, {
-        type: "text",
+      await socket.emit('chatMessage', router.query.sessionId, {
+        type: 'text',
         body: newMessage,
         senderId: currentUser?._id,
         senderName: currentUser?.name,
@@ -34,10 +33,10 @@ const InputBar = ({ scrollToLastMessage, socket }: Props) => {
       });
 
       // setStatus("sent");
-      setNewMessage("");
+      setNewMessage('');
       scrollToLastMessage();
     } catch (error) {
-      addNotification("error", "There was an error sending your message.");
+      Toast('error', 'There was an error sending your message.');
       console.log(error);
     }
   };
@@ -53,7 +52,7 @@ const InputBar = ({ scrollToLastMessage, socket }: Props) => {
         }
       />
       <Image
-        src={"/send.png"}
+        src={'/send.png'}
         alt="chat"
         width={100}
         height={100}

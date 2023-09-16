@@ -6,19 +6,17 @@ import {
   useEffect,
   useRef,
   useState,
-} from "react";
-import InputBar from "../input-bar/input-bar.component";
-import MessageBubble from "../message-bubble/message-bubble.component";
-import useMessagesDocs from "@/hooks/useMessagesDocs";
-import styles from "./MessagesBox.module.scss";
-import { userContext } from "@/contexts/user-context";
-import { Fetcher } from "@/utils/fetcher";
-import { useRouter } from "next/router";
-import { notificationsContext } from "@/contexts/notifications.context";
-import { Socket } from "socket.io-client";
+} from 'react';
+import InputBar from '../input-bar/input-bar.component';
+import MessageBubble from '../message-bubble/message-bubble.component';
+import useMessagesDocs from '@/hooks/useMessagesDocs';
+import styles from './MessagesBox.module.scss';
+import { userContext } from '@/contexts/user-context';
+import { useRouter } from 'next/router';
+import { Socket } from 'socket.io-client';
 
 type Message = {
-  type: "text";
+  type: 'text';
   body: string;
   senderId: string;
   senderName: string;
@@ -33,12 +31,11 @@ type Props = {
 const MessageBox = ({ socket, setMessages, messages }: Props) => {
   const [hookData, setHookData] = useState({
     page: 1,
-    sessionId: "",
+    sessionId: '',
   });
   const { page } = hookData;
 
   const { currentUser } = useContext(userContext);
-  const { addNotification } = useContext(notificationsContext);
 
   const router = useRouter();
 
@@ -49,7 +46,7 @@ const MessageBox = ({ socket, setMessages, messages }: Props) => {
   }, [router]);
 
   useEffect(() => {
-    socket?.on("message", (data) => {
+    socket?.on('message', (data) => {
       setMessages((prev) => [data, ...prev]);
     });
   }, [socket]);
@@ -107,7 +104,7 @@ const MessageBox = ({ socket, setMessages, messages }: Props) => {
 
   const scrollToLastMessage = () => {
     if (latestMsg.current) {
-      latestMsg.current.scrollIntoView({ behavior: "smooth" });
+      latestMsg.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -118,12 +115,12 @@ const MessageBox = ({ socket, setMessages, messages }: Props) => {
         {isLoading && (
           <div
             style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "#1d1d1f",
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: '#1d1d1f',
             }}
           >
             <p>Loading...</p>
@@ -137,16 +134,16 @@ const MessageBox = ({ socket, setMessages, messages }: Props) => {
         {isError && (
           <p
             style={{
-              width: "100%",
-              height: "500px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              fontFamily: "Poppins",
-              fontWeight: "600",
+              width: '100%',
+              height: '500px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontFamily: 'Poppins',
+              fontWeight: '600',
               fontSize: 20,
               zIndex: 5,
-              color: "#1d1d1f",
+              color: '#1d1d1f',
             }}
           >
             Error: {error}

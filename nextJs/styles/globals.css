@@ -1,13 +1,57 @@
-:root {
-  background-color: #fff;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
   box-sizing: border-box;
-  padding-inline: 70px;
 }
 
 a {
   text-decoration: none;
+  color: black;
 }
 
-* {
-  box-sizing: border-box;
+@layer utilities {
+  .animate-scrolling {
+    animation: scroll 20s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+@layer utilities {
+  .animate-perks {
+    animation: perks 15s linear infinite;
+  }
+
+  @keyframes perks {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+@layer utilities {
+  .animate-reverse-perks {
+    animation: reverseperks 15s linear infinite;
+  }
+
+  @keyframes reverseperks {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(50%);
+    }
+  }
 }

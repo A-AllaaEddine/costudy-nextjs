@@ -21,7 +21,19 @@
 
 /mainDb
 /mainDb/**
-**/mainDb
+**/mainDb/
+
+mainDb1
+/mainDb1/**
+**/mainDb1/
+
+mainDb2
+/mainDb2/**
+**/mainDb2/
+
+mainDb3
+/mainDb3/**
+**/mainDb3
 
 
 # misc
@@ -36,6 +48,7 @@ yarn-error.log*
 # local env files
 .env*.local
 **/.env*.local
+.env
 
 # vercel
 .vercel
