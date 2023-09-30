@@ -1,31 +1,80 @@
-version: "3.9"
+version: '3.9'
 
 services:
-  website:
+  costudy:
     image: node:19-alpine
-    container_name: website
+    container_name: costudy
     working_dir: /app
-    hostname: website
+    hostname: costudy
     volumes:
       - ./nextJs:/app
     ports:
-      - "3000:3000"
+      - '3000:3000'
+      - '5555:5555'
     command: sh -c "npm install && npm run dev"
     networks:
       - shared-network
 
-  mainDb:
+  # mainDb:
+  #   image: mongo
+  #   container_name: mainDb
+  #   restart: always
+  #   hostname: mainDb
+  #   volumes:
+  #     - ./mainDb:/data/db
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=lazydev
+  #     - MONGO_INITDB_ROOT_PASSWORD=lazydev
+  #   ports:
+  #     - '27020:27017'
+  #   networks:
+  #     - shared-network
+
+  mainDb1:
     image: mongo
-    container_name: mainDb
+    container_name: mainDb1
     restart: always
-    hostname: mainDb
+    hostname: mainDb1
     volumes:
-      - ./mainDb:/data/db
+      - ./mainDb1:/data/db
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'dbrs']
     environment:
       - MONGO_INITDB_ROOT_USERNAME=lazydev
       - MONGO_INITDB_ROOT_PASSWORD=lazydev
     ports:
-      - "27017:27017"
+      - '27017:27017'
+    networks:
+      - shared-network
+
+  mainDb2:
+    image: mongo
+    container_name: mainDb2
+    restart: always
+    hostname: mainDb2
+    volumes:
+      - ./mainDb2:/data/db
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'dbrs']
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=lazydev
+      - MONGO_INITDB_ROOT_PASSWORD=lazydev
+    ports:
+      - '27018:27017'
+    networks:
+      - shared-network
+
+  mainDb3:
+    image: mongo
+    container_name: mainDb3
+    restart: always
+    hostname: mainDb3
+    volumes:
+      - ./mainDb3:/data/db
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'dbrs']
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=lazydev
+      - MONGO_INITDB_ROOT_PASSWORD=lazydev
+    ports:
+      - '27019:27017'
     networks:
       - shared-network
 

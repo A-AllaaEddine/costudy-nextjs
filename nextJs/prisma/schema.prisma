@@ -1,0 +1,251 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model authentication {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  accountStatus  String
+  createdAt      DateTime  @db.Date
+  email          String    @unique
+  emailVerified  Boolean
+  name           String
+  password       String
+  profilePicture String
+  type           String
+  role           String?
+  updatedAt      DateTime? @db.Date
+  username       String    @unique
+
+    @@map("authentication")
+}
+
+model Resource {
+  id                      String   @id @default(auto()) @map("_id") @db.ObjectId
+  title                   String   @unique
+  description             String   
+  type                    String
+  class                   String
+  major                   String
+  degree                  String
+  year                    String
+  by                      String
+  video                   Json?
+  file                    Json?   
+  thumbnail               Json   
+  createdAt               DateTime @db.Date
+  updatedAt               DateTime @db.Date
+  Bookmarks               Bookmark[]
+  Views                   View[]
+  Report                  Report[]
+  resourcesReview         resourcesReview[]
+  download                Download[]
+  resourceView            resourceView[]
+
+  @@map("resources")
+}
+
+model Report {
+   id              String    @id @default(auto()) @map("_id") @db.ObjectId
+   tag             String
+   reason          String
+   status          String
+   user_id         String    @db.ObjectId @unique
+   resource_id     String    @db.ObjectId @unique
+   createdAt       DateTime  @db.Date
+   updatedAt       DateTime  @db.Date
+
+   user            User      @relation(fields: [user_id ], references: [id], onDelete: Cascade) 
+   resource        Resource  @relation(fields: [resource_id ], references: [id], onDelete: Cascade) 
+
+   @@map("reports")
+}
+model Ticket {
+   id              String    @id @default(auto()) @map("_id") @db.ObjectId
+   tag             String
+   email           String    @unique
+   subject         String
+   message         String
+   status          String
+   createdAt       DateTime  @db.Date
+   updatedAt       DateTime  @db.Date
+
+
+   @@map("tickets")
+}
+
+model Download {
+   id              String    @id @default(auto()) @map("_id") @db.ObjectId
+   username        String    @unique
+   user_id         String    @db.ObjectId @unique
+   resource_id     String    @db.ObjectId @unique
+   createdAt       DateTime  @db.Date
+
+   user            User      @relation(fields: [user_id ], references: [id])
+   resource        Resource  @relation(fields: [resource_id ], references: [id],onDelete: Cascade)
+
+   @@map("downloads")
+}
+
+model User {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId 
+  accountStatus       String
+  createdAt           DateTime  @db.Date
+  email               String    @unique
+  emailVerified       Boolean
+  name                String
+  profilePicture      String
+  type                String
+  bookmarks           String[]
+  updatedAt           DateTime? @db.Date
+  username            String    @unique
+  Bookmarks           Bookmark[]
+  Views               View[]
+  Report              Report[]
+  resourcesReview     resourcesReview[]
+  WebsiteReview       WebsiteReview[]
+  download            Download[]
+ 
+
+  @@map("users")
+}
+
+model Bookmark {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+  user_id           String    @db.ObjectId @unique
+  resource_id       String    @db.ObjectId @unique
+  resource_class    String 
+  resource_major    String 
+  resource_degree   String
+  resource_year     String 
+  createdAt         DateTime  @db.Date
+  user              User      @relation(fields: [user_id ], references: [id],onDelete: Cascade)
+  resource          Resource  @relation(fields: [resource_id ], references: [id],onDelete: Cascade)
+
+  @@map("bookmarks")
+}
+
+model View {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+  user_id           String    @db.ObjectId @unique
+  resource_id       String    @db.ObjectId @unique
+  user              User      @relation(fields: [user_id ], references: [id])
+  resource          Resource  @relation(fields: [resource_id ], references: [id], onDelete: Cascade)
+
+  @@map("views")
+}
+
+
+
+model Review {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId 
+  userId         String  
+  username       String
+  rating         Float
+  review         String
+  createdAt      DateTime?  @db.Date
+
+  @@map("reviews")
+}
+
+
+
+model WebsiteReview {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  user_id             String    @db.ObjectId @unique 
+  username            String    
+  rating              Float    
+  review              String    
+  createdAt           DateTime  @db.Date
+  updatedAt           DateTime? @db.Date
+  user                User      @relation(fields: [user_id ], references: [id])
+
+    @@map("websiteReviews")
+}
+
+model resourcesReview {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  user_id             String    @db.ObjectId @unique
+  username            String    
+  resource_id         String    @db.ObjectId @unique 
+  rating              Float    
+  review              String  
+  isRecommended       Boolean  
+  createdAt           DateTime  @db.Date
+  updatedAt           DateTime? @db.Date
+
+  user                User      @relation(fields: [user_id ], references: [id], onDelete: Cascade)
+  resource            Resource  @relation(fields: [resource_id ], references: [id], onDelete: Cascade)
+
+    @@map("resourcesReviews")
+}
+
+
+
+// Events
+
+// model resourceView {
+//   id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+//   eventType         String
+//   user_id           String    @db.ObjectId @unique
+//   resource_id       String    @db.ObjectId @unique
+//   createdAt         DateTime
+//   user              User      @relation(fields: [user_id ], references: [id])
+//   resource          Resource  @relation(fields: [resource_id ], references: [id], onDelete: Cascade)
+
+//   @@map("resourceViews")
+// } 
+model resourceView {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+  eventType         String
+  referrer         String
+  userId            String    
+  resource_id       String    @db.ObjectId @unique
+  createdAt         DateTime
+  resource          Resource  @relation(fields: [resource_id ], references: [id], onDelete: Cascade)
+
+  @@map("resourceViews")
+} 
+
+model Device {
+   id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+   eventType         String
+   userId           String    @unique
+   platform          String
+   language          String
+   userAgent         String
+   browser           String
+   createdAt         DateTime
+   location          Json
+   screenSize          Json
+
+  @@map("devices")
+}
+
+
+
+model Page {
+   id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+   eventType         String
+   user_id           String    @unique
+   page              String
+   createdAt         DateTime
+
+    @@map("pages")
+}
+
+
+// model userRegistration {
+//   id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+//   eventType         String
+//   user_id           String    @db.ObjectId @unique
+//   createdAt         DateTime
+//   user              User      @relation(fields: [user_id ], references: [id])
+//   resource          Resource  @relation(fields: [resource_id ], references: [id])
+
+//   @@map("userRegistrations")
+// } 

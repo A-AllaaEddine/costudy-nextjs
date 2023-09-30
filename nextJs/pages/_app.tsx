@@ -1,21 +1,29 @@
-import Layout from "../components/commun/layout";
-import { NotificationsProvider } from "@/contexts/notifications.context";
-import { UserProvider } from "@/contexts/user-context";
-import "@/styles/globals.css";
-import { AppProps } from "next/app";
-import NextTopLoader from "nextjs-toploader";
+import '@/styles/globals.css';
+import { trpc } from '@/utils/trpc';
+import { SessionProvider } from 'next-auth/react';
+import { AppProps, AppType } from 'next/app';
+import Layout from '../components/commun/layout/layout';
+import { Poppins } from 'next/font/google';
 
-export default function App({ Component, pageProps }: AppProps) {
+export const poppins = Poppins({
+  weight: '300',
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
+const App: AppType = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) => {
   return (
-    <>
-      <NextTopLoader color={"#e6a0ff"} />
-      <UserProvider>
-        <NotificationsProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </NotificationsProvider>
-      </UserProvider>
-    </>
+    <main className={poppins.variable}>
+      <SessionProvider session={session} refetchOnWindowFocus={true}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </SessionProvider>
+    </main>
   );
-}
+};
+
+export default trpc.withTRPC(App);
