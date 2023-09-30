@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { AppProps, AppType } from 'next/app';
 import Layout from '../components/commun/layout/layout';
 import { Poppins } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
 
 export const poppins = Poppins({
   weight: '300',
@@ -19,6 +20,7 @@ const App: AppType = ({
     <main className={poppins.variable}>
       <SessionProvider session={session} refetchOnWindowFocus={true}>
         <Layout>
+          <Analytics />
           <Component {...pageProps} />
         </Layout>
       </SessionProvider>
