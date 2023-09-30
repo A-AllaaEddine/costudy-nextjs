@@ -1,5 +1,4 @@
-import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,17 +6,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
-import {
-  IoMdSettings,
-  IoMdLogOut,
-  IoMdBookmark,
-  IoIosAt,
-  IoIosConstruct,
-} from 'react-icons/io';
-import { authenticationUser } from '@/types/types';
 import Link from 'next/link';
+import { IoMdBookmark, IoMdLogOut, IoMdSettings } from 'react-icons/io';
+import { IoCloudUpload } from 'react-icons/io5';
+import { MdSpaceDashboard } from 'react-icons/md';
 
 const UserPopover = () => {
   const router = useRouter();
@@ -27,12 +22,12 @@ const UserPopover = () => {
     await signOut({
       callbackUrl: '/',
     });
-    // router.push('/');
   };
+
   return (
     <div
       className="w-auto h-10  flex flex-row justify-end
-     items-center  "
+     items-center font-sans "
     >
       {session?.user ? (
         <DropdownMenu>
@@ -59,7 +54,7 @@ const UserPopover = () => {
                       session?.user?.username?.length > 17
                         ? `text-md  whitespace-nowrap animate-scrolling`
                         : 'text-md'
-                    } h-5 text-md font-bold  p-0 m-0`}
+                    } h-5 text-md font-bold  p-0 m-0 font-sans`}
                   >
                     {session?.user?.username}
                   </p>
@@ -76,10 +71,10 @@ const UserPopover = () => {
               </div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {session?.user?.type !== 'admin' && (
+            {session?.user?.type && (
               <DropdownMenuItem
                 className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
-        hover:cursor-pointer"
+                hover:cursor-pointer"
                 onClick={() => router.push('/bookmarks')}
               >
                 <IoMdBookmark className="w-6 h-6 rounded-3xl" />
@@ -87,19 +82,36 @@ const UserPopover = () => {
               </DropdownMenuItem>
             )}
             {session?.user?.type === 'admin' && (
-              <DropdownMenuItem
-                className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
-              hover:cursor-pointer"
-                onClick={() => router.push('/admin')}
-              >
-                <IoIosConstruct className="w-6 h-6 rounded-3xl" />
-                <p>Admin Panel</p>
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem
+                  className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
+                hover:cursor-pointer"
+                  onClick={() =>
+                    router.push({
+                      pathname: '/admin/dashboard',
+                      query: {
+                        tab: 'overview',
+                      },
+                    })
+                  }
+                >
+                  <MdSpaceDashboard className="w-6 h-6 rounded-3xl" />
+                  <p>Dashboard</p>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
+                hover:cursor-pointer"
+                  onClick={() => router.push('/admin/upload')}
+                >
+                  <IoCloudUpload className="w-6 h-6 rounded-3xl" />
+                  <p>Uplaods</p>
+                </DropdownMenuItem>
+              </>
             )}
             <DropdownMenuItem
               className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
-        hover:cursor-pointer"
-              onClick={() => router.push('/account/info')}
+              hover:cursor-pointer"
+              onClick={() => router.push('/settings?tab=account')}
             >
               <IoMdSettings className="w-6 h-6 rounded-3xl" />
               <p>Settings</p>
@@ -123,14 +135,6 @@ const UserPopover = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        // <IoMdLogIn
-        //   className="text-black-txt w-4/6 h-4/6
-        //     lg:hover:cursor-pointer
-        //     xl:hover:cursor-pointer
-
-        //     "
-        //   onClick={() => router.push('/login')}
-        // />
         <Link
           className="font-semibold rounded-3xl pr-2 pl-2 hover:bg-slate-200
         hover:cursor-pointer"
@@ -140,14 +144,6 @@ const UserPopover = () => {
               destination: router.asPath,
             },
           }}
-          // onClick={() =>
-          //   router.push({
-          //     pathname: '/login',
-          //     query: {
-          //       destination: router.asPath,
-          //     },
-          //   })
-          // }
         >
           Log in
         </Link>

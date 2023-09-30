@@ -13,12 +13,26 @@ a {
 
 @layer utilities {
   .animate-scrolling {
-    animation: scroll 20s linear infinite;
+    animation: scroll 10s linear infinite;
   }
 
   @keyframes scroll {
     0% {
       transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+@layer utilities {
+  .animate-filter {
+    animation: scroll 15s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(50%);
     }
     100% {
       transform: translateX(-100%);

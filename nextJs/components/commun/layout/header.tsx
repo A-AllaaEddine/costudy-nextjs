@@ -16,7 +16,22 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { signOut, useSession } from 'next-auth/react';
 import UserPopover from './UserPopover';
-import { IoMdMenu } from 'react-icons/io';
+import {
+  IoLogoFacebook,
+  IoLogoInstagram,
+  IoLogoLinkedin,
+  IoMdMenu,
+} from 'react-icons/io';
+
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const Header = () => {
   const router = useRouter();
@@ -24,6 +39,7 @@ const Header = () => {
 
   const [hideNavbar, setHideNavbar] = useState<boolean>(false);
   const [lastScrollY, setLastScrollY] = useState<number>(0);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,103 +59,96 @@ const Header = () => {
     };
   }, [lastScrollY]);
 
-  const signOutUser = async () => {
-    await signOut({
-      callbackUrl: '/',
-    });
-    // router.push('/');
-  };
-
-  const resources = [
-    { value: 'math', label: 'math', url: '/math', imgUrl: '/math.png' },
-    {
-      value: 'science',
-      label: 'science',
-      url: '/science',
-      imgUrl: '/science.png',
-    },
-    {
-      value: 'history',
-      label: 'history',
-      url: '/history',
-      imgUrl: '/history.png',
-    },
-    { value: 'art', label: 'art', url: '/art', imgUrl: '/art.png' },
-    { value: 'music', label: 'music', url: '/music', imgUrl: '/music.png' },
-    {
-      value: 'language',
-      label: 'language',
-      url: '/language',
-      imgUrl: '/language.png',
-    },
-    { value: 'sports', label: 'sports', url: '/sports', imgUrl: '/sports.png' },
-    {
-      value: 'technology',
-      label: 'technology',
-      url: '/technology',
-      imgUrl: '/technology.png',
-    },
-    {
-      value: 'geography',
-      label: 'geography',
-      url: '/geography',
-      imgUrl: '/geography.png',
-    },
-    { value: 'food', label: 'food', url: '/food', imgUrl: '/food.png' },
-    { value: 'health', label: 'health', url: '/health', imgUrl: '/health.png' },
-    {
-      value: 'literature',
-      label: 'literature',
-      url: '/literature',
-      imgUrl: '/literature.png',
-    },
-    { value: 'nature', label: 'nature', url: '/nature', imgUrl: '/nature.png' },
-    {
-      value: 'politics',
-      label: 'politics',
-      url: '/politics',
-      imgUrl: '/politics.png',
-    },
-    {
-      value: 'philosophy',
-      label: 'philosophy',
-      url: '/philosophy',
-      imgUrl: '/philosophy.png',
-    },
-    {
-      value: 'economics',
-      label: 'economics',
-      url: '/economics',
-      imgUrl: '/economics.png',
-    },
-    {
-      value: 'fashion',
-      label: 'fashion',
-      url: '/fashion',
-      imgUrl: '/fashion.png',
-    },
-    { value: 'travel', label: 'travel', url: '/travel', imgUrl: '/travel.png' },
-    {
-      value: 'mythology',
-      label: 'mythology',
-      url: '/mythology',
-      imgUrl: '/mythology.png',
-    },
-    {
-      value: 'architecture',
-      label: 'architecture',
-      url: '/architecture',
-      imgUrl: '/architecture.png',
-    },
-    { value: 'film', label: 'film', url: '/film', imgUrl: '/film.png' },
-  ];
+  // const resources = [
+  //   { value: 'math', label: 'math', url: '/math', imgUrl: '/math.png' },
+  //   {
+  //     value: 'science',
+  //     label: 'science',
+  //     url: '/science',
+  //     imgUrl: '/science.png',
+  //   },
+  //   {
+  //     value: 'history',
+  //     label: 'history',
+  //     url: '/history',
+  //     imgUrl: '/history.png',
+  //   },
+  //   { value: 'art', label: 'art', url: '/art', imgUrl: '/art.png' },
+  //   { value: 'music', label: 'music', url: '/music', imgUrl: '/music.png' },
+  //   {
+  //     value: 'language',
+  //     label: 'language',
+  //     url: '/language',
+  //     imgUrl: '/language.png',
+  //   },
+  //   { value: 'sports', label: 'sports', url: '/sports', imgUrl: '/sports.png' },
+  //   {
+  //     value: 'technology',
+  //     label: 'technology',
+  //     url: '/technology',
+  //     imgUrl: '/technology.png',
+  //   },
+  //   {
+  //     value: 'geography',
+  //     label: 'geography',
+  //     url: '/geography',
+  //     imgUrl: '/geography.png',
+  //   },
+  //   { value: 'food', label: 'food', url: '/food', imgUrl: '/food.png' },
+  //   { value: 'health', label: 'health', url: '/health', imgUrl: '/health.png' },
+  //   {
+  //     value: 'literature',
+  //     label: 'literature',
+  //     url: '/literature',
+  //     imgUrl: '/literature.png',
+  //   },
+  //   { value: 'nature', label: 'nature', url: '/nature', imgUrl: '/nature.png' },
+  //   {
+  //     value: 'politics',
+  //     label: 'politics',
+  //     url: '/politics',
+  //     imgUrl: '/politics.png',
+  //   },
+  //   {
+  //     value: 'philosophy',
+  //     label: 'philosophy',
+  //     url: '/philosophy',
+  //     imgUrl: '/philosophy.png',
+  //   },
+  //   {
+  //     value: 'economics',
+  //     label: 'economics',
+  //     url: '/economics',
+  //     imgUrl: '/economics.png',
+  //   },
+  //   {
+  //     value: 'fashion',
+  //     label: 'fashion',
+  //     url: '/fashion',
+  //     imgUrl: '/fashion.png',
+  //   },
+  //   { value: 'travel', label: 'travel', url: '/travel', imgUrl: '/travel.png' },
+  //   {
+  //     value: 'mythology',
+  //     label: 'mythology',
+  //     url: '/mythology',
+  //     imgUrl: '/mythology.png',
+  //   },
+  //   {
+  //     value: 'architecture',
+  //     label: 'architecture',
+  //     url: '/architecture',
+  //     imgUrl: '/architecture.png',
+  //   },
+  //   { value: 'film', label: 'film', url: '/film', imgUrl: '/film.png' },
+  // ];
 
   return (
     <>
       <div
         className={`fixed ${
           hideNavbar ? 'top-[-12rem]' : 'top-0'
-        } transition-all z-10 h-auto w-full lg:flex flex-col justify-center items-center
+        } transition-all z-10 h-auto w-full lg:hidden  flex-col justify-center items-center font-sans
       `}
       >
         <div
@@ -155,9 +164,81 @@ const Header = () => {
           className=" w-full h-14 flex flex-row justify-between items-center pr-2 pl-2
           border-b-2 border-[#e9e9e9] bg-white"
         >
-          <div className="w-10 h-10  flex flex-row justify-start items-center lg:hidden ">
-            <IoMdMenu className="w-4/5 h-4/5 " />
-          </div>
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetTrigger className="w-10 h-10  flex flex-row justify-start items-center lg:hidden ">
+              <IoMdMenu className="w-4/5 h-4/5 " />
+            </SheetTrigger>
+            <SheetContent
+              menu
+              side={'left'}
+              className="flex flex-col justify-start items-center gap-3"
+            >
+              <p
+                className="w-full h-8 text-md font-semibold
+              flex justify-start items-center"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  router.push('/resources');
+                }}
+              >
+                Resources
+              </p>
+              <Separator />
+              <p
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  router.push('/about');
+                }}
+              >
+                About
+              </p>
+              <p
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  router.push('/about');
+                }}
+              >
+                Terms and Conditions
+              </p>
+              <p
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  router.push('/about');
+                }}
+              >
+                Cookie Policy
+              </p>
+              <p
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  router.push('/support');
+                }}
+              >
+                Support
+              </p>
+              <Separator />
+              <div className="flex flex-row justify-start gap-4 w-full h-auto ">
+                <Link href="/instagram">
+                  <IoLogoInstagram className="w-7 h-7" />
+                </Link>
+                <Link href="/facebook">
+                  <IoLogoFacebook className="w-7 h-7" />
+                </Link>
+                <Link href="/linkedin">
+                  <IoLogoLinkedin className="w-7 h-7" />
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
+
           <div className="w-auto h-10 flex flex-row justify-center items-center">
             <Image
               src={Logo}
@@ -173,12 +254,14 @@ const Header = () => {
           </div>
         </div>
       </div>
-      /* Desktop Header */
+
+      {/* Desktop Header */}
+
       <div
         className={`fixed ${
           hideNavbar ? 'top-[-12rem]' : 'top-0'
-        } transition-all z-10 h-auto w-full lg:flex flex-col justify-center items-center
-          hidden`}
+        } transition-all z-10 h-auto w-full hidden  lg:visible lg:flex lg:flex-col justify-center items-center font-sans
+          `}
       >
         <div
           className="w-full h-8 flex justify-center items-center
@@ -198,7 +281,9 @@ const Header = () => {
               width={100}
               height={100}
               className="w-full h-full hover:cursor-pointer"
-              onClick={() => router.push('/')}
+              onClick={() => {
+                router.push('/');
+              }}
             />
           </div>
           <div className="w-full h-full flex flex-row justify-center items-center gap-3">
@@ -282,14 +367,14 @@ const Header = () => {
               >
                 About
               </Link>
-              <Link
+              {/* <Link
                 href={'/community'}
                 className="font-semibold hover:cursor-pointer
              text-black pr-2 pl-2 rounded-full h-full
             flex flex-row justify-center items-center hover:text-[#8449BF]"
               >
                 Community
-              </Link>
+              </Link> */}
               <Link
                 href={'/support'}
                 className="font-semibold hover:cursor-pointer
@@ -299,7 +384,7 @@ const Header = () => {
                 Support
               </Link>
             </div>
-            <Link
+            {/* <Link
               href={'/how-it-works'}
               className=" h-8 font-semibold hover:cursor-pointer
              text-black pr-4 pl-4 rounded-full 
@@ -307,7 +392,7 @@ const Header = () => {
             bg-[#8449BF] bg-opacity-10"
             >
               How it works
-            </Link>
+            </Link> */}
           </div>
           <div className="w-auto h-full flex flex-row justify-between items-center gap-2">
             {!session?.user ? (
@@ -315,9 +400,10 @@ const Header = () => {
                 <Link
                   href={{
                     pathname: '/login',
-                    query: {
-                      destination: router.asPath,
-                    },
+                    query:
+                      router.asPath === '/'
+                        ? {}
+                        : { destination: router.asPath },
                   }}
                   className="w-auto h-full pr-2 pl-2 text-black
                   flex justify-center items-center font-semibold hover:text-[#8449BF]"

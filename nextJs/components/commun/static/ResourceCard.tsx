@@ -1,35 +1,32 @@
-import { useRouter } from 'next/router';
 import { Resource } from '@/types/types';
 import { ForwardedRef, forwardRef, useState } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
-import { IoEye, IoBookmark } from 'react-icons/io5';
 import {
   AiFillFilePdf,
   AiFillFilePpt,
   AiFillFileWord,
   AiFillVideoCamera,
 } from 'react-icons/ai';
-import ResourceModal from './ResourceModal';
+import ResourceModal from '@/components/modules/resourceId/resource/ResourceModal';
+import ToolTip from './ToolTip';
 
 const ResourceCard = forwardRef(
   (
     { resource, userBookmarks }: { resource: Resource; userBookmarks?: any },
     ref: ForwardedRef<any>
   ) => {
-    const router = useRouter();
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    const badgeType = {
+    const badgeType: Record<any, any> = {
       pdf: (
         <Badge variant="secondary" className="flex gap-1 text-xs">
           PDF <AiFillFilePdf />
@@ -51,41 +48,23 @@ const ResourceCard = forwardRef(
         </Badge>
       ),
     };
-    const bgColor = {
-      pdf: 'bg-[#FF0089] bg-opacity-10',
-      ppt: 'bg-[#FF0089] bg-opacity-10',
-      docx: 'bg-[#000000] bg-opacity-10',
-      video: 'bg-[#8449BF] bg-opacity-10',
-    };
 
     const cardBody = (
       <Card
-        className={`max-w-[22rem] min-w-[22rem] w-full sm:w-[22rem] h-auto
+        className={`max-w-[22rem]  w-[18rem]  sm:w-[22rem] h-[18rem]
              bg-white border-[1px] rounded-xl drop-shadow-md shadow-md
-             hover:cursor-pointer`}
+             hover:cursor-pointer p-0`}
       >
         <CardHeader>
           <CardTitle
-            className={` w-full h-12  overflow-hidden  text-md sm:text-2xl font-bold`}
+            className={`w-full h-12  overflow-hidden  text-md sm:text-2xl font-bold`}
           >
-            <div
-              className={`${
-                resource?.title?.length > 23 &&
-                'whitespace-nowrap animate-scrolling'
-              }`}
-            >
-              {resource?.title}
-            </div>
+            <ToolTip
+              children={<p className="truncate">{resource?.title}</p>}
+              tooltip={resource?.title}
+            />
           </CardTitle>
-          <div className="h-6 flex gap-1">
-            {badgeType[resource?.type]}
-            {/* <Badge variant="secondary" className="flex gap-1">
-              382 <IoEye />
-            </Badge>
-            <Badge variant="secondary" className="flex gap-1">
-              2.4k <IoBookmark />
-            </Badge> */}
-          </div>
+          <div className="h-6 flex gap-1">{badgeType[resource?.type]}</div>
         </CardHeader>
         <CardContent>
           <p

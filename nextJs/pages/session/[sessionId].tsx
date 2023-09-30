@@ -3,7 +3,7 @@ import styles from './Session.module.scss';
 import { useEffect, useState } from 'react';
 import { Fetcher } from '@/utils/fetcher';
 import { io } from 'socket.io-client';
-import MessageBox from '@/components/modular/session/messages-box/messages-box.component';
+import MessageBox from '@/components/modules/session/messages-box/messages-box.component';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Socket } from 'socket.io-client';
 import { checkServerSession } from '@/utils/serserSideUtils';
@@ -109,11 +109,11 @@ const Session = () => {
     <div className={styles.sessionPage}>
       <h1>Chat</h1>
       <div className={styles.chatBox}></div>
-      <MessageBox
+      {/* <MessageBox
         socket={socket}
         setMessages={setMessages}
         messages={messages}
-      />
+      /> */}
     </div>
   );
 };

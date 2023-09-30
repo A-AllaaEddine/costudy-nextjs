@@ -1,22 +1,28 @@
-import Layout from '../components/commun/layout/layout';
-import { UserProvider } from '@/contexts/user-context';
 import '@/styles/globals.css';
-import { AppProps, AppType } from 'next/app';
-import { SessionProvider } from 'next-auth/react';
 import { trpc } from '@/utils/trpc';
+import { SessionProvider } from 'next-auth/react';
+import { AppProps, AppType } from 'next/app';
+import Layout from '../components/commun/layout/layout';
+import { Poppins } from 'next/font/google';
 
+export const poppins = Poppins({
+  weight: '300',
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 const App: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) => {
   return (
-    <SessionProvider session={session} refetchOnWindowFocus={true}>
-      <UserProvider>
+    <main className={poppins.variable}>
+      <SessionProvider session={session} refetchOnWindowFocus={true}>
         <Layout>
           <Component {...pageProps} />
         </Layout>
-      </UserProvider>
-    </SessionProvider>
+      </SessionProvider>
+    </main>
   );
 };
 

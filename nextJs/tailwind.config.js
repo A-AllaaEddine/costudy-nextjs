@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+const { withUt } = require('uploadthing/tw');
 
-module.exports = {
+module.exports = withUt({
   darkMode: ['class'],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -31,7 +32,11 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      fontFamily: {
+        sans: ['var(--font-poppins)'],
+        mono: ['var(--font-roboto-mono)'],
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],
-};
+});

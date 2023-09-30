@@ -4,22 +4,33 @@ import { prisma } from '@/utils/prisma';
 
 export const reviewsRouter = router({
   website: router({
-    create: protectedProcedure
+    add: protectedProcedure
       .input(
         z.object({
-          userId: z.string(),
-          username: z.string(),
           rating: z.number(),
           review: z.string(),
         })
       )
-      .mutation(async ({ input }) => {
-        const { userId, username, rating, review } = input;
+      .mutation(async ({ input, ctx: { session } }) => {
+        const { rating, review } = input;
         try {
+          const exist = await prisma.websiteReview.findUnique({
+            where: {
+              user_id: session?.user?.id,
+            },
+          });
+
+          if (exist) {
+            throw new Error('Review exists already.');
+          }
           await prisma.websiteReview.create({
             data: {
-              userId,
-              username,
+              user: {
+                connect: {
+                  id: session?.user?.id, // Connect to the user by ObjectID
+                },
+              },
+              username: session?.user?.username,
               rating,
               review,
               createdAt: new Date(),
@@ -32,24 +43,43 @@ export const reviewsRouter = router({
         }
       }),
   }),
-  user: router({
-    create: protectedProcedure
+  resource: router({
+    add: protectedProcedure
       .input(
         z.object({
-          userId: z.string(),
-          username: z.string(),
+          id: z.string(),
           rating: z.number(),
           review: z.string(),
           isRecommended: z.boolean(),
         })
       )
-      .mutation(async ({ input }) => {
-        const { userId, username, rating, review, isRecommended } = input;
+      .mutation(async ({ input, ctx: { session } }) => {
+        const { rating, review, isRecommended } = input;
         try {
-          await prisma.usersReview.create({
+          const exist = await prisma.resourcesReview.findUnique({
+            where: {
+              user_id: session?.user?.id,
+              resource_id: input?.id,
+            },
+          });
+
+          if (exist) {
+            throw new Error('Review exists already.');
+          }
+
+          await prisma.resourcesReview.create({
             data: {
-              userId,
-              username,
+              user: {
+                connect: {
+                  id: session?.user?.id, // Connect to the user by ObjectID
+                },
+              },
+              resource: {
+                connect: {
+                  id: input?.id, // Connect to the resource by ObjectID
+                },
+              },
+              username: session?.user?.username,
               rating,
               review,
               isRecommended,
@@ -80,4 +110,50 @@ export const reviewsRouter = router({
       // return data;
       return {};
     }),
+  count: router({
+    get: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+        })
+      )
+      .query(async ({ input }) => {
+        try {
+          const [reviewsCount, positiveReviewsCount, ratingCount] =
+            await prisma.$transaction([
+              prisma.resourcesReview.count({
+                where: {
+                  resource_id: input?.id,
+                },
+              }),
+              prisma.resourcesReview.count({
+                where: {
+                  resource_id: input?.id,
+                  isRecommended: true,
+                },
+              }),
+              prisma.resourcesReview.findMany({
+                where: {
+                  resource_id: input?.id,
+                },
+                select: {
+                  rating: true,
+                },
+              }),
+            ]);
+          let totalRating = 0;
+          for (const rating of ratingCount) {
+            totalRating += rating.rating;
+          }
+
+          const recommendation = (reviewsCount / positiveReviewsCount) * 100;
+          const rating = totalRating / reviewsCount;
+
+          return { recommendation: recommendation || 0, rating: rating || 0 };
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
+  }),
 });

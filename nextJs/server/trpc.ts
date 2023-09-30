@@ -31,6 +31,16 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   });
 });
 
+const isAdmin = t.middleware(({ next, ctx }) => {
+  if (ctx.session?.user?.type !== 'admin') {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+    });
+  }
+  return next({
+    ctx,
+  });
+});
 export const middleware = t.middleware;
 
 // public procedure
@@ -38,3 +48,6 @@ export const publicProcedure = t.procedure;
 
 //private procedure
 export const protectedProcedure = t.procedure.use(isAuthed);
+
+// admin procedure
+export const adminProcedure = t.procedure.use(isAdmin);

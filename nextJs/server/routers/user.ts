@@ -2,26 +2,22 @@ import { z } from 'zod';
 import { protectedProcedure, publicProcedure, router } from '../trpc';
 import { createUser } from '@/utils/mongo';
 import { prisma } from '@/utils/prisma';
-import { hashPassword } from '@/utils/bcryptUtils';
+import { hashPassword, verifyPassword } from '@/utils/bcryptUtils';
 
 export const userRouter = router({
-  get: protectedProcedure
-    .input(
-      z.object({
-        page: z.number(),
-        keyword: z.string().optional(),
-        major: z.string().optional(),
-        degree: z.string().optional(),
-        year: z.string().optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      // Retrieve users from a datasource, this is an imaginary database
-      // const data = await getResources(input);
-
-      // return data;
-      return {};
-    }),
+  get: protectedProcedure.query(async ({ input, ctx: { session } }) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: session?.user?.id,
+        },
+      });
+      return user || {};
+    } catch (error: any) {
+      console.log(error);
+      throw error;
+    }
+  }),
   create: publicProcedure
     .input(
       z.object({
@@ -97,4 +93,85 @@ export const userRouter = router({
         throw error;
       }
     }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().optional(),
+        username: z.string().optional(),
+        email: z.string().optional(),
+        currentPassword: z.string().optional(),
+        newPassword: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx: { session } }) => {
+      //   const { email, name, surname, username, type, job, state, city, phone } =
+      //     input;
+
+      try {
+        if (input?.currentPassword) {
+          const userAuth = await prisma.authentication.findUnique({
+            where: {
+              id: session?.user?.id,
+            },
+          });
+
+          if (!userAuth) {
+            throw new Error('No User');
+          }
+
+          const isValid = await verifyPassword(
+            input?.currentPassword,
+            userAuth?.password!
+          );
+
+          if (!isValid) {
+            throw new Error('Wrong Password');
+          }
+
+          const hashedPassword = await hashPassword(input?.newPassword!);
+          await prisma.authentication.update({
+            where: {
+              id: session?.user?.id,
+            },
+            data: {
+              password: hashedPassword,
+              updatedAt: new Date(),
+            },
+          });
+          return;
+        }
+
+        await prisma.user.update({
+          where: {
+            id: session?.user?.id,
+          },
+          data: {
+            ...input,
+            updatedAt: new Date(),
+          },
+        });
+      } catch (error: any) {
+        console.log(error);
+        throw new Error(error.message);
+      }
+    }),
+  delete: protectedProcedure.mutation(async ({ ctx: { session } }) => {
+    try {
+      await prisma.$transaction([
+        prisma.user.delete({
+          where: {
+            id: session?.user?.id,
+          },
+        }),
+        prisma.authentication.delete({
+          where: {
+            id: session?.user?.id,
+          },
+        }),
+      ]);
+    } catch (error: any) {
+      console.log(error);
+      throw new Error(error.message);
+    }
+  }),
 });
