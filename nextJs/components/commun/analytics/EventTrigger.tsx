@@ -1,9 +1,21 @@
+import { generateSalt } from '@/utils/bcryptUtils';
 import { trpc } from '@/utils/trpc';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 const EventTrigger = () => {
   const router = useRouter();
+
+  const { data: session } = useSession();
+
+  const generateId = () => {
+    const salt = generateSalt();
+    const dataToHash = `${
+      navigator.userAgent
+    }${new Date().toISOString()}${salt}`;
+    return dataToHash;
+  };
 
   const {
     mutateAsync: addDevice,
@@ -22,10 +34,9 @@ const EventTrigger = () => {
     try {
       let userId = localStorage.getItem('userId');
       if (!userId) {
-        userId = 'generateUniqueId()';
+        userId = generateId();
         localStorage.setItem('userId', userId);
       }
-      let data: any = { userId };
 
       let OSName = 'unknown';
       let navApp = navigator.userAgent.toLowerCase();
@@ -69,7 +80,7 @@ const EventTrigger = () => {
       device = JSON.parse(sessionStorage.getItem('device')!);
       if (!device) {
         device = {
-          userId: 'fg',
+          userId: userId,
           userAgent: navigator.userAgent,
           platform: OSName,
           language: navigator.language,
@@ -99,7 +110,7 @@ const EventTrigger = () => {
     try {
       let userId = localStorage.getItem('userId');
       if (!userId) {
-        userId = 'gqggdgd5Aq525sgg';
+        userId = generateId();
         localStorage.setItem('userId', userId);
       }
       let data: any = { userId };
@@ -136,10 +147,6 @@ const EventTrigger = () => {
     if (router.isReady && router.pathname.includes('/[type]/[resourceId]')) {
       resourceViewEvent({ resourceId: router.query.resourceId! as string });
     }
-    addDownload({
-      username: 'fl',
-      resourceId: 'f',
-    });
   }, [router]);
 
   return <></>;
@@ -148,20 +155,33 @@ const EventTrigger = () => {
 export default EventTrigger;
 
 export const addDownload = async ({
-  resourceId,
-  username,
+  userId,
+  refetch,
 }: {
-  resourceId: string;
-  username: string;
+  userId: string;
+  refetch?: any;
 }) => {
-  try {
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'generateUniqueId()';
-      localStorage.setItem('userId', userId);
-    }
-    let data: any = { userId, username, resourceId };
+  const {
+    mutateAsync: addDownloadEvent,
+    isLoading: isLoadingDownloadEvent,
+    isError: isErrorDownloadEvent,
+    error: errorDownloadEvent,
+  } = trpc.events.downloads.add.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
+  try {
+    await addDownloadEvent({
+      id: userId,
+    });
+
+    if (isErrorDownloadEvent) {
+      throw errorDownloadEvent;
+    }
+
+    return { isLoading: isLoadingDownloadEvent };
     // console.log(data);
   } catch (error: any) {
     console.log(error);

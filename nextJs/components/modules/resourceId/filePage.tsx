@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import Toast from '@/components/commun/static/Toast';
 import { Resource } from '@/types/types';
 import Spinner from '@/components/commun/static/spinner';
+import { addDownload } from '@/components/commun/analytics/EventTrigger';
 
 const FilePage = ({ resource }: { resource: Resource }) => {
   const router = useRouter();
@@ -70,8 +71,8 @@ const FilePage = ({ resource }: { resource: Resource }) => {
 
   const downloadFile = async () => {
     try {
-      await addDownloadEvent({
-        id: resource?.id!,
+      await addDownload({
+        userId: resource?.id!,
       });
 
       if (isErrorDownloadEvent) {
@@ -241,7 +242,6 @@ const FilePage = ({ resource }: { resource: Resource }) => {
           >
             {isLoadingDownloadEvent ? (
               <>
-                {' '}
                 <Spinner className="text-white h-5 w-5" />
                 <p className="font-semibold text-sm">Downloading...</p>
               </>
