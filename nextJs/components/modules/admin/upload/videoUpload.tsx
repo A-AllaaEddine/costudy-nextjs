@@ -209,7 +209,8 @@ const VideoUpload = () => {
           <Button
             className="w-full h-12 text-white text-lg
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
-            hover:bg-[#8449BF] hover:text-white  mt-3"
+            hover:bg-[#8449BF] hover:text-white  mt-3
+            flex justify-center items-center gap-1"
             onClick={() => document.getElementById('thumbnailUpload')?.click()}
             type="button"
           >
@@ -301,6 +302,7 @@ const VideoUpload = () => {
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
             hover:bg-[#8449BF] hover:text-white  mt-3"
             type="submit"
+            disabled={isLoading}
           >
             Submit
           </Button>

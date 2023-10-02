@@ -21,27 +21,27 @@ export type Resource = {
   degree: string;
   year: string;
   by: string;
-  thumbnail: {
-    fileKey: string;
-    fileName: string;
-    fileSize: number;
-    fileUrl: string;
-    key: string;
-    name: string;
-    size: number;
-    url: string;
+  thumbnail?: {
+    fileKey?: string;
+    fileName?: string;
+    fileSize?: number;
+    fileUrl?: string;
+    key?: string;
+    name?: string;
+    size?: number;
+    url?: string;
   };
   file?: {
-    fileKey: string;
-    fileName: string;
-    fileSize: number;
-    fileUrl: string;
-    key: string;
-    name: string;
-    size: number;
-    url: string;
+    fileKey?: string;
+    fileName?: string;
+    fileSize?: number;
+    fileUrl?: string;
+    key?: string;
+    name?: string;
+    size?: number;
+    url?: string;
   };
-  video: {
+  video?: {
     url: string;
   };
   createdAt: string;

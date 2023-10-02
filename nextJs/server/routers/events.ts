@@ -224,22 +224,34 @@ export const eventsRouter = router({
               return;
             }
 
-            await prisma.download.create({
-              data: {
-                user: {
-                  connect: {
-                    id: session?.user?.id, // Connect to the user by ObjectID
+            await prisma.$transaction([
+              prisma.download.create({
+                data: {
+                  user: {
+                    connect: {
+                      id: session?.user?.id, // Connect to the user by ObjectID
+                    },
+                  },
+                  resource: {
+                    connect: {
+                      id: input?.id, // Connect to the resource by ObjectID
+                    },
+                  },
+                  username: session?.user?.username,
+                  createdAt: new Date(),
+                },
+              }),
+              prisma.resource.update({
+                where: {
+                  id: input?.id,
+                },
+                data: {
+                  totalDownloads: {
+                    increment: 1,
                   },
                 },
-                resource: {
-                  connect: {
-                    id: input?.id, // Connect to the resource by ObjectID
-                  },
-                },
-                username: session?.user?.username,
-                createdAt: new Date(),
-              },
-            });
+              }),
+            ]);
           }
         } catch (error: any) {
           console.log(error);

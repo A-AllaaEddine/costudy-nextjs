@@ -165,7 +165,7 @@ const EditInfoModal = ({
           </Label>
           <Textarea
             name="description"
-            className="w-full h-auto text-black-txt ttext-xs md:text-sm font-semibold"
+            className="w-full h-auto resize-none text-black-txt ttext-xs md:text-sm font-semibold"
             onChange={handleChange}
             value={formFields?.description}
             minLength={50}

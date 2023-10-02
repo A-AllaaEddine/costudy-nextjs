@@ -1,20 +1,13 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import useResources from '@/hooks/useReources';
+import CustomSelect from '@/components/commun/static/Select';
+import Spinner from '@/components/commun/static/spinner';
+import { Resource } from '@/types/types';
+import { trpc } from '@/utils/trpc';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ResourceCard from '../../commun/static/ResourceCard';
-import { trpc } from '@/utils/trpc';
-import { Resource } from '@/types/types';
-import { useSession } from 'next-auth/react';
-import Toast from '@/components/commun/static/Toast';
-import CustomSelect from '@/components/commun/static/Select';
-import Spinner from '@/components/commun/static/spinner';
+import { ErrorBoundary } from 'react-error-boundary';
+import ResourcesInfinitScroll from './InfiniteScroll';
 
 const majorOptions = [
   { value: 'All Majors', label: 'All Majors' },
@@ -64,7 +57,6 @@ const yearOptions = [
 
 const Main = () => {
   const [hookData, setHookData] = useState({
-    page: 1,
     keyword: '',
     class: '',
     major: '',
@@ -75,7 +67,7 @@ const Main = () => {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const { page, keyword, major, degree, year } = hookData;
+  const { keyword, major, degree, year } = hookData;
 
   useEffect(() => {
     if (router.isReady) {
@@ -84,69 +76,6 @@ const Main = () => {
       });
     }
   }, [router]);
-
-  const { data: userBookmarks, isLoading: isFetchingBookmarks } =
-    trpc.bookmarks.get.useQuery();
-
-  const {
-    data: resources,
-    fetchNextPage,
-    isFetching,
-    isFetchingNextPage,
-    hasNextPage,
-    isError,
-    error,
-  } = trpc.resources.page.get.useInfiniteQuery(
-    { keyword, class: hookData.class, major, degree, year },
-
-    {
-      getNextPageParam: (lastPage) => lastPage.nextPage,
-    }
-  );
-
-  const data = resources?.pages.reduce((acc: any, page) => {
-    return [...acc, ...page.data];
-  }, []);
-
-  const intObserver = useRef<IntersectionObserver | null>();
-  const lastDocRef = useCallback(
-    (doc: Element | null) => {
-      if (isFetching || isFetchingNextPage) return;
-
-      if (intObserver.current) intObserver.current.disconnect();
-
-      intObserver.current = new IntersectionObserver((doc) => {
-        if (doc[0].isIntersecting && hasNextPage) {
-          // console.log('We are near the last post!');
-
-          fetchNextPage();
-        }
-      });
-      if (doc) intObserver.current.observe(doc);
-    },
-    [isFetching, isFetchingNextPage, hasNextPage]
-  );
-
-  const content = data?.map((resource: Resource, i: number) => {
-    if (data.length >= 9) {
-      return (
-        <ResourceCard
-          key={i}
-          resource={resource}
-          ref={data.length === i + 1 ? lastDocRef : null}
-          userBookmarks={userBookmarks}
-        />
-      );
-    } else {
-      return (
-        <ResourceCard
-          key={i}
-          resource={resource}
-          userBookmarks={userBookmarks}
-        />
-      );
-    }
-  });
 
   const onSelectMajor = (selectedMajor: string) => {
     if (selectedMajor === 'All Majors') {
@@ -196,66 +125,40 @@ const Main = () => {
             options={majorOptions}
             onChange={onSelectMajor}
             value={major}
+            contenClassName="h-auto max-h-[14rem]"
           />
           <CustomSelect
             options={degreeOptions}
             onChange={onSelectDegree}
             value={degree}
+            contenClassName="h-auto"
           />
           <CustomSelect
             options={yearOptions}
             onChange={onSelectYear}
             value={year}
+            contenClassName="h-auto"
           />
         </div>
       </div>
-      <div
-        className="w-full h-full flex flex-wrap justify-center sm:justify-start item gap-4 mt-6
-         pb-12"
-      >
-        {content}
-        {isFetching && (
-          <div
-            style={{
-              width: '100%',
-              height: 500,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {/* <Spinner bgColor="#fafafa" width="100px" height="100px" /> */}
-            <Spinner className="text-[#8449BF] w-10 h-10" />
-          </div>
-        )}{' '}
-        {isFetchingNextPage && (
-          <div
-            style={{
-              width: '100%',
-              height: 500,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Spinner className="text-[#8449BF] w-10 h-10" />
-          </div>
-        )}
-        {(!isFetching || !isFetchingNextPage) &&
-          !content?.length &&
-          !isError && (
-            <div className="h-full w-full flex  flex-col justify-start pt-64 items-center">
-              <p className="font-bold text-slate-400 md:text-2xl lg:text-4xl">
-                No user has been found
+      <ErrorBoundary
+        FallbackComponent={({ error, resetErrorBoundary }) => {
+          return (
+            <div className="w-full flex justify-center items-center h-72 pl-2 pr-2 md:pl-8 md:pr-8  mt-12  mb-12">
+              <p className="text-md  font-sans">Something went wrong...</p>
+              <p
+                className="text-md ml-2 mr-2 underline hover:text-[#8449BF]
+                  hover:cursor-pointer font-bold"
+                onClick={() => resetErrorBoundary()}
+              >
+                Retry
               </p>
             </div>
-          )}
-        {isError && (
-          <p className="font-bold text-slate-400 md:text-2xl lg:text-4xl">
-            Error: {error.message}
-          </p>
-        )}
-      </div>
+          );
+        }}
+      >
+        <ResourcesInfinitScroll hookData={hookData} />
+      </ErrorBoundary>
     </div>
   );
 };

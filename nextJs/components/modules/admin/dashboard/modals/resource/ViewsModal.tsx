@@ -6,14 +6,24 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { DialogDescription } from '@radix-ui/react-dialog';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 
 import CustomSelect from '@/components/commun/static/Select';
 import Spinner from '@/components/commun/static/spinner';
 import { trpc } from '@/utils/trpc';
 import { useState } from 'react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { Resource } from '@/types/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const ViewsModal = ({
   t,
@@ -26,18 +36,42 @@ const ViewsModal = ({
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [selectedYear, setSelectedYear] = useState<number>(
-    new Date().getFullYear()
+  const [selectedRange, setSelectedRange] = useState<string>('today');
+  const [isEnabled, setIsEnabled] = useState<boolean>(false);
+
+  const {
+    data: growth,
+    isLoading,
+    refetch,
+  } = trpc.admin.events.views.growth.useQuery(
+    {
+      id: resource?.id!,
+      range: selectedRange,
+    },
+    {
+      enabled: isEnabled,
+    }
   );
-  const { data: growth, isLoading } = trpc.admin.events.views.growth.useQuery({
-    id: resource?.id!,
-  });
-  const yearOptions = [
-    { value: '2023', label: '2023' },
-    { value: '2024', label: '2024' },
+
+  useEffect(() => {
+    if (isOpen) {
+      refetch();
+      setIsEnabled(true);
+    }
+  }, [isOpen]);
+
+  const rangeOptions = [
+    { value: 'today', label: 'Today' },
+    { value: 'yesterday', label: 'Yesterday' },
+    { value: 'last-week', label: 'Last Week' },
+    { value: 'last-month', label: 'Last 30 days' },
+    { value: 'current-month', label: 'Current Month' },
+    { value: 'previous-month', label: 'Previous Month' },
+    { value: 'current-year', label: 'Current Year' },
+    { value: 'previous-year', label: 'Previous Year' },
   ];
-  const onSelectYear = (year: string) => {
-    setSelectedYear(parseInt(year));
+  const onSelectRange = (range: string) => {
+    setSelectedRange(range);
   };
 
   return (
@@ -56,19 +90,28 @@ const ViewsModal = ({
         <div className="w-full h-full flex flex-col justify-center items-center gap-5">
           <div className="w-full h-auto flex justify-end items-center">
             <CustomSelect
-              options={yearOptions}
-              onChange={onSelectYear}
+              options={rangeOptions}
+              onChange={onSelectRange}
               className="bg-white rounded-md"
               contenClassName="h-auto"
             />
           </div>
           {isLoading ? (
-            <div className="w-full h-full flex justify-center items-center">
-              <Spinner className="text-[#8449BF] w-10 h-10" />
-            </div>
+            <Skeleton className="h-[350px] w-full rounded-lg" />
           ) : (
             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={growth!}>
+              <LineChart
+                width={100}
+                height={100}
+                data={growth!}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="name"
                   stroke="#888888"
@@ -82,8 +125,13 @@ const ViewsModal = ({
                   tickLine={true}
                   axisLine={true}
                 />
-                <Bar dataKey="total" fill="#b571f8" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                <Line
+                  type="monotone"
+                  dataKey="pv"
+                  stroke="#b571f8"
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
             </ResponsiveContainer>
           )}
         </div>

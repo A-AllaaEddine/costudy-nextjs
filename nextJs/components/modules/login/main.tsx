@@ -97,11 +97,11 @@ const Main = () => {
   };
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center">
-      <p className="w-auto h-auto p-2 text-4xl font-bold">
+      <p className="w-auto h-auto p-2 text-center text-xl md:text-4xl font-bold">
         Oh! Is it exams time again? 😏
       </p>
       <form
-        className="w-[30rem] h-auto p-8 flex flex-col justify-center items-center gap-4
+        className="w-4/5 md:w-[30rem] h-auto p-8 flex flex-col justify-center items-center gap-4
           "
         onSubmit={handleSubmit}
       >
@@ -146,7 +146,7 @@ const Main = () => {
         </div>
         <Separator className="mt-2 mb-2" />
         <p
-          className="text-md text-center font-semibold flex flex-row justify-between items-center
+          className="text-sm md:text-md text-center font-normal flex flex-row justify-between items-center
         gap-2"
         >
           Not a member?{' '}

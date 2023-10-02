@@ -1,11 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import Resources from './tabs/Resources';
+import Resources from './tabs/resources/Resources';
 import OverView from './tabs/Overview';
 import Spinner from '@/components/commun/static/spinner';
 import Users from './tabs/Users';
-import Reports from './tabs/Reports';
+import Reports from './tabs/reports/Reports';
 
 const Main = () => {
   const [tab, setTab] = useState<string>('overview');
@@ -31,7 +31,7 @@ const Main = () => {
         </div>
       ) : (
         <div
-          className="w-4/6 h-auto max-h-[750px] flex flex-col justify-start items-center gap-2
+          className="w-5/6 h-auto max-h-[750px] flex flex-col justify-start items-center gap-2
           rounded-md border-[1px] border-slate-300 p-4"
         >
           <div

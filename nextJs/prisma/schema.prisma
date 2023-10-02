@@ -45,6 +45,8 @@ model Resource {
   resourcesReview         resourcesReview[]
   download                Download[]
   resourceView            resourceView[]
+  totalDownloads          Int?
+  totalViews              Int?
 
   @@map("resources")
 }
