@@ -7,6 +7,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
+import ForgetPasswordModal from './ForgetPasswordModal';
 
 const defaultFormFields = {
   email: '',
@@ -16,6 +17,8 @@ const Main = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassInput, setShowPassInput] = useState<boolean>(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
+    useState(false);
 
   const { email, password } = formFields;
 
@@ -123,7 +126,10 @@ const Main = () => {
             onChange={handleChange}
           />
         )}
-        <p className=" h-10 text-sm font-medium text-black-txt hover:cursor-pointer">
+        <p
+          className=" h-10 text-sm font-medium text-black-txt hover:cursor-pointer"
+          onClick={() => setIsForgotPasswordModalOpen(true)}
+        >
           Forgot password?
         </p>
         <div className="w-full h-12 flex flex-col justify-center items-center">
@@ -135,7 +141,6 @@ const Main = () => {
           >
             {isLoading ? (
               <>
-                {' '}
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Loggin in...</p>
               </>
@@ -158,6 +163,10 @@ const Main = () => {
           </Link>
         </p>
       </form>
+      <ForgetPasswordModal
+        isOpen={isForgotPasswordModalOpen}
+        setIsOpen={setIsForgotPasswordModalOpen}
+      />
     </div>
   );
 };

@@ -41,7 +41,7 @@ const ResourcesList = () => {
           p-4 scrollbar-hide"
         >
           {Array.from({ length: 6 }, (_, i) => i).map((__, idx) => {
-            return <CardSeleton />;
+            return <CardSeleton key={idx} />;
           })}
         </div>
       ) : !resources?.length ? (

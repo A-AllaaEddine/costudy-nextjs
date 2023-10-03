@@ -35,7 +35,7 @@ const Main = () => {
   const { name, username, email, password, confirmPassword } = formFields;
 
   const router = useRouter();
-  const { mutate, isError, error } = trpc.user.create.useMutation();
+  const { mutateAsync, isError, error } = trpc.user.create.useMutation();
 
   const handleChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -82,7 +82,7 @@ const Main = () => {
     try {
       setIsLoading(true);
 
-      mutate({ name, username, email, password });
+      await mutateAsync({ name, username, email, password });
 
       if (isError) {
         switch (error.message) {

@@ -56,7 +56,7 @@ const UserPopover = () => {
                         : 'text-md'
                     } h-5 text-md font-bold  p-0 m-0 font-sans`}
                   >
-                    {session?.user?.username}
+                    {session?.user?.name}
                   </p>
                   <p
                     className={`${

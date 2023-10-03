@@ -95,7 +95,7 @@ const BookmarksInfinitScroll = ({
       {isFetching && (
         <>
           {Array.from({ length: 2 }, (_, i) => i).map((__, idx) => {
-            return <CardSeleton />;
+            return <CardSeleton key={idx} />;
           })}
         </>
       )}
