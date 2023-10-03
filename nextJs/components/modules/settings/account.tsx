@@ -3,6 +3,7 @@ import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/utils/trpc';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
@@ -63,15 +64,20 @@ const Account = ({ userData, refetch }: { userData: any; refetch: any }) => {
   };
 
   return (
-    <div className="w-4/5 h-auto flex flex-col justify-start items-start gap-4 mt-8">
-      <Label className="w-full sm:w-4/5 max-w-[400px] text-sm sm:text-md">
-        Change your account details.
+    <div className="w-4/5 h-auto flex flex-col justify-start items-start gap-4">
+      <Label className="hidden lg:block text-md h-auto font-bold w-4/5 text-start">
+        Account
       </Label>
+      <Label className="hidden lg:block text-sm h-auto w-4/5 text-start">
+        Update your account settings.
+      </Label>
+      <Separator className="hidden lg:block w-4/5" />
+
       <form
-        className="w-full sm:w-4/5 max-w-[400px] h-auto flex flex-col justify-start items-start gap-2"
+        className="w-full sm:w-4/5 max-w-[300px] h-auto flex flex-col justify-start items-start gap-2"
         onSubmit={handleSubmit}
       >
-        <Label className="w-full text-xs md:text-sm">Name</Label>
+        <Label className="w-full text-xs md:text-sm font-semibold">Name</Label>
         <Input
           placeholder="Name"
           value={formFields?.name}
@@ -79,10 +85,12 @@ const Account = ({ userData, refetch }: { userData: any; refetch: any }) => {
           required
           onChange={handleChange}
           name="name"
-          className="w-full h-12 text-black-txt text-xs md:text-sm font-semibold"
+          className="w-full h-12 text-black-txt text-xs md:text-sm font-sans"
         />
 
-        <Label className="w-full text-xs md:text-sm">Username</Label>
+        <Label className="w-full text-xs md:text-sm font-semibold">
+          Username
+        </Label>
         <Input
           placeholder="Username"
           value={formFields?.username}
@@ -90,9 +98,9 @@ const Account = ({ userData, refetch }: { userData: any; refetch: any }) => {
           required
           onChange={handleChange}
           name="username"
-          className="w-full h-12 text-black-txt ttext-xs md:text-sm font-semibold"
+          className="w-full h-12 text-black-txt ttext-xs md:text-sm font-sans"
         />
-        <Label className="w-full text-xs md:text-sm">Email</Label>
+        <Label className="w-full text-xs md:text-sm font-semibold">Email</Label>
         <Input
           placeholder="Email"
           value={formFields?.email}
@@ -100,7 +108,7 @@ const Account = ({ userData, refetch }: { userData: any; refetch: any }) => {
           required
           onChange={handleChange}
           name="email"
-          className="w-full h-12 text-black-txt text-xs md:text-sm font-semibold"
+          className="w-full h-12 text-black-txt text-xs md:text-sm font-sans"
         />
         <Button
           className="w-full h-12 text-white text-lg
