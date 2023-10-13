@@ -35,7 +35,7 @@ const ForgetPasswordModal = ({
     e.preventDefault();
 
     if (!email.length) {
-      Toast('warning', 'Please enter your email address.');
+      Toast('error', 'Please enter your email address.');
       return;
     }
 
@@ -47,6 +47,7 @@ const ForgetPasswordModal = ({
       }
 
       Toast('success', 'An email has been sent to reset your password.');
+      setIsOpen(false);
     } catch (error: any) {
       console.log(error);
       if (error.message === 'no user') {
@@ -73,16 +74,18 @@ const ForgetPasswordModal = ({
           <Label className="w-full text-start text-md font-semibold">
             Email
           </Label>
-          <Input
-            placeholder="Email"
-            value={email}
-            type="text"
-            required
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-3/5  h-12 text-black-txt text-xs md:text-sm font-semibold"
-          />
+          <div className="w-full flex justify-start items-center">
+            <Input
+              placeholder="Email"
+              value={email}
+              type="text"
+              required
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-4/5  h-12 text-black-txt text-xs md:text-sm font-semibold"
+            />
+          </div>
 
-          <DialogFooter className="mt-5">
+          <DialogFooter className="mt-5 w-full flex justify-end items-center">
             <Button
               className="w-auto h-10 text-white text-lg
                 font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]

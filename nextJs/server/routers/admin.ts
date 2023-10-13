@@ -2,6 +2,10 @@ import { hashPassword, verifyPassword } from '@/utils/bcryptUtils';
 import { prisma } from '@/utils/prisma';
 import { z } from 'zod';
 import { adminProcedure, router } from '../trpc';
+import { promises } from 'nodemailer/lib/xoauth2';
+import { viewsRouter } from './admin/events/views';
+import { geoRouter } from './admin/events/geo';
+import { techsRouter } from './admin/events/techs';
 
 export const adminRouter = router({
   users: router({
@@ -1093,798 +1097,814 @@ export const adminRouter = router({
       }),
   }),
   events: router({
-    views: router({
-      growth: adminProcedure
-        .input(
-          z.object({
-            id: z.string(),
-            range: z.string(),
-          })
-        )
-        .query(async ({ input }) => {
-          if (!input?.id) return [];
-          const { range } = input;
+    resource: router({
+      views: router({
+        growth: adminProcedure
+          .input(
+            z.object({
+              id: z.string(),
+              type: z.string(),
+              range: z.string(),
+            })
+          )
+          .query(async ({ input }) => {
+            if (!input?.id) return [];
+            const { range } = input;
 
-          try {
-            const today = new Date();
+            try {
+              const today = new Date();
 
-            // Initialize an array to store the results
-            const resourceCounts = [];
+              // Initialize an array to store the results
+              const viewsCounts = [];
 
-            // Array of month names for formatting
-            const monthNames = [
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'October',
-              'November',
-              'December',
-            ];
-            const hourNames = [
-              '00',
-              '01',
-              '02',
-              '03',
-              '04',
-              '05',
-              '06',
-              '07',
-              '08',
-              '09',
-              '10',
-              '11',
-              '12',
-              '13',
-              '14',
-              '15',
-              '16',
-              '17',
-              '18',
-              '19',
-              '20',
-              '21',
-              '22',
-              '23',
-            ];
-            switch (range) {
-              case 'today':
-                for (let hour = 0; hour <= 23; hour++) {
-                  const startHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate(),
-                    hour,
-                    0,
-                    0,
-                    0
-                  );
-                  const endHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate(),
-                    hour + 1,
-                    0,
-                    0,
-                    0
-                  );
-                  const hourlyCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startHour,
-                        lte: endHour,
-                      },
-                    },
-                  });
-
-                  resourceCounts.push({
-                    name: hourNames[`${hour}`],
-                    pv: hourlyCount,
-                  });
-                }
-                break;
-              case 'yesterday':
-                for (let hour = 0; hour <= 23; hour++) {
-                  const startHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - 1,
-                    hour,
-                    0,
-                    0,
-                    0
-                  );
-                  const endHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - 1,
-                    hour + 1,
-                    0,
-                    0,
-                    0
-                  );
-                  const hourlyCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startHour,
-                        lte: endHour,
-                      },
-                    },
-                  });
-
-                  resourceCounts.push({
-                    name: hourNames[`${hour}`],
-                    pv: hourlyCount,
-                  });
-                }
-                break;
-              case 'last-week':
-                for (let day = 6; day >= 0; day--) {
-                  const startDay = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - day,
-                    0,
-                    0,
-                    0
-                  );
-                  const endDay = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - day + 1,
-                    0,
-                    0,
-                    0
-                  );
-                  const dailyCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startDay,
-                        lte: endDay,
-                      },
-                    },
-                  });
-                  resourceCounts.push({
-                    name: `${monthNames[startDay.getMonth() - 1].slice(
+              // Array of month names for formatting
+              const monthNames = [
+                'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December',
+              ];
+              const hourNames = [
+                '00',
+                '01',
+                '02',
+                '03',
+                '04',
+                '05',
+                '06',
+                '07',
+                '08',
+                '09',
+                '10',
+                '11',
+                '12',
+                '13',
+                '14',
+                '15',
+                '16',
+                '17',
+                '18',
+                '19',
+                '20',
+                '21',
+                '22',
+                '23',
+              ];
+              switch (range) {
+                case 'today':
+                  for (let hour = 0; hour <= 23; hour++) {
+                    const startHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate(),
+                      hour,
                       0,
-                      3
-                    )},${startDay.getDate()}`,
-                    pv: dailyCount,
-                  });
-                }
-                break;
-              case 'last-month':
-                const thirtyDaysAgo = new Date(today);
-                thirtyDaysAgo.setDate(today.getDate() - 29);
-
-                // Loop through each day of the past 30 days
-                for (let day = 0; day < 30; day++) {
-                  const startOfDay = new Date(
-                    thirtyDaysAgo.getFullYear(),
-                    thirtyDaysAgo.getMonth(),
-                    thirtyDaysAgo.getDate(),
-                    0,
-                    0,
-                    0,
-                    0
-                  );
-                  const endOfDay = new Date(
-                    thirtyDaysAgo.getFullYear(),
-                    thirtyDaysAgo.getMonth(),
-                    thirtyDaysAgo.getDate(),
-                    23,
-                    59,
-                    59,
-                    999
-                  );
-
-                  // Calculate the user count for the current day
-                  const dailyCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startOfDay,
-                        lte: endOfDay,
+                      0,
+                      0
+                    );
+                    const endHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate(),
+                      hour + 1,
+                      0,
+                      0,
+                      0
+                    );
+                    const page = `/${input?.type}/${input.id}`;
+                    const hourlyCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: startHour,
+                          lte: endHour,
+                        },
                       },
-                    },
-                  });
+                    });
 
-                  resourceCounts.push({
-                    name: `${
-                      thirtyDaysAgo.getMonth() + 1
-                    }/${thirtyDaysAgo.getDate()}`, // Format as MM/DD
-                    pv: dailyCount,
-                  });
-
-                  // Move to the previous day
-                  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() + 1);
-                }
-                break;
-              case 'current-month':
-                const currentMonthStart = new Date(
-                  today.getFullYear(),
-                  today.getMonth(),
-                  1
-                );
-
-                // Calculate the end date for the previous month
-                const currentMonthEnd = new Date(
-                  today.getFullYear(),
-                  today.getMonth() + 1,
-                  0
-                );
-                for (let day = 1; day <= currentMonthEnd.getDate(); day++) {
-                  const startDay = new Date(
-                    currentMonthStart.getFullYear(),
-                    currentMonthStart.getMonth(),
-                    day,
-                    0,
-                    0,
-                    0
-                  );
-                  const endDay = new Date(
-                    currentMonthStart.getFullYear(),
-                    currentMonthStart.getMonth(),
-                    day + 1,
-                    0,
-                    0,
-                    0
-                  );
-
-                  // Calculate the user count for the current day
-                  const dailyCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startDay,
-                        lt: endDay,
+                    viewsCounts.push({
+                      name: hourNames[`${hour}`],
+                      pv: hourlyCount,
+                    });
+                  }
+                  break;
+                case 'yesterday':
+                  for (let hour = 0; hour <= 23; hour++) {
+                    const startHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - 1,
+                      hour,
+                      0,
+                      0,
+                      0
+                    );
+                    const endHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - 1,
+                      hour + 1,
+                      0,
+                      0,
+                      0
+                    );
+                    const page = `/${input?.type}/${input.id}`;
+                    const hourlyCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: startHour,
+                          lte: endHour,
+                        },
                       },
-                    },
-                  });
+                    });
 
-                  resourceCounts.push({
-                    name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
-                    pv: dailyCount,
-                  });
-                }
-                break;
-              case 'previous-month':
-                const lastMonthStart = new Date(
-                  today.getFullYear(),
-                  today.getMonth() - 1,
-                  1
-                );
-
-                // Calculate the end date for the previous month
-                const lastMonthEnd = new Date(
-                  today.getFullYear(),
-                  today.getMonth(),
-                  0
-                );
-                for (let day = 1; day <= lastMonthEnd.getDate(); day++) {
-                  const startDay = new Date(
-                    lastMonthStart.getFullYear(),
-                    lastMonthStart.getMonth(),
-                    day,
-                    0,
-                    0,
-                    0
-                  );
-                  const endDay = new Date(
-                    lastMonthStart.getFullYear(),
-                    lastMonthStart.getMonth(),
-                    day + 1,
-                    0,
-                    0,
-                    0
-                  );
-
-                  // Calculate the user count for the current day
-                  const dailyCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startDay,
-                        lt: endDay,
+                    viewsCounts.push({
+                      name: hourNames[`${hour}`],
+                      pv: hourlyCount,
+                    });
+                  }
+                  break;
+                case 'last-week':
+                  for (let day = 6; day >= 0; day--) {
+                    const startDay = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - day,
+                      0,
+                      0,
+                      0
+                    );
+                    const endDay = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - day + 1,
+                      0,
+                      0,
+                      0
+                    );
+                    const page = `/${input?.type}/${input.id}`;
+                    const dailyCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: startDay,
+                          lte: endDay,
+                        },
                       },
-                    },
-                  });
+                    });
+                    viewsCounts.push({
+                      name: `${monthNames[startDay.getMonth() - 1].slice(
+                        0,
+                        3
+                      )},${startDay.getDate()}`,
+                      pv: dailyCount,
+                    });
+                  }
+                  break;
+                case 'last-month':
+                  const thirtyDaysAgo = new Date(today);
+                  thirtyDaysAgo.setDate(today.getDate() - 29);
 
-                  resourceCounts.push({
-                    name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
-                    pv: dailyCount,
-                  });
-                }
-                break;
-              case 'current-year':
-                // Loop through each month of the year
-                for (let month = 1; month <= 12; month++) {
-                  // Get the first and last day of the current month
-                  const firstDayOfMonth = new Date(
+                  // Loop through each day of the past 30 days
+                  for (let day = 0; day < 30; day++) {
+                    const startOfDay = new Date(
+                      thirtyDaysAgo.getFullYear(),
+                      thirtyDaysAgo.getMonth(),
+                      thirtyDaysAgo.getDate(),
+                      0,
+                      0,
+                      0,
+                      0
+                    );
+                    const endOfDay = new Date(
+                      thirtyDaysAgo.getFullYear(),
+                      thirtyDaysAgo.getMonth(),
+                      thirtyDaysAgo.getDate(),
+                      23,
+                      59,
+                      59,
+                      999
+                    );
+
+                    const page = `/${input?.type}/${input.id}`;
+                    // Calculate the user count for the current day
+                    const dailyCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: startOfDay,
+                          lte: endOfDay,
+                        },
+                      },
+                    });
+
+                    viewsCounts.push({
+                      name: `${
+                        thirtyDaysAgo.getMonth() + 1
+                      }/${thirtyDaysAgo.getDate()}`, // Format as MM/DD
+                      pv: dailyCount,
+                    });
+
+                    // Move to the previous day
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() + 1);
+                  }
+                  break;
+                case 'current-month':
+                  const currentMonthStart = new Date(
                     today.getFullYear(),
-                    month - 1,
+                    today.getMonth(),
                     1
                   );
-                  const lastDayOfMonth = new Date(
+
+                  // Calculate the end date for the previous month
+                  const currentMonthEnd = new Date(
                     today.getFullYear(),
-                    month,
-                    0,
-                    23,
-                    59,
-                    59,
-                    999
-                  ); // Last day of the month at 23:59:59.999
+                    today.getMonth() + 1,
+                    0
+                  );
+                  for (let day = 1; day <= currentMonthEnd.getDate(); day++) {
+                    const startDay = new Date(
+                      currentMonthStart.getFullYear(),
+                      currentMonthStart.getMonth(),
+                      day,
+                      0,
+                      0,
+                      0
+                    );
+                    const endDay = new Date(
+                      currentMonthStart.getFullYear(),
+                      currentMonthStart.getMonth(),
+                      day + 1,
+                      0,
+                      0,
+                      0
+                    );
 
-                  // Calculate the user count for the current month
-                  const userCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: firstDayOfMonth,
-                        lte: lastDayOfMonth,
+                    const page = `/${input?.type}/${input.id}`;
+                    // Calculate the user count for the current day
+                    const dailyCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: startDay,
+                          lt: endDay,
+                        },
                       },
-                    },
-                  });
+                    });
 
-                  // Add the result to the array
-                  resourceCounts.push({
-                    name: monthNames[month - 1].slice(0, 3),
-                    pv: userCount,
-                  });
-                }
-                break;
-              case 'previous-year':
-                const previousYearStart = new Date(
-                  today.getFullYear() - 1,
-                  0,
-                  1
-                );
-
-                for (let month = 1; month < 12; month++) {
-                  const firstDayOfMonth = new Date(
-                    previousYearStart.getFullYear(),
-                    month,
+                    viewsCounts.push({
+                      name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
+                      pv: dailyCount,
+                    });
+                  }
+                  break;
+                case 'previous-month':
+                  const lastMonthStart = new Date(
+                    today.getFullYear(),
+                    today.getMonth() - 1,
                     1
                   );
-                  const lastDayOfMonth = new Date(
-                    previousYearStart.getFullYear(),
-                    month + 1,
+
+                  // Calculate the end date for the previous month
+                  const lastMonthEnd = new Date(
+                    today.getFullYear(),
+                    today.getMonth(),
+                    0
+                  );
+                  for (let day = 1; day <= lastMonthEnd.getDate(); day++) {
+                    const startDay = new Date(
+                      lastMonthStart.getFullYear(),
+                      lastMonthStart.getMonth(),
+                      day,
+                      0,
+                      0,
+                      0
+                    );
+                    const endDay = new Date(
+                      lastMonthStart.getFullYear(),
+                      lastMonthStart.getMonth(),
+                      day + 1,
+                      0,
+                      0,
+                      0
+                    );
+
+                    const page = `/${input?.type}/${input.id}`;
+                    // Calculate the user count for the current day
+                    const dailyCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: startDay,
+                          lt: endDay,
+                        },
+                      },
+                    });
+
+                    viewsCounts.push({
+                      name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
+                      pv: dailyCount,
+                    });
+                  }
+                  break;
+                case 'current-year':
+                  // Loop through each month of the year
+                  for (let month = 1; month <= 12; month++) {
+                    // Get the first and last day of the current month
+                    const firstDayOfMonth = new Date(
+                      today.getFullYear(),
+                      month - 1,
+                      1
+                    );
+                    const lastDayOfMonth = new Date(
+                      today.getFullYear(),
+                      month,
+                      0,
+                      23,
+                      59,
+                      59,
+                      999
+                    ); // Last day of the month at 23:59:59.999
+
+                    const page = `/${input?.type}/${input.id}`;
+                    // Calculate the user count for the current month
+                    const userCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: firstDayOfMonth,
+                          lte: lastDayOfMonth,
+                        },
+                      },
+                    });
+
+                    // Add the result to the array
+                    viewsCounts.push({
+                      name: monthNames[month - 1].slice(0, 3),
+                      pv: userCount,
+                    });
+                  }
+                  break;
+                case 'previous-year':
+                  const previousYearStart = new Date(
+                    today.getFullYear() - 1,
                     0,
-                    23,
-                    59,
-                    59,
-                    999
+                    1
                   );
 
-                  // Calculate the user count for the current month
-                  const userCount = await prisma.resourceView.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: firstDayOfMonth,
-                        lte: lastDayOfMonth,
-                      },
-                    },
-                  });
+                  for (let month = 1; month < 12; month++) {
+                    const firstDayOfMonth = new Date(
+                      previousYearStart.getFullYear(),
+                      month,
+                      1
+                    );
+                    const lastDayOfMonth = new Date(
+                      previousYearStart.getFullYear(),
+                      month + 1,
+                      0,
+                      23,
+                      59,
+                      59,
+                      999
+                    );
 
-                  resourceCounts.push({
-                    name: monthNames[month].slice(0, 3),
-                    pv: userCount,
-                  });
-                }
-                break;
+                    const page = `/${input?.type}/${input.id}`;
+                    // Calculate the user count for the current month
+                    const userCount = await prisma.pageView.count({
+                      where: {
+                        page,
+                        createdAt: {
+                          gte: firstDayOfMonth,
+                          lte: lastDayOfMonth,
+                        },
+                      },
+                    });
+
+                    viewsCounts.push({
+                      name: monthNames[month].slice(0, 3),
+                      pv: userCount,
+                    });
+                  }
+                  break;
+              }
+
+              return viewsCounts || [];
+            } catch (error: any) {
+              console.log(error);
+              throw error;
             }
+          }),
+      }),
+      downloads: router({
+        growth: adminProcedure
+          .input(
+            z.object({
+              id: z.string(),
+              range: z.string(),
+            })
+          )
+          .query(async ({ input }) => {
+            if (!input?.id.length) return [];
 
-            return resourceCounts || [];
-          } catch (error: any) {
-            console.log(error);
-            throw error;
-          }
-        }),
+            const { range } = input;
+
+            try {
+              const today = new Date();
+
+              // Initialize an array to store the results
+              const resourceCounts = [];
+
+              // Array of month names for formatting
+              const monthNames = [
+                'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December',
+              ];
+              const hourNames = [
+                '00',
+                '01',
+                '02',
+                '03',
+                '04',
+                '05',
+                '06',
+                '07',
+                '08',
+                '09',
+                '10',
+                '11',
+                '12',
+                '13',
+                '14',
+                '15',
+                '16',
+                '17',
+                '18',
+                '19',
+                '20',
+                '21',
+                '22',
+                '23',
+              ];
+              switch (range) {
+                case 'today':
+                  for (let hour = 0; hour <= 23; hour++) {
+                    const startHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate(),
+                      hour,
+                      0,
+                      0,
+                      0
+                    );
+                    const endHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate(),
+                      hour + 1,
+                      0,
+                      0,
+                      0
+                    );
+                    const hourlyCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: startHour,
+                          lte: endHour,
+                        },
+                      },
+                    });
+                    resourceCounts.push({
+                      name: hourNames[`${hour}`],
+                      pv: hourlyCount,
+                    });
+                  }
+                  break;
+                case 'yesterday':
+                  for (let hour = 0; hour <= 23; hour++) {
+                    const startHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - 1,
+                      hour,
+                      0,
+                      0,
+                      0
+                    );
+                    const endHour = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - 1,
+                      hour + 1,
+                      0,
+                      0,
+                      0
+                    );
+                    const hourlyCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: startHour,
+                          lte: endHour,
+                        },
+                      },
+                    });
+                    resourceCounts.push({
+                      name: hourNames[`${hour}`],
+                      pv: hourlyCount,
+                    });
+                  }
+                  break;
+                case 'last-week':
+                  for (let day = 6; day >= 0; day--) {
+                    const startDay = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - day,
+                      0,
+                      0,
+                      0
+                    );
+                    const endDay = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() - day + 1,
+                      0,
+                      0,
+                      0
+                    );
+                    const dailyCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: startDay,
+                          lte: endDay,
+                        },
+                      },
+                    });
+                    resourceCounts.push({
+                      name: `${monthNames[startDay.getMonth() - 1].slice(
+                        0,
+                        3
+                      )},${startDay.getDate()}`,
+                      pv: dailyCount,
+                    });
+                  }
+                  break;
+                case 'last-month':
+                  const thirtyDaysAgo = new Date(today);
+                  thirtyDaysAgo.setDate(today.getDate() - 29);
+
+                  // Loop through each day of the past 30 days
+                  for (let day = 0; day < 30; day++) {
+                    const startOfDay = new Date(
+                      thirtyDaysAgo.getFullYear(),
+                      thirtyDaysAgo.getMonth(),
+                      thirtyDaysAgo.getDate(),
+                      0,
+                      0,
+                      0,
+                      0
+                    );
+                    const endOfDay = new Date(
+                      thirtyDaysAgo.getFullYear(),
+                      thirtyDaysAgo.getMonth(),
+                      thirtyDaysAgo.getDate(),
+                      23,
+                      59,
+                      59,
+                      999
+                    );
+
+                    // Calculate the user count for the current day
+                    const dailyCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: startOfDay,
+                          lte: endOfDay,
+                        },
+                      },
+                    });
+
+                    resourceCounts.push({
+                      name: `${
+                        thirtyDaysAgo.getMonth() + 1
+                      }/${thirtyDaysAgo.getDate()}`, // Format as MM/DD
+                      pv: dailyCount,
+                    });
+
+                    // Move to the previous day
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() + 1);
+                  }
+                  break;
+                case 'current-month':
+                  const currentMonthStart = new Date(
+                    today.getFullYear(),
+                    today.getMonth(),
+                    1
+                  );
+
+                  // Calculate the end date for the previous month
+                  const currentMonthEnd = new Date(
+                    today.getFullYear(),
+                    today.getMonth() + 1,
+                    0
+                  );
+                  for (let day = 1; day <= currentMonthEnd.getDate(); day++) {
+                    const startDay = new Date(
+                      currentMonthStart.getFullYear(),
+                      currentMonthStart.getMonth(),
+                      day,
+                      0,
+                      0,
+                      0
+                    );
+                    const endDay = new Date(
+                      currentMonthStart.getFullYear(),
+                      currentMonthStart.getMonth(),
+                      day + 1,
+                      0,
+                      0,
+                      0
+                    );
+
+                    // Calculate the user count for the current day
+                    const dailyCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: startDay,
+                          lt: endDay,
+                        },
+                      },
+                    });
+
+                    resourceCounts.push({
+                      name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
+                      pv: dailyCount,
+                    });
+                  }
+                  break;
+                case 'previous-month':
+                  const lastMonthStart = new Date(
+                    today.getFullYear(),
+                    today.getMonth() - 1,
+                    1
+                  );
+
+                  // Calculate the end date for the previous month
+                  const lastMonthEnd = new Date(
+                    today.getFullYear(),
+                    today.getMonth(),
+                    0
+                  );
+                  for (let day = 1; day <= lastMonthEnd.getDate(); day++) {
+                    const startDay = new Date(
+                      lastMonthStart.getFullYear(),
+                      lastMonthStart.getMonth(),
+                      day,
+                      0,
+                      0,
+                      0
+                    );
+                    const endDay = new Date(
+                      lastMonthStart.getFullYear(),
+                      lastMonthStart.getMonth(),
+                      day + 1,
+                      0,
+                      0,
+                      0
+                    );
+
+                    // Calculate the user count for the current day
+                    const dailyCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: startDay,
+                          lt: endDay,
+                        },
+                      },
+                    });
+
+                    resourceCounts.push({
+                      name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
+                      pv: dailyCount,
+                    });
+                  }
+                  break;
+                case 'current-year':
+                  // Loop through each month of the year
+                  for (let month = 1; month <= 12; month++) {
+                    // Get the first and last day of the current month
+                    const firstDayOfMonth = new Date(
+                      today.getFullYear(),
+                      month - 1,
+                      1
+                    );
+                    const lastDayOfMonth = new Date(
+                      today.getFullYear(),
+                      month,
+                      0,
+                      23,
+                      59,
+                      59,
+                      999
+                    ); // Last day of the month at 23:59:59.999
+
+                    // Calculate the user count for the current month
+                    const userCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: firstDayOfMonth,
+                          lte: lastDayOfMonth,
+                        },
+                      },
+                    });
+
+                    // Add the result to the array
+                    resourceCounts.push({
+                      name: monthNames[month - 1].slice(0, 3),
+                      pv: userCount,
+                    });
+                  }
+                  break;
+                case 'previous-year':
+                  const previousYearStart = new Date(
+                    today.getFullYear() - 1,
+                    0,
+                    1
+                  );
+
+                  for (let month = 1; month < 12; month++) {
+                    const firstDayOfMonth = new Date(
+                      previousYearStart.getFullYear(),
+                      month,
+                      1
+                    );
+                    const lastDayOfMonth = new Date(
+                      previousYearStart.getFullYear(),
+                      month + 1,
+                      0,
+                      23,
+                      59,
+                      59,
+                      999
+                    );
+
+                    // Calculate the user count for the current month
+                    const userCount = await prisma.download.count({
+                      where: {
+                        resource_id: input?.id,
+                        createdAt: {
+                          gte: firstDayOfMonth,
+                          lte: lastDayOfMonth,
+                        },
+                      },
+                    });
+
+                    resourceCounts.push({
+                      name: monthNames[month].slice(0, 3),
+                      pv: userCount,
+                    });
+                  }
+                  break;
+              }
+
+              return resourceCounts;
+            } catch (error: any) {
+              console.log(error);
+              throw error;
+            }
+          }),
+      }),
     }),
-    downloads: router({
-      growth: adminProcedure
-        .input(
-          z.object({
-            id: z.string(),
-            range: z.string(),
-          })
-        )
-        .query(async ({ input }) => {
-          if (!input?.id.length) return [];
-
-          const { range } = input;
-
-          try {
-            const today = new Date();
-
-            // Initialize an array to store the results
-            const resourceCounts = [];
-
-            // Array of month names for formatting
-            const monthNames = [
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'October',
-              'November',
-              'December',
-            ];
-            const hourNames = [
-              '00',
-              '01',
-              '02',
-              '03',
-              '04',
-              '05',
-              '06',
-              '07',
-              '08',
-              '09',
-              '10',
-              '11',
-              '12',
-              '13',
-              '14',
-              '15',
-              '16',
-              '17',
-              '18',
-              '19',
-              '20',
-              '21',
-              '22',
-              '23',
-            ];
-            switch (range) {
-              case 'today':
-                for (let hour = 0; hour <= 23; hour++) {
-                  const startHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate(),
-                    hour,
-                    0,
-                    0,
-                    0
-                  );
-                  const endHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate(),
-                    hour + 1,
-                    0,
-                    0,
-                    0
-                  );
-                  const hourlyCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startHour,
-                        lte: endHour,
-                      },
-                    },
-                  });
-                  resourceCounts.push({
-                    name: hourNames[`${hour}`],
-                    pv: hourlyCount,
-                  });
-                }
-                break;
-              case 'yesterday':
-                for (let hour = 0; hour <= 23; hour++) {
-                  const startHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - 1,
-                    hour,
-                    0,
-                    0,
-                    0
-                  );
-                  const endHour = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - 1,
-                    hour + 1,
-                    0,
-                    0,
-                    0
-                  );
-                  const hourlyCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startHour,
-                        lte: endHour,
-                      },
-                    },
-                  });
-                  resourceCounts.push({
-                    name: hourNames[`${hour}`],
-                    pv: hourlyCount,
-                  });
-                }
-                break;
-              case 'last-week':
-                for (let day = 6; day >= 0; day--) {
-                  const startDay = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - day,
-                    0,
-                    0,
-                    0
-                  );
-                  const endDay = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - day + 1,
-                    0,
-                    0,
-                    0
-                  );
-                  const dailyCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startDay,
-                        lte: endDay,
-                      },
-                    },
-                  });
-                  resourceCounts.push({
-                    name: `${monthNames[startDay.getMonth() - 1].slice(
-                      0,
-                      3
-                    )},${startDay.getDate()}`,
-                    pv: dailyCount,
-                  });
-                }
-                break;
-              case 'last-month':
-                const thirtyDaysAgo = new Date(today);
-                thirtyDaysAgo.setDate(today.getDate() - 29);
-
-                // Loop through each day of the past 30 days
-                for (let day = 0; day < 30; day++) {
-                  const startOfDay = new Date(
-                    thirtyDaysAgo.getFullYear(),
-                    thirtyDaysAgo.getMonth(),
-                    thirtyDaysAgo.getDate(),
-                    0,
-                    0,
-                    0,
-                    0
-                  );
-                  const endOfDay = new Date(
-                    thirtyDaysAgo.getFullYear(),
-                    thirtyDaysAgo.getMonth(),
-                    thirtyDaysAgo.getDate(),
-                    23,
-                    59,
-                    59,
-                    999
-                  );
-
-                  // Calculate the user count for the current day
-                  const dailyCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startOfDay,
-                        lte: endOfDay,
-                      },
-                    },
-                  });
-
-                  resourceCounts.push({
-                    name: `${
-                      thirtyDaysAgo.getMonth() + 1
-                    }/${thirtyDaysAgo.getDate()}`, // Format as MM/DD
-                    pv: dailyCount,
-                  });
-
-                  // Move to the previous day
-                  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() + 1);
-                }
-                break;
-              case 'current-month':
-                const currentMonthStart = new Date(
-                  today.getFullYear(),
-                  today.getMonth(),
-                  1
-                );
-
-                // Calculate the end date for the previous month
-                const currentMonthEnd = new Date(
-                  today.getFullYear(),
-                  today.getMonth() + 1,
-                  0
-                );
-                for (let day = 1; day <= currentMonthEnd.getDate(); day++) {
-                  const startDay = new Date(
-                    currentMonthStart.getFullYear(),
-                    currentMonthStart.getMonth(),
-                    day,
-                    0,
-                    0,
-                    0
-                  );
-                  const endDay = new Date(
-                    currentMonthStart.getFullYear(),
-                    currentMonthStart.getMonth(),
-                    day + 1,
-                    0,
-                    0,
-                    0
-                  );
-
-                  // Calculate the user count for the current day
-                  const dailyCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startDay,
-                        lt: endDay,
-                      },
-                    },
-                  });
-
-                  resourceCounts.push({
-                    name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
-                    pv: dailyCount,
-                  });
-                }
-                break;
-              case 'previous-month':
-                const lastMonthStart = new Date(
-                  today.getFullYear(),
-                  today.getMonth() - 1,
-                  1
-                );
-
-                // Calculate the end date for the previous month
-                const lastMonthEnd = new Date(
-                  today.getFullYear(),
-                  today.getMonth(),
-                  0
-                );
-                for (let day = 1; day <= lastMonthEnd.getDate(); day++) {
-                  const startDay = new Date(
-                    lastMonthStart.getFullYear(),
-                    lastMonthStart.getMonth(),
-                    day,
-                    0,
-                    0,
-                    0
-                  );
-                  const endDay = new Date(
-                    lastMonthStart.getFullYear(),
-                    lastMonthStart.getMonth(),
-                    day + 1,
-                    0,
-                    0,
-                    0
-                  );
-
-                  // Calculate the user count for the current day
-                  const dailyCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: startDay,
-                        lt: endDay,
-                      },
-                    },
-                  });
-
-                  resourceCounts.push({
-                    name: `${startDay.getMonth() + 1},${day}`, // Format as MM/DD
-                    pv: dailyCount,
-                  });
-                }
-                break;
-              case 'current-year':
-                // Loop through each month of the year
-                for (let month = 1; month <= 12; month++) {
-                  // Get the first and last day of the current month
-                  const firstDayOfMonth = new Date(
-                    today.getFullYear(),
-                    month - 1,
-                    1
-                  );
-                  const lastDayOfMonth = new Date(
-                    today.getFullYear(),
-                    month,
-                    0,
-                    23,
-                    59,
-                    59,
-                    999
-                  ); // Last day of the month at 23:59:59.999
-
-                  // Calculate the user count for the current month
-                  const userCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: firstDayOfMonth,
-                        lte: lastDayOfMonth,
-                      },
-                    },
-                  });
-
-                  // Add the result to the array
-                  resourceCounts.push({
-                    name: monthNames[month - 1].slice(0, 3),
-                    pv: userCount,
-                  });
-                }
-                break;
-              case 'previous-year':
-                const previousYearStart = new Date(
-                  today.getFullYear() - 1,
-                  0,
-                  1
-                );
-
-                for (let month = 1; month < 12; month++) {
-                  const firstDayOfMonth = new Date(
-                    previousYearStart.getFullYear(),
-                    month,
-                    1
-                  );
-                  const lastDayOfMonth = new Date(
-                    previousYearStart.getFullYear(),
-                    month + 1,
-                    0,
-                    23,
-                    59,
-                    59,
-                    999
-                  );
-
-                  // Calculate the user count for the current month
-                  const userCount = await prisma.download.count({
-                    where: {
-                      resource_id: input?.id,
-                      createdAt: {
-                        gte: firstDayOfMonth,
-                        lte: lastDayOfMonth,
-                      },
-                    },
-                  });
-
-                  resourceCounts.push({
-                    name: monthNames[month].slice(0, 3),
-                    pv: userCount,
-                  });
-                }
-                break;
-            }
-
-            return resourceCounts;
-          } catch (error: any) {
-            console.log(error);
-            throw error;
-          }
-        }),
+    page: router({
+      views: viewsRouter,
+      geo: geoRouter,
+      tech: techsRouter,
     }),
   }),
 });

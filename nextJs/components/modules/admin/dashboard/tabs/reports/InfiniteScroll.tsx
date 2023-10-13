@@ -90,11 +90,11 @@ const ReportsInfiniteScroll = ({
                     <div className=" min-w-[2.5rem] min-h-[2.5rem] w-4/5 h-4/5 rounded-full bg-slate-200 flex justify-center items-center">
                       {report.tag === 'bug' ? (
                         <div className="flex gap-1 text-xs w-4/5 h-4/5 justify-center items-center">
-                          <AiFillBug className="w-4/5 h-4/5" />
+                          <AiFillBug className="w-3/5 h-3/5" />
                         </div>
                       ) : (
                         <div className="flex gap-1 text-xs w-4/5 h-4/5 justify-center items-center">
-                          <AiFillWarning className="w-4/5 h-4/5" />
+                          <AiFillWarning className="w-3/5 h-3/5" />
                         </div>
                       )}
                     </div>
@@ -125,7 +125,7 @@ const ReportsInfiniteScroll = ({
                     </p>
                   </div>
                   <div className="w-28 h-full flex justify-center items-center gap-2">
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                           <span className="sr-only">Open menu</span>

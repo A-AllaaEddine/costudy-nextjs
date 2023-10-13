@@ -108,7 +108,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
       <div className="w-full lg:w-1/2 h-full  sm:h-1/2 bg-gray-100 rounded-xl">
         <div className="w-full h-full lg:aspect-square relative">
           <Image
-            src={resource?.thumbnail.url || '/resource-img.png'}
+            src={resource?.thumbnail?.url || '/resource-img.png'}
             alt="Thumbnail"
             width={100}
             height={100}

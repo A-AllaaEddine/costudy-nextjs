@@ -1,44 +1,58 @@
 import { generateSalt } from '@/utils/bcryptUtils';
 import { trpc } from '@/utils/trpc';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 const EventTrigger = () => {
   const router = useRouter();
 
-  const { data: session } = useSession();
+  let generateIdPromise: any = '';
 
-  const generateId = () => {
-    const salt = generateSalt();
-    const dataToHash = `${
-      navigator.userAgent
-    }${new Date().toISOString()}${salt}`;
-    return dataToHash;
+  const generateId = async () => {
+    if (!generateIdPromise) {
+      generateIdPromise = new Promise(async (resolve) => {
+        const salt = await generateSalt();
+        const dataToHash = `${new Date().toISOString()}${salt}`;
+        resolve(dataToHash);
+      });
+    }
+    return generateIdPromise;
   };
-
   const {
-    mutateAsync: addDevice,
-    isLoading,
+    mutateAsync: addPageEvent,
     isError,
     error,
-  } = trpc.events.views.device.add.useMutation();
-  const {
-    mutateAsync: addResourceView,
-    // isLoading,
-    // isError,
-    // error,
-  } = trpc.events.views.resource.add.useMutation();
+  } = trpc.events.page.add.useMutation();
 
-  const deviceEvent = async () => {
-    try {
-      let userId = localStorage.getItem('userId');
-      if (!userId) {
-        userId = generateId();
-        localStorage.setItem('userId', userId);
+  const pageEvent = async ({ page }: { page: string }) => {
+    if (page.includes('admin')) return;
+
+    let landingPage = false,
+      referrer = '';
+    if (document.referrer.length) {
+      const url = new URL(document?.referrer!);
+      if (
+        url.host.includes(
+          process.env.NEXT_PUBLIC_BASEURL?.replace('http://', '')!
+        )
+      ) {
+        landingPage = true;
+        referrer = document.referrer;
       }
+    }
 
-      let OSName = 'unknown';
+    let exist = await sessionStorage.getItem(`page_${page}`);
+
+    if (exist) return;
+
+    try {
+      let userId = sessionStorage.getItem('userId');
+      if (!userId) {
+        userId = await generateId();
+        sessionStorage.setItem('userId', userId!);
+      }
+      let OSName = 'unknown',
+        device = 'unknown';
       let navApp = navigator.userAgent.toLowerCase();
       switch (true) {
         case navApp.indexOf('win') != -1:
@@ -76,76 +90,81 @@ const EventTrigger = () => {
         long = pos.coords.longitude;
       });
 
-      let device;
-      device = JSON.parse(sessionStorage.getItem('device')!);
-      if (!device) {
-        device = {
-          userId: userId,
-          userAgent: navigator.userAgent,
-          platform: OSName,
-          language: navigator.language,
-          location: {
-            lat: lat,
-            long: long,
-          },
-          screenSize: {
-            width: window.screen.width,
-            height: window.screen.height,
-          },
-          browser: browser,
-        };
-        sessionStorage.setItem('device', JSON.stringify(device));
-        await addDevice(device);
-        if (isError) {
-          throw error;
-        }
+      if (window.screen.width > 1024) {
+        device = 'desk';
+      } else {
+        device = 'mobile';
       }
-      // console.log(data);
-    } catch (error: any) {
-      console.log(error);
-    }
-  };
 
-  const resourceViewEvent = async ({ resourceId }: { resourceId: string }) => {
-    try {
-      let userId = localStorage.getItem('userId');
-      if (!userId) {
-        userId = generateId();
-        localStorage.setItem('userId', userId);
-      }
-      let data: any = { userId };
-      data = {
-        ...data,
-        resourceId,
-        event: 'resource_view',
-        page: router.asPath,
+      let pageData = {
+        userId: userId!,
+        page: page,
+        referrer: referrer,
+        landingPage,
+        userAgent: navigator.userAgent,
+        platform: OSName,
+        language: navigator.language,
+        location: {
+          lat: lat,
+          long: long,
+        },
+        screenSize: {
+          width: window.screen.width,
+          height: window.screen.height,
+        },
+        browser: browser,
+        device,
       };
-
-      data.referrer = document.referrer;
-
-      let resourceView;
-      resourceView = JSON.parse(
-        sessionStorage.getItem(`resourceView_${resourceId}`)!
-      );
-      if (!resourceView) {
-        sessionStorage.setItem(
-          `resourceView_${resourceId}`,
-          JSON.stringify(data)
-        );
-        addResourceView(data);
+      await addPageEvent(pageData);
+      if (isError) {
+        throw error;
       }
+
+      await sessionStorage.setItem(`page_${page}`, JSON.stringify(pageData));
     } catch (error: any) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    deviceEvent();
-  }, []);
+  // const craftsmanViewEvent = async ({ username }: { username: string }) => {
+  //   try {
+  //     let userId = sessionStorage.getItem('userId');
+
+  //     if (!userId) {
+  //       userId = await generateId();
+
+  //       sessionStorage.setItem('userId', userId!);
+  //     }
+
+  //     let data: {
+  //       username: string;
+  //       userId: string;
+  //       referrer: string;
+  //     } = {
+  //       userId: userId!,
+  //       username,
+  //       referrer: document.referrer,
+  //     };
+
+  //     let craftsmanView;
+  //     craftsmanView = JSON.parse(
+  //       sessionStorage.getItem(`craftsman_view_${username}`)!
+  //     );
+  //     if (!craftsmanView) {
+  //       await addCraftsmanView(data);
+  //       sessionStorage.setItem(
+  //         `craftsman_view_${username}`,
+  //         JSON.stringify(data)
+  //       );
+  //     }
+  //   } catch (error: any) {
+  //     console.log(error);
+  //   }
+  // };
 
   useEffect(() => {
-    if (router.isReady && router.pathname.includes('/[type]/[resourceId]')) {
-      resourceViewEvent({ resourceId: router.query.resourceId! as string });
+    if (router.isReady) {
+      pageEvent({ page: router.asPath });
     }
   }, [router]);
 

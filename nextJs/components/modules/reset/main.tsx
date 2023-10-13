@@ -56,11 +56,11 @@ const Main = ({
     e.preventDefault();
 
     if (formFields.newPassword.length < 8) {
-      Toast('warning', 'Password must be at least  8 chacacters!');
+      Toast('error', 'Password must be at least  8 chacacters!');
       return;
     }
     if (formFields.confirmPassword !== formFields.newPassword) {
-      Toast('warning', 'Passwords do not match!');
+      Toast('error', 'Passwords do not match!');
       return;
     }
 
@@ -83,16 +83,16 @@ const Main = ({
       if (!resp?.ok) {
         switch (resp?.error) {
           case 'No User':
-            Toast('warning', 'No user with this email');
+            Toast('error', 'No user with this email');
             break;
           case 'Wrong Password':
-            Toast('warning', 'Wrong Password !');
+            Toast('error', 'Wrong Password !');
             break;
           case 'suspended':
-            Toast('warning', 'Your account has been suspended');
+            Toast('error', 'Your account has been suspended');
             break;
           case 'banned':
-            Toast('warning', 'Your account is banned');
+            Toast('error', 'Your account is banned');
             break;
           default:
             Toast('error', 'There was an error siging you in!');

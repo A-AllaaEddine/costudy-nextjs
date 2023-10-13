@@ -46,19 +46,19 @@ const Support = () => {
     e.preventDefault();
 
     if (!formFields?.email.length) {
-      Toast('warning', 'Please enter a valid email!');
+      Toast('error', 'Please enter a valid email!');
       return;
     }
     if (!formFields?.subject.length) {
-      Toast('warning', 'Please write your subject!');
+      Toast('error', 'Please write your subject!');
       return;
     }
     if (!formFields?.message.length) {
-      Toast('warning', 'Please write your message!');
+      Toast('error', 'Please write your message!');
       return;
     }
     if (!selectedTag) {
-      Toast('warning', 'Please select a tag!');
+      Toast('error', 'Please select a tag!');
       return;
     }
 

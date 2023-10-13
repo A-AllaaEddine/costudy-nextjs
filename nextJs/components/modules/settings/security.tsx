@@ -60,19 +60,19 @@ const Security = ({ t }: { t?: any }) => {
     e.preventDefault();
 
     if (formFields.currentPassword.length < 8) {
-      Toast('warning', 'Current password must be at least 8 characters long!');
+      Toast('error', 'Current password must be at least 8 characters long!');
       return;
     }
     if (formFields.newPassword.length < 8) {
-      Toast('warning', 'New password must be at least 8 characters long!');
+      Toast('error', 'New password must be at least 8 characters long!');
       return;
     }
     if (formFields.newPassword === formFields.currentPassword) {
-      Toast('warning', 'New password cannot be the same as current password!');
+      Toast('error', 'New password cannot be the same as current password!');
       return;
     }
     if (formFields.newPassword !== formFields.ConfirmPassword) {
-      Toast('warning', 'Password is not matching!');
+      Toast('error', 'Password is not matching!');
       return;
     }
 

@@ -19,7 +19,7 @@ const Footer = () => {
         <Link href="/terms-&-conditions" className="hover:text-[#8449BF]">
           Terms & Conditions
         </Link>
-        <Link href="/terms-&-conditions" className="hover:text-[#8449BF]">
+        <Link href="/cookie-policy" className="hover:text-[#8449BF]">
           Cookie Policy
         </Link>
         <Link href="/contact-us" className="hover:text-[#8449BF]">

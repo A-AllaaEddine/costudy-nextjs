@@ -34,11 +34,11 @@ const WebsiteRatingModal = ({ t }: { t?: any }) => {
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      Toast('warning', 'Please select a rating!');
+      Toast('error', 'Please select a rating!');
       return;
     }
     if (!review.length) {
-      Toast('warning', 'Please leave your review!');
+      Toast('error', 'Please leave your review!');
       return;
     }
 

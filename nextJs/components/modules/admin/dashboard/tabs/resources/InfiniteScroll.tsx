@@ -166,9 +166,9 @@ const ResourcesInfinitScroll = ({
                     </div>
                   </div>
                   <div className="w-28 h-full flex justify-center items-center gap-2">
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button variant={'ghost'} className="h-8 w-8 p-0">
                           <span className="sr-only">Open menu</span>
                           <IoMdMore className="h-6 w-6" />
                         </Button>

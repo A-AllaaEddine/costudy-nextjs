@@ -43,7 +43,7 @@ const DownloadsModal = ({
     data: growth,
     isLoading,
     refetch,
-  } = trpc.admin.events.downloads.growth.useQuery(
+  } = trpc.admin.events.resource.downloads.growth.useQuery(
     {
       id: resource?.id!,
       range: selectedRange,

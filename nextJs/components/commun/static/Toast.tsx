@@ -1,21 +1,11 @@
 import toast from 'react-hot-toast';
-import { IoWarningSharp } from 'react-icons/io5';
-import { IoMdInformationCircle, IoMdCheckmarkCircle } from 'react-icons/io';
 
-const Toast = (type: string, message: string) => {
+const Toast = (type: 'error' | 'success', message: string) => {
   switch (type) {
-    case 'warning':
-      return toast(message, {
-        icon: <IoWarningSharp color="#FF8A20" />,
-      });
     case 'error':
-      return toast(message, {
-        icon: <IoMdInformationCircle color="#ff4336" />,
-      });
+      return toast.error(message, {});
     case 'success':
-      return toast(message, {
-        icon: <IoMdCheckmarkCircle color="#50e722" />,
-      });
+      return toast.success(message, {});
     default:
       return;
   }

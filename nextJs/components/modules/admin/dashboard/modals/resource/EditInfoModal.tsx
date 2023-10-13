@@ -71,7 +71,7 @@ const EditInfoModal = ({
     e.preventDefault();
 
     if (formFields?.description.length < 50) {
-      Toast('warning', 'Description must be at least 50 characters.');
+      Toast('error', 'Description must be at least 50 characters.');
       return;
     }
     try {

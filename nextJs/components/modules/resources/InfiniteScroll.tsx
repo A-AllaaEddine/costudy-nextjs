@@ -92,26 +92,16 @@ const ResourcesInfinitScroll = ({
       className="w-full h-full flex flex-wrap justify-center sm:justify-start item gap-4 mt-6
          pb-12"
     >
-      {content}
-      {isFetching && (
+      {isFetching ? (
         <>
           {Array.from({ length: 2 }, (_, i) => i).map((__, idx) => {
             return <CardSeleton />;
           })}
         </>
+      ) : (
+        content
       )}
       {isFetchingNextPage && (
-        // <div
-        //   style={{
-        //     width: '100%',
-        //     height: 500,
-        //     display: 'flex',
-        //     justifyContent: 'center',
-        //     alignItems: 'center',
-        //   }}
-        // >
-        //   <Spinner className="text-[#8449BF] w-10 h-10" />
-        // </div>
         <>
           {Array.from({ length: 2 }, (_, i) => i).map((__, idx) => {
             return <CardSeleton key={idx} />;

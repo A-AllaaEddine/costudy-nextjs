@@ -55,7 +55,7 @@ const Main = () => {
                   <TabsList
                     className="w-auto sm:w-auto max-w-[400px] h-8 item
               grid-cols-2  rounded-lg 
-              overflow-x-auto focus:overflow-x-scroll overflow-y-hidden "
+              overflow-x-auto focus:overflow-x-scroll overflow-y-hidden scrollbar-hide "
                   >
                     <TabsTrigger
                       className="w-auto h-6 sm:text-md font-bold text-sm rounded-lg"

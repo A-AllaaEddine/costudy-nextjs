@@ -65,17 +65,17 @@ const Main = () => {
     e.preventDefault();
 
     if (email.length === 0) {
-      Toast('warning', 'Please type your email!');
+      Toast('error', 'Please type your email!');
       return;
     }
 
     if (password.length < 8) {
-      Toast('warning', 'Password must be at least  8 chacacters !');
+      Toast('error', 'Password must be at least  8 chacacters !');
       return;
     }
 
     if (password !== confirmPassword) {
-      Toast('warning', 'Password is not matching !');
+      Toast('error', 'Password is not matching !');
       return;
     }
 

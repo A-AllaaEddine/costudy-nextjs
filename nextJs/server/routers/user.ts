@@ -184,7 +184,7 @@ export const userRouter = router({
       )
       .mutation(async ({ input }) => {
         try {
-          const user = await prisma.user.findUnique({
+          const user = await prisma.authentication.findUnique({
             where: {
               email: input?.email,
             },

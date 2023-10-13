@@ -27,11 +27,10 @@ export const sendResetPassowrdEmail = async ({
   } = {
     id,
     email,
-    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
   };
 
   const verificationToken = generateToken(payload);
-  console.log(verificationToken);
 
   const templatePath = path.join(process.cwd(), 'emails', 'ResetPassword.html');
 
@@ -53,7 +52,7 @@ export const sendResetPassowrdEmail = async ({
     );
 
   const mailOptions = {
-    from: 'costudy@gmail.com',
+    from: 'CoStudy',
     to: email,
     subject: 'Reset your password',
     html: message,

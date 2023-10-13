@@ -43,9 +43,10 @@ const ViewsModal = ({
     data: growth,
     isLoading,
     refetch,
-  } = trpc.admin.events.views.growth.useQuery(
+  } = trpc.admin.events.resource.views.growth.useQuery(
     {
       id: resource?.id!,
+      type: resource?.type!,
       range: selectedRange,
     },
     {

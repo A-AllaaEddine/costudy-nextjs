@@ -125,7 +125,7 @@ const ResourceModal = ({
 
   const addToBookmarks = async () => {
     if (!session?.user) {
-      Toast('warning', 'You must be logged in to add to your favorites.');
+      Toast('error', 'You must be logged in to add to your favorites.');
       return;
     }
     try {
@@ -179,7 +179,7 @@ const ResourceModal = ({
       <DialogContent className="w-[93%] sm:w-4/5 ">
         <DialogHeader>
           <Image
-            src={resource?.thumbnail.url || '/resource-img.png'}
+            src={resource?.thumbnail?.url || '/resource-img.png'}
             alt="resource"
             width={100}
             height={100}

@@ -55,11 +55,11 @@ const ResourceShareModal = ({
 
   const handleSubmit = async () => {
     if (!selectedTag.length) {
-      Toast('warning', 'Plaese select a tag.');
+      Toast('error', 'Plaese select a tag.');
       return;
     }
     if (!reason.length) {
-      Toast('warning', 'Plaese write a reason.');
+      Toast('error', 'Plaese write a reason.');
       return;
     }
     try {

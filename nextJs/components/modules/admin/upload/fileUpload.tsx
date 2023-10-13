@@ -83,36 +83,36 @@ const FileUpload = () => {
     e.preventDefault();
 
     if (!formFields?.title.length) {
-      Toast('warning', 'Please set the title of the resource.');
+      Toast('error', 'Please set the title of the resource.');
       return;
     }
     if (formFields?.description.length < 50) {
-      Toast('warning', 'Description must be at least 50 characters.');
+      Toast('error', 'Description must be at least 50 characters.');
       return;
     }
 
     if (!formFields?.class.length) {
-      Toast('warning', 'Please set the class of the resource.');
+      Toast('error', 'Please set the class of the resource.');
       return;
     }
     if (!formFields?.major.length) {
-      Toast('warning', 'Please set the major of the resource.');
+      Toast('error', 'Please set the major of the resource.');
       return;
     }
     if (!formFields?.degree.length) {
-      Toast('warning', 'Please set the degree of the resource.');
+      Toast('error', 'Please set the degree of the resource.');
       return;
     }
     if (!formFields?.year.length) {
-      Toast('warning', 'Please set the year of the resource.');
+      Toast('error', 'Please set the year of the resource.');
       return;
     }
     if (!file) {
-      Toast('warning', 'Please upload a file.');
+      Toast('error', 'Please upload a file.');
       return;
     }
     if (!thumbnail) {
-      Toast('warning', 'Please upload a thumbnail.');
+      Toast('error', 'Please upload a thumbnail.');
       return;
     }
 

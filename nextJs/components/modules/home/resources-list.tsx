@@ -26,13 +26,15 @@ const ResourcesList = () => {
   return (
     <div className="w-full h-72 pl-2 pr-2 md:pl-8 md:pr-8  mt-12  mb-12">
       {!isLoading && resources?.length ? (
-        <p
-          className="text-md font-semibold w-full text-end h-8
-         hover:cursor-pointer hover:text-[#8449BF]"
-          onClick={() => router.push('/resources')}
-        >
-          More...
-        </p>
+        <div className="w-full flex justify-end items-center">
+          <p
+            className="text-md font-semibold  text-end h-8
+          hover:cursor-pointer hover:text-[#8449BF]"
+            onClick={() => router.push('/resources')}
+          >
+            More...
+          </p>
+        </div>
       ) : null}
 
       {isLoading ? (

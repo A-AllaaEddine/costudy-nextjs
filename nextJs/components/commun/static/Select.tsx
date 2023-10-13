@@ -35,9 +35,9 @@ const CustomSelect = ({
                   flex justify-start"
         >
           <p
-            className={`${
-              value?.length! > 11 && 'whitespace-nowrap animate-filter'
-            }`}
+          // className={`${
+          //   value?.length! > 11 && 'whitespace-nowrap animate-filter'
+          // }`}
           >
             <SelectValue placeholder={options[0].label} />
           </p>

@@ -70,12 +70,12 @@ const ResetPasswordModal = ({
     e.preventDefault();
 
     if (formFields.newPassowrd.length < 8) {
-      Toast('warning', 'Password must be at least  8 chacacters !');
+      Toast('error', 'Password must be at least  8 chacacters !');
       return;
     }
 
     if (formFields.confirmPassowrd !== formFields.newPassowrd) {
-      Toast('warning', 'Password is not matching !');
+      Toast('error', 'Password is not matching !');
       return;
     }
 

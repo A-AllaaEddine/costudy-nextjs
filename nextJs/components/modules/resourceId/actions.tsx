@@ -57,7 +57,7 @@ const Actions = ({
   const addToBookmarks = async () => {
     if (!session?.user) {
       setShowLogInAlert(true);
-      // Toast('warning', 'You must be logged in to add to your favorites.');
+      // Toast('error', 'You must be logged in to add to your favorites.');
       return;
     }
     try {
