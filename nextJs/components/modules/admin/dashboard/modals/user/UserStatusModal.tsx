@@ -80,14 +80,14 @@ const StatusModal = ({
         <DialogFooter className="gap-2">
           <Button
             className="w-auto h-10 flex justify-center items-center
-            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px]"
+            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px] font-bold"
             onClick={() => setIsOpen(false)}
           >
             Cancel
           </Button>
           <Button
             className="w-auto h-10 flex justify-center items-center gap-2
-            bg-black text-white sm:text-md text-sm hover:bg-[#8449BF] hover:text-white"
+            bg-black text-white sm:text-md text-sm hover:bg-[#8449BF] hover:text-white font-bold"
             onClick={changesStatu}
           >
             {isLoading ? (

@@ -225,8 +225,9 @@ const FileUpload = () => {
             hover:bg-[#8449BF] hover:text-white  mt-3 flex justify-center items-center gap-2"
             onClick={() => document.getElementById('fileUpload')?.click()}
             type="button"
+            disabled={isLoading || isThumbnailUploading || isFileUploading}
           >
-            {isFileUploading ? (
+            {isLoading || isThumbnailUploading || isFileUploading ? (
               <>
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Uploading...</p>
@@ -267,8 +268,9 @@ const FileUpload = () => {
             hover:bg-[#8449BF] hover:text-white  mt-3 flex justify-center items-center gap-2"
             onClick={() => document.getElementById('thumbnailUpload')?.click()}
             type="button"
+            disabled={isLoading || isThumbnailUploading || isFileUploading}
           >
-            {isThumbnailUploading ? (
+            {isLoading || isThumbnailUploading || isFileUploading ? (
               <>
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Uploading...</p>
@@ -338,8 +340,9 @@ const FileUpload = () => {
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
             hover:bg-[#8449BF] hover:text-white  mt-3 flex justify-center items-center gap-2"
           type="submit"
+          disabled={isLoading || isThumbnailUploading || isFileUploading}
         >
-          {isLoading ? (
+          {isLoading || isThumbnailUploading || isFileUploading ? (
             <>
               <Spinner className="text-white h-6 w-6" />
               <p className="font-semibold">Uploading...</p>

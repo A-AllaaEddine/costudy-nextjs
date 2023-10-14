@@ -221,7 +221,7 @@ const EditInfoModal = ({
           <DialogFooter className="mt-5">
             <Button
               className="w-auto h-10 flex justify-center items-center
-            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px]"
+            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px font-bold]"
               type="button"
               onClick={() => setIsOpen(false)}
             >
@@ -230,14 +230,14 @@ const EditInfoModal = ({
 
             <Button
               className="w-auto h-10 text-white text-lg
-              font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
+              font-bold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
               hover:bg-[#8449BF] hover:text-white flex justify-center items-center gap-2"
               type="submit"
             >
               {isLoading ? (
                 <>
                   <Spinner className="text-white h-6 w-6" />
-                  <p className="font-semibold">Saving...</p>
+                  <p className="font-bold">Saving...</p>
                 </>
               ) : (
                 'Save'

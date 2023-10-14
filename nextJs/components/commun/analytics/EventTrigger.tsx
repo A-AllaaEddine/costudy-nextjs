@@ -173,7 +173,7 @@ const EventTrigger = () => {
 
 export default EventTrigger;
 
-export const addDownload = async ({
+export const addDownload = ({
   userId,
   refetch,
 }: {
@@ -190,19 +190,24 @@ export const addDownload = async ({
       refetch();
     },
   });
+  const addEvent = async () => {
+    try {
+      await addDownloadEvent({
+        id: userId,
+      });
 
-  try {
-    await addDownloadEvent({
-      id: userId,
-    });
+      if (isErrorDownloadEvent) {
+        throw errorDownloadEvent;
+      }
 
-    if (isErrorDownloadEvent) {
-      throw errorDownloadEvent;
+      // console.log(data);
+    } catch (error: any) {
+      console.log(error);
     }
+  };
 
-    return { isLoading: isLoadingDownloadEvent };
-    // console.log(data);
-  } catch (error: any) {
-    console.log(error);
-  }
+  return {
+    isLoadingDownloadEvent: isLoadingDownloadEvent,
+    addDownloadEvent: addEvent,
+  };
 };

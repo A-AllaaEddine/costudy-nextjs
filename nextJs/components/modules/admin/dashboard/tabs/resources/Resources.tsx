@@ -20,7 +20,7 @@ const Resources = () => {
   const sortOptions = [
     { value: 'All', label: 'All' },
     { value: 'downloads', label: 'Downloads' },
-    { value: 'iews', label: 'Views' },
+    { value: 'views', label: 'Views' },
   ];
 
   const onSelectSort = (sort: string) => {

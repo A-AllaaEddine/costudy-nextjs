@@ -213,8 +213,9 @@ const VideoUpload = () => {
             flex justify-center items-center gap-1"
             onClick={() => document.getElementById('thumbnailUpload')?.click()}
             type="button"
+            disabled={isLoading || isThumbnailUploading}
           >
-            {isThumbnailUploading ? (
+            {isLoading || isThumbnailUploading ? (
               <>
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Uploading...</p>
@@ -289,7 +290,7 @@ const VideoUpload = () => {
           onChange={onSelectYear}
           className="w-full h-12 rounded-md bg-white border-[1px] "
         />
-        {isLoading ? (
+        {isLoading || isThumbnailUploading ? (
           <div
             className="w-full h-12 flex flex-row justify-center items-center
             bg-[#8449BF] rounded-md"
@@ -302,7 +303,7 @@ const VideoUpload = () => {
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
             hover:bg-[#8449BF] hover:text-white  mt-3"
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || isThumbnailUploading}
           >
             Submit
           </Button>

@@ -42,17 +42,6 @@ const FilePage = ({ resource }: { resource: Resource }) => {
   );
 
   const {
-    mutateAsync: addDownloadEvent,
-    isLoading: isLoadingDownloadEvent,
-    isError: isErrorDownloadEvent,
-    error: errorDownloadEvent,
-  } = trpc.events.downloads.add.useMutation({
-    onSuccess: () => {
-      refetchDownloadCount();
-    },
-  });
-
-  const {
     data: downloadCount,
     isFetching: isFetchingDownloadCount,
     isError: isErrorDownloadCount,
@@ -69,16 +58,14 @@ const FilePage = ({ resource }: { resource: Resource }) => {
     }
   );
 
+  const { isLoadingDownloadEvent, addDownloadEvent } = addDownload({
+    userId: resource?.id!,
+    refetch: refetchDownloadCount,
+  });
+
   const downloadFile = async () => {
     try {
-      await addDownload({
-        userId: resource?.id!,
-      });
-
-      if (isErrorDownloadEvent) {
-        throw errorDownloadEvent;
-      }
-
+      await addDownloadEvent();
       router.push(resource?.file?.url!);
     } catch (error: any) {
       console.log(error);

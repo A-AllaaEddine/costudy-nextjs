@@ -66,7 +66,7 @@ const DeleteResourceModal = ({
         <DialogFooter className="gap-2">
           <Button
             className="w-auto h-10 flex justify-center items-center
-            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px]"
+            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px] font-bold"
             onClick={() => setIsOpen(false)}
           >
             Cancel
@@ -74,13 +74,12 @@ const DeleteResourceModal = ({
 
           <Button
             className="w-auto h-10 flex justify-center items-center gap-2
-            bg-[#ff4336] text-black sm:text-md text-sm hover:bg-[#ff4336] hover:text-white"
+            bg-[#ff4336] text-black sm:text-md text-sm hover:bg-[#ff4336] hover:text-white font-bold"
             onClick={deleteResourceFunc}
           >
             {isLoading ? (
               <>
-                {' '}
-                <Spinner className="text-white h-6 w-6" />
+                <Spinner className="text-black h-6 w-6" />
                 <p className="font-semibold">Deleting...</p>
               </>
             ) : (

@@ -6,6 +6,8 @@ import { promises } from 'nodemailer/lib/xoauth2';
 import { viewsRouter } from './admin/events/views';
 import { geoRouter } from './admin/events/geo';
 import { techsRouter } from './admin/events/techs';
+import { utapi } from 'uploadthing/server';
+import { Prisma } from '@prisma/client';
 
 export const adminRouter = router({
   users: router({
@@ -797,11 +799,22 @@ export const adminRouter = router({
       )
       .mutation(async ({ input }) => {
         try {
-          await prisma.resource.delete({
+          const deletedRes = await prisma.resource.delete({
             where: {
               id: input?.id,
             },
           });
+
+          let filesToDelete = [
+            (deletedRes.thumbnail as Prisma.JsonObject)?.fileKey! as string,
+          ];
+          if (deletedRes.file) {
+            filesToDelete.push(
+              (deletedRes.file as Prisma.JsonObject)?.fileKey! as string
+            );
+          }
+          console.log(filesToDelete);
+          await utapi.deleteFiles(filesToDelete);
         } catch (error: any) {
           console.log(error);
           throw error;
