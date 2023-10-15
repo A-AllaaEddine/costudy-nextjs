@@ -94,6 +94,17 @@ const VideoUpload = () => {
       Toast('error', 'Please set the title of the resource.');
       return;
     }
+    const regex = /^[a-zA-Z0-9_ -|]+$/i;
+    const isValid = regex.test(formFields?.title);
+
+    if (!isValid) {
+      Toast(
+        'error',
+        'Only characters, numbers and dashes are allowed in Title field.'
+      );
+      return;
+    }
+
     if (formFields?.description.length < 50) {
       Toast('error', 'Description must be at least 50 characters.');
       return;

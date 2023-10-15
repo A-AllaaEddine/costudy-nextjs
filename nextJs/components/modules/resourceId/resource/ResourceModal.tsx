@@ -264,9 +264,9 @@ const ResourceModal = ({
                  hover:bg-[#8449BF] hover:text-black"
             onClick={() =>
               router.push(
-                `/${resource?.type?.toLowerCase()}/${encodeURIComponent(
-                  resource?.title.replace(' ', '-')
-                )}`
+                `/${resource?.type?.toLowerCase()}/${resource?.title
+                  .replaceAll(/\s/g, '-')
+                  .replaceAll(/\|/g, '_')}`
               )
             }
           >
