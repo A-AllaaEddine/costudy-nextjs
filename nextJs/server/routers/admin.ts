@@ -507,7 +507,7 @@ export const adminRouter = router({
         const [lastestUsersResp, monthUsersResp] = await Promise.allSettled([
           prisma.user.findMany({
             orderBy: {
-              createdAt: 'asc',
+              createdAt: 'desc',
             },
             take: 8,
           }),

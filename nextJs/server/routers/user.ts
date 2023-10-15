@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { protectedProcedure, publicProcedure, router } from '../trpc';
-import { createUser } from '@/utils/mongo';
 import { prisma } from '@/utils/prisma';
 import { hashPassword, verifyPassword } from '@/utils/bcryptUtils';
 import { sendResetPassowrdEmail } from '@/utils/sendEmails';
