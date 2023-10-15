@@ -69,6 +69,13 @@ const FileUpload = () => {
     error,
   } = trpc.admin.resource.upload.file.useMutation();
 
+  const {
+    mutateAsync: checkResource,
+    isError: isExistError,
+    error: existError,
+    isLoading: isCheckingResource,
+  } = trpc.admin.resource.upload.check.useMutation();
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -83,40 +90,55 @@ const FileUpload = () => {
     e.preventDefault();
 
     if (!formFields?.title.length) {
-      Toast('warning', 'Please set the title of the resource.');
+      Toast('error', 'Please set the title of the resource.');
+      return;
+    }
+    const regex = /^[a-zA-Z0-9_ -|]+$/i;
+    const isValid = regex.test(formFields?.title);
+
+    if (!isValid) {
+      Toast(
+        'error',
+        'Only characters, numbers and dashes are allowed in Title field.'
+      );
       return;
     }
     if (formFields?.description.length < 50) {
-      Toast('warning', 'Description must be at least 50 characters.');
+      Toast('error', 'Description must be at least 50 characters.');
       return;
     }
 
     if (!formFields?.class.length) {
-      Toast('warning', 'Please set the class of the resource.');
+      Toast('error', 'Please set the class of the resource.');
       return;
     }
     if (!formFields?.major.length) {
-      Toast('warning', 'Please set the major of the resource.');
+      Toast('error', 'Please set the major of the resource.');
       return;
     }
     if (!formFields?.degree.length) {
-      Toast('warning', 'Please set the degree of the resource.');
+      Toast('error', 'Please set the degree of the resource.');
       return;
     }
     if (!formFields?.year.length) {
-      Toast('warning', 'Please set the year of the resource.');
+      Toast('error', 'Please set the year of the resource.');
       return;
     }
     if (!file) {
-      Toast('warning', 'Please upload a file.');
+      Toast('error', 'Please upload a file.');
       return;
     }
     if (!thumbnail) {
-      Toast('warning', 'Please upload a thumbnail.');
+      Toast('error', 'Please upload a thumbnail.');
       return;
     }
 
     try {
+      await checkResource({ title: formFields?.title });
+
+      if (isExistError) {
+        throw isExistError;
+      }
       const fileResp = await startFileUpload([file]);
       const thumbnailResp = await startThumbnailUpload([thumbnail]);
 
@@ -225,8 +247,9 @@ const FileUpload = () => {
             hover:bg-[#8449BF] hover:text-white  mt-3 flex justify-center items-center gap-2"
             onClick={() => document.getElementById('fileUpload')?.click()}
             type="button"
+            disabled={isLoading || isThumbnailUploading || isFileUploading}
           >
-            {isFileUploading ? (
+            {isLoading || isThumbnailUploading || isFileUploading ? (
               <>
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Uploading...</p>
@@ -267,8 +290,9 @@ const FileUpload = () => {
             hover:bg-[#8449BF] hover:text-white  mt-3 flex justify-center items-center gap-2"
             onClick={() => document.getElementById('thumbnailUpload')?.click()}
             type="button"
+            disabled={isLoading || isThumbnailUploading || isFileUploading}
           >
-            {isThumbnailUploading ? (
+            {isLoading || isThumbnailUploading || isFileUploading ? (
               <>
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Uploading...</p>
@@ -338,8 +362,19 @@ const FileUpload = () => {
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
             hover:bg-[#8449BF] hover:text-white  mt-3 flex justify-center items-center gap-2"
           type="submit"
+          disabled={
+            isLoading ||
+            isThumbnailUploading ||
+            isFileUploading ||
+            isCheckingResource
+          }
         >
-          {isLoading ? (
+          {isCheckingResource ? (
+            <>
+              <Spinner className="text-white h-6 w-6" />
+              <p className="font-semibold">Checking...</p>
+            </>
+          ) : isLoading || isThumbnailUploading || isFileUploading ? (
             <>
               <Spinner className="text-white h-6 w-6" />
               <p className="font-semibold">Uploading...</p>

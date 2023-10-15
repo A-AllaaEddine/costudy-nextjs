@@ -210,10 +210,10 @@ const About = () => {
         >
           <Accordion type="single" collapsible className="w-full lg:w-2/3">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="w-full font-bold text-sm md:text-md">
+              <AccordionTrigger className="w-full font-bold text-sm md:text-md text-start">
                 What is Co-Study?
               </AccordionTrigger>
-              <AccordionContent className="font-semibold text-sm md:text-md">
+              <AccordionContent className="font-semibold text-sm md:text-md text-start">
                 Co-Study is an online platform that enables users to create
                 virtual study rooms for collaborative learning. It offers
                 features like video chats, interactive whiteboards, and
@@ -221,20 +221,20 @@ const About = () => {
               </AccordionContent>
             </AccordionItem>{' '}
             <AccordionItem value="item-2">
-              <AccordionTrigger className="w-full font-bold text-sm md:text-md">
+              <AccordionTrigger className="w-full font-bold text-sm md:text-md text-start">
                 Are there any tools to help me stay focused?
               </AccordionTrigger>
-              <AccordionContent className="font-semibold text-sm md:text-md">
+              <AccordionContent className="font-normal text-sm md:text-md text-start">
                 Yes, Co-Study offers focus-enhancing tools like timers, ambient
                 background sounds, and tasks to help you maintain concentration
                 and boost productivity.
               </AccordionContent>
             </AccordionItem>{' '}
             <AccordionItem value="item-3">
-              <AccordionTrigger className="w-full font-bold text-sm md:text-md">
+              <AccordionTrigger className="w-full font-bold text-sm md:text-md text-start">
                 How can I connect with other learners on Co-Study?
               </AccordionTrigger>
-              <AccordionContent className="font-semibold text-sm md:text-md">
+              <AccordionContent className="font-normal text-sm md:text-md text-start">
                 You can connect with other learners by simply creating a study
                 session and inviting whoever you wish to join you through the
                 generated link, participating in study challenges, and engaging
@@ -242,21 +242,21 @@ const About = () => {
               </AccordionContent>
             </AccordionItem>{' '}
             <AccordionItem value="item-4">
-              <AccordionTrigger className="w-full font-bold text-sm md:text-md">
+              <AccordionTrigger className="w-full font-bold text-sm md:text-md text-start">
                 Can I integrate my study materials from other platforms?
               </AccordionTrigger>
-              <AccordionContent className="font-semibold text-sm md:text-md">
-                CCo-Study is continuously working to enhance user experience.
+              <AccordionContent className="font-normal text-sm md:text-md text-start">
+                CoStudy is continuously working to enhance user experience.
                 While direct integration with other platforms might not be
                 available, you can easily share resources and notes within your
                 study rooms.
               </AccordionContent>
             </AccordionItem>{' '}
             <AccordionItem value="item-5">
-              <AccordionTrigger className="w-full font-bold text-sm md:text-md">
+              <AccordionTrigger className="w-full font-bold text-sm md:text-md text-start">
                 What if I want to study alone?
               </AccordionTrigger>
-              <AccordionContent className="font-semibold text-sm md:text-md">
+              <AccordionContent className="font-normal text-sm md:text-md text-start">
                 While Co-Study promotes collaborative learning, you can create a
                 private study room for yourself if you prefer to study alone.
                 This still provides access to features like customizable

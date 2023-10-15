@@ -45,6 +45,8 @@ model Resource {
   resourcesReview         resourcesReview[]
   download                Download[]
   resourceView            resourceView[]
+  totalDownloads          Int?
+  totalViews              Int?
 
   @@map("resources")
 }
@@ -211,33 +213,28 @@ model resourceView {
   @@map("resourceViews")
 } 
 
-model Device {
+
+
+
+
+model PageView {
    id                String    @id @default(auto()) @map("_id") @db.ObjectId 
+   viewer_id         String    
    eventType         String
-   userId           String    @unique
+   referrer         String
+   page              String
+   landingPage       Boolean
    platform          String
    language          String
    userAgent         String
    browser           String
-   createdAt         DateTime
+   device           String
    location          Json
    screenSize          Json
-
-  @@map("devices")
-}
-
-
-
-model Page {
-   id                String    @id @default(auto()) @map("_id") @db.ObjectId 
-   eventType         String
-   user_id           String    @unique
-   page              String
    createdAt         DateTime
 
-    @@map("pages")
+    @@map("pagesViews")
 }
-
 
 // model userRegistration {
 //   id                String    @id @default(auto()) @map("_id") @db.ObjectId 

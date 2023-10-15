@@ -21,7 +21,7 @@ import ToolTip from './ToolTip';
 
 const ResourceCard = forwardRef(
   (
-    { resource, userBookmarks }: { resource: Resource; userBookmarks?: any },
+    { resource, userBookmarks }: { resource: any; userBookmarks?: any },
     ref: ForwardedRef<any>
   ) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);

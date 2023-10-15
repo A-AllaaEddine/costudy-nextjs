@@ -1,4 +1,3 @@
-import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -6,25 +5,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Resource } from '@/types/types';
 import { trpc } from '@/utils/trpc';
-import { SyntheticEvent, useState } from 'react';
 import {
   AiFillFilePdf,
   AiFillFilePpt,
   AiFillFileWord,
   AiFillVideoCamera,
 } from 'react-icons/ai';
-import { IoMdMore } from 'react-icons/io';
-import DeleteResourceModal from '../modals/resource/DeleteResourceModal';
-import DownloadsModal from '../modals/resource/DownloadsModal';
-import ViewsModal from '../modals/resource/ViewsModal';
-
+import EditInfoModal from '../../modals/resource/EditInfoModal';
+import EditThumbnail from '../../modals/resource/EditThumbnail';
+import EditFileModal from '../../modals/resource/EditFileModal';
+import DeleteResourceModal from '../../modals/resource/DeleteResourceModal';
+import DownloadsModal from '../../modals/resource/DownloadsModal';
+import ViewsModal from '../../modals/resource/ViewsModal';
+import { useState } from 'react';
 import Link from 'next/link';
-import EditFileModal from '../modals/resource/EditFileModal';
-import EditThumbnail from '../modals/resource/EditThumbnail';
-import EditInfoModal from '../modals/resource/EditInfoModal';
+import { IoMdMore } from 'react-icons/io';
 
 const badgeType: Record<any, any> = {
   pdf: (
@@ -49,7 +47,13 @@ const badgeType: Record<any, any> = {
   ),
 };
 
-const Resources = () => {
+const ResourcesInfinitScroll = ({
+  keyword,
+  sort,
+}: {
+  keyword: string;
+  sort: string;
+}) => {
   const [isFileModalOpen, setIsFileModalOpen] = useState<boolean>(false);
   const [isThumbModalOpen, setIsThumbModalOpen] = useState<boolean>(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
@@ -57,16 +61,10 @@ const Resources = () => {
   const [isViewsModalOpen, setIsViewsModalOpen] = useState<boolean>(false);
   const [isDownloadsModalOpen, setIsDownloadsModalOpen] =
     useState<boolean>(false);
+
   const [selectedResource, setSelectResource] = useState<Resource | undefined>(
     undefined
   );
-  const [filter, setFilter] = useState<string>('');
-  const [keyword, setKeyword] = useState<string>('');
-
-  const filterResult = (e: SyntheticEvent) => {
-    e.preventDefault();
-    setKeyword(filter);
-  };
 
   const {
     data,
@@ -81,87 +79,45 @@ const Resources = () => {
   } = trpc.admin.resources.get.useInfiniteQuery(
     {
       keyword: keyword,
+      sort: sort,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextPage,
     }
   );
 
+  if (isError) {
+    throw error;
+  }
+
   const resources: Resource[] = data?.pages.reduce((acc: any, page) => {
     return [...acc, ...page.data];
   }, []);
 
   return (
-    <div
-      className="w-full h-full flex flex-col justify-start items-center
-        gap-3"
-    >
-      {isFetching ? (
-        <div className="min-h-screen w-full flex flex-col justify-center items-center">
-          <div className="w-12 h-12 lg:w-16 lg:h-16">
-            <Spinner className="text-[#8449BF] h-12 w-12" />
-          </div>
-        </div>
-      ) : (
-        <div className="w-full h-full flex flex-col justify-start items-center gap-5">
-          <form
-            onSubmit={filterResult}
-            className="w-full h-12 flex justify-end items-center gap-3"
-          >
-            <Button
-              className="w-auto h-8 bg-white border-slate-500 text-slate-500 border-[1px] rounded-md 
-                  hover:bg-[#8449BF] hover:border-[#8449BF] hover:text-white"
-              type="submit"
-            >
-              Filter
-            </Button>
-            <Input
-              type="text"
-              name="keyword"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="w-2/5 h-8"
-            />
-          </form>
-          <div
-            className="w-full h-14 flex justify-between items-center
-                      border-slate-500 rounded-xl pr-2 pl-2 gap-3
-                    "
-          >
-            <div className="w-10 h-10 flex justify-center items-center">
-              <div className=" min-w-[2.5rem] min-h-[2.5rem] w-4/5 h-4/5  flex justify-center items-center"></div>
-            </div>
-            <div className="w-full min-w-[7rem] flex justify-start items-center text-start text-md font-bold truncate">
-              Title
-            </div>
-            <div
-              className={`w-28 min-w-[7rem] h-full flex justify-center items-center
-                   `}
-            >
-              <p
-                className={`w-auto h-auto text-md font-bold pr-2 pl-2 pt-1 pb-1 rounded-md
-                    `}
-              >
-                Views
-              </p>
-            </div>
-            <div
-              className={`w-28 min-w-[7rem]  h-full flex justify-center items-center
-                   `}
-            >
-              <p
-                className={`w-auto h-8 text-md font-bold pr-2 pl-2 pt-1 pb-1 rounded-md
-                    `}
-              >
-                Downloads
-              </p>
-            </div>
-            <div className="w-28 h-full flex justify-center items-center gap-2">
-              <p className="text-md font-bold">Actions</p>
-            </div>
-          </div>
-          <div className="w-full h-full flex flex-col justify-start items-center gap-4">
-            {resources?.map((resourse: Resource) => {
+    <>
+      <div className="w-full h-full flex flex-col justify-start items-center gap-4">
+        {isFetching
+          ? Array.from({ length: 4 }, (_, i) => i).map((__, idx) => {
+              return (
+                <div
+                  key={idx}
+                  className="w-full h-14 flex justify-between items-center
+                      bg-slate-100 border-slate-100 bg-opacity-80  00 rounded-xl pr-2 pl-2 gap-3"
+                >
+                  <div className="w-10 h-10 flex justify-center items-center">
+                    <Skeleton className="min-w-[2.5rem] min-h-[2.5rem] w-4/5 h-4/5 rounded-full" />
+                  </div>
+                  <div className="w-full min-w-[7rem] ">
+                    <Skeleton className="w-64 h-6 min-w-[7rem] " />
+                  </div>
+                  <Skeleton className="w-28 min-w-[7rem] h-6 flex justify-center items-center" />
+                  <Skeleton className="w-28 min-w-[7rem]  h-6 flex justify-center items-center" />
+                  <div className="w-28 h-full flex justify-center items-center gap-2" />{' '}
+                </div>
+              );
+            })
+          : resources?.map((resourse: Resource) => {
               return (
                 <div
                   key={resourse.id}
@@ -210,9 +166,9 @@ const Resources = () => {
                     </div>
                   </div>
                   <div className="w-28 h-full flex justify-center items-center gap-2">
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button variant={'ghost'} className="h-8 w-8 p-0">
                           <span className="sr-only">Open menu</span>
                           <IoMdMore className="h-6 w-6" />
                         </Button>
@@ -272,9 +228,14 @@ const Resources = () => {
                 </div>
               );
             })}
+        {!isFetching && !resources?.length ? (
+          <div className="h-32 w-full flex  flex-col justify-center  items-center">
+            <p className="font-bold text-slate-400 md:text-xl">
+              No resource has been found
+            </p>
           </div>
-        </div>
-      )}
+        ) : null}
+      </div>
       <ViewsModal
         isOpen={isViewsModalOpen}
         setIsOpen={setIsViewsModalOpen}
@@ -309,8 +270,8 @@ const Resources = () => {
         resource={selectedResource!}
         refetchResources={refetchResources}
       />
-    </div>
+    </>
   );
 };
 
-export default Resources;
+export default ResourcesInfinitScroll;

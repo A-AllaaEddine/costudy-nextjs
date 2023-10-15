@@ -70,12 +70,12 @@ const ResetPasswordModal = ({
     e.preventDefault();
 
     if (formFields.newPassowrd.length < 8) {
-      Toast('warning', 'Password must be at least  8 chacacters !');
+      Toast('error', 'Password must be at least  8 chacacters !');
       return;
     }
 
     if (formFields.confirmPassowrd !== formFields.newPassowrd) {
-      Toast('warning', 'Password is not matching !');
+      Toast('error', 'Password is not matching !');
       return;
     }
 
@@ -106,12 +106,8 @@ const ResetPasswordModal = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-md">
-            Are you sure absolutely sure?
+            Change the user's password
           </DialogTitle>
-          <DialogDescription className="text-sm sm:text-md">
-            This action cannot be undone. This will permanently delete the user
-            account and remove his data from the servers.
-          </DialogDescription>
         </DialogHeader>
         <form className="w-full   h-auto flex flex-col justify-start items-start gap-2">
           <Label className="w-full text-xs md:text-sm">New Password</Label>
@@ -138,7 +134,7 @@ const ResetPasswordModal = ({
         <DialogFooter className="gap-2">
           <Button
             className="w-auto h-10 flex justify-center items-center
-            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px]"
+            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px] font-bold"
             onClick={() => setIsOpen(false)}
           >
             Cancel
@@ -146,7 +142,7 @@ const ResetPasswordModal = ({
 
           <Button
             className="w-auto h-10 flex justify-center items-center gap-2
-            bg-black text-white sm:text-md text-sm hover:bg-[#8449BF] hover:text-white"
+            bg-black text-white sm:text-md text-sm hover:bg-[#8449BF] hover:text-white font-bold"
             onClick={changePassword}
           >
             {isLoading ? (

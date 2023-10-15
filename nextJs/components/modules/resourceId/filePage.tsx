@@ -42,17 +42,6 @@ const FilePage = ({ resource }: { resource: Resource }) => {
   );
 
   const {
-    mutateAsync: addDownloadEvent,
-    isLoading: isLoadingDownloadEvent,
-    isError: isErrorDownloadEvent,
-    error: errorDownloadEvent,
-  } = trpc.events.downloads.add.useMutation({
-    onSuccess: () => {
-      refetchDownloadCount();
-    },
-  });
-
-  const {
     data: downloadCount,
     isFetching: isFetchingDownloadCount,
     isError: isErrorDownloadCount,
@@ -69,16 +58,14 @@ const FilePage = ({ resource }: { resource: Resource }) => {
     }
   );
 
+  const { isLoadingDownloadEvent, addDownloadEvent } = addDownload({
+    userId: resource?.id!,
+    refetch: refetchDownloadCount,
+  });
+
   const downloadFile = async () => {
     try {
-      await addDownload({
-        userId: resource?.id!,
-      });
-
-      if (isErrorDownloadEvent) {
-        throw errorDownloadEvent;
-      }
-
+      await addDownloadEvent();
       router.push(resource?.file?.url!);
     } catch (error: any) {
       console.log(error);
@@ -108,7 +95,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
       <div className="w-full lg:w-1/2 h-full  sm:h-1/2 bg-gray-100 rounded-xl">
         <div className="w-full h-full lg:aspect-square relative">
           <Image
-            src={resource?.thumbnail.url || '/resource-img.png'}
+            src={resource?.thumbnail?.url || '/resource-img.png'}
             alt="Thumbnail"
             width={100}
             height={100}
@@ -139,9 +126,9 @@ const FilePage = ({ resource }: { resource: Resource }) => {
         </div>
         <div
           className="flex-1 w-full h-full flex flex-col justify-start items-start gap-4
-         rounded-xl p-3 mt-4 bg-gray-100"
+         rounded-xl p-3 mt-4 bg-gray-100 overflow-hidden"
         >
-          <p className="h-auto w-full text-sm md:text-md lg:text-lg font-normal  whitespace-break-spaces">
+          <p className="h-auto w-full text-sm md:text-md lg:text-lg font-normal  whitespace-break-spaces truncate">
             {resource?.description}
           </p>
           <div className="w-full">

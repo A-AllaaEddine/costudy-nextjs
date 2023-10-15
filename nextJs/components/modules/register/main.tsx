@@ -35,7 +35,7 @@ const Main = () => {
   const { name, username, email, password, confirmPassword } = formFields;
 
   const router = useRouter();
-  const { mutate, isError, error } = trpc.user.create.useMutation();
+  const { mutateAsync, isError, error } = trpc.user.create.useMutation();
 
   const handleChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -65,24 +65,24 @@ const Main = () => {
     e.preventDefault();
 
     if (email.length === 0) {
-      Toast('warning', 'Please type your email!');
+      Toast('error', 'Please type your email!');
       return;
     }
 
     if (password.length < 8) {
-      Toast('warning', 'Password must be at least  8 chacacters !');
+      Toast('error', 'Password must be at least  8 chacacters !');
       return;
     }
 
     if (password !== confirmPassword) {
-      Toast('warning', 'Password is not matching !');
+      Toast('error', 'Password is not matching !');
       return;
     }
 
     try {
       setIsLoading(true);
 
-      mutate({ name, username, email, password });
+      await mutateAsync({ name, username, email, password });
 
       if (isError) {
         switch (error.message) {
@@ -120,11 +120,11 @@ const Main = () => {
 
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center">
-      <p className="w-auto h-auto p-2 text-5xl font-bold">
+      <p className="w-auto h-auto p-2 text-xl text-center md:text-5xl font-bold">
         Welcome to the family
       </p>
       <form
-        className="w-[30rem] h-auto p-8 flex flex-col justify-center items-center gap-4
+        className="w-4/5 md:w-[30rem] h-auto p-8 flex flex-col justify-center items-center gap-4
           "
         onSubmit={handleSubmit}
       >
@@ -190,20 +190,26 @@ const Main = () => {
             )}
           </Button>
         </div>
-        <p className="text-sm text-center font-semibold">
+        <p className="text-sm text-center font-normal">
           By creating an account, you agree to our
-          <span className="w-auto whitespace-nowrap pl-1 pr-1 font-bold">
+          <Link
+            href={'/terms'}
+            className="w-auto whitespace-nowrap pl-1 pr-1 font-bold"
+          >
             Terms of Service
-          </span>{' '}
-          and{' '}
-          <span className="w-auto whitespace-nowrap pl-1 pr-1 font-bold">
+          </Link>
+          and
+          <Link
+            href={'/privacy'}
+            className="w-auto whitespace-nowrap pl-1 pr-1 font-bold"
+          >
             Privacy Policy
-          </span>
+          </Link>
           .
         </p>
         <Separator className="mt-2 mb-2" />
         <p
-          className="text-md text-center font-semibold flex flex-row justify-between items-center
+          className="text-sm md:text-md text-center font-normal flex flex-row justify-between items-center
         gap-2"
         >
           Already a member?

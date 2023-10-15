@@ -1,7 +1,6 @@
-import { getResources } from '@/utils/mongo';
 import { prisma } from '@/utils/prisma';
 import { z } from 'zod';
-import { adminProcedure, publicProcedure, router } from '../trpc';
+import { publicProcedure, router } from '../trpc';
 
 export const resourcesRouter = router({
   home: router({

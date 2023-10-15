@@ -3,6 +3,7 @@ import { protectedProcedure, publicProcedure, router } from '../trpc';
 import { createUser } from '@/utils/mongo';
 import { prisma } from '@/utils/prisma';
 import { hashPassword, verifyPassword } from '@/utils/bcryptUtils';
+import { sendResetPassowrdEmail } from '@/utils/sendEmails';
 
 export const userRouter = router({
   get: protectedProcedure.query(async ({ input, ctx: { session } }) => {
@@ -173,5 +174,53 @@ export const userRouter = router({
       console.log(error);
       throw new Error(error.message);
     }
+  }),
+  reset: router({
+    email: publicProcedure
+      .input(
+        z.object({
+          email: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        try {
+          const user = await prisma.authentication.findUnique({
+            where: {
+              email: input?.email,
+            },
+          });
+
+          if (!user) {
+            throw new Error('no user');
+          }
+
+          await sendResetPassowrdEmail({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          });
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
+    password: publicProcedure
+      .input(z.object({ id: z.string(), password: z.string() }))
+      .mutation(async ({ input }) => {
+        try {
+          const hashedPassword = await hashPassword(input?.password);
+          await prisma.authentication.update({
+            where: {
+              id: input?.id,
+            },
+            data: {
+              password: hashedPassword,
+            },
+          });
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
   }),
 });

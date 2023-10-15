@@ -25,15 +25,21 @@ export const getServerSideProps = async ({
   res: NextApiResponse;
   query: NextApiRequestQuery;
 }) => {
-  const { type, resourceId } = query;
+  const { type, title } = query;
 
+  console.log((title as string)?.replaceAll(/\-/g, ' ').replaceAll(/\_/g, '|'));
   try {
     const resource = await prisma.resource.findUnique({
       where: {
-        id: resourceId as string,
+        title: (title as string)?.replaceAll(/\-/g, ' ').replaceAll(/\_/g, '|'),
       },
     });
 
+    if (!resource) {
+      return {
+        notFound: true,
+      };
+    }
     return {
       props: {
         resource: {

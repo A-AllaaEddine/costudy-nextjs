@@ -125,7 +125,7 @@ const ResourceModal = ({
 
   const addToBookmarks = async () => {
     if (!session?.user) {
-      Toast('warning', 'You must be logged in to add to your favorites.');
+      Toast('error', 'You must be logged in to add to your favorites.');
       return;
     }
     try {
@@ -179,7 +179,7 @@ const ResourceModal = ({
       <DialogContent className="w-[93%] sm:w-4/5 ">
         <DialogHeader>
           <Image
-            src={resource?.thumbnail.url || '/resource-img.png'}
+            src={resource?.thumbnail?.url || '/resource-img.png'}
             alt="resource"
             width={100}
             height={100}
@@ -263,7 +263,11 @@ const ResourceModal = ({
                 font-semibold bg-[#8449BF] pr-4 pl-4 rounded-md  
                  hover:bg-[#8449BF] hover:text-black"
             onClick={() =>
-              router.push(`/${resource?.type?.toLowerCase()}/${resource?.id}`)
+              router.push(
+                `/${resource?.type?.toLowerCase()}/${resource?.title
+                  .replaceAll(/\s/g, '-')
+                  .replaceAll(/\|/g, '_')}`
+              )
             }
           >
             More details

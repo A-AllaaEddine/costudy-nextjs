@@ -1,13 +1,12 @@
 import ToolTip from '@/components/commun/static/ToolTip';
 import { Badge } from '@/components/ui/badge';
+import { Resource } from '@/types/types';
 import { trpc } from '@/utils/trpc';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Suspense } from 'react';
-import { IoMdCloudDownload } from 'react-icons/io';
 import { IoBookmark, IoStar, IoThumbsUpSharp } from 'react-icons/io5';
 import Actions from './actions';
-import { Resource } from '@/types/types';
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
 const VideoPage = ({ resource }: { resource: Resource }) => {
@@ -46,7 +45,7 @@ const VideoPage = ({ resource }: { resource: Resource }) => {
         fallback={
           <div className="w-full h-auto aspect-video">
             <Image
-              src={resource?.thumbnail.url || '/resource-img.png'}
+              src={resource?.thumbnail?.url || '/resource-img.png'}
               alt="Thumbnail"
               width={100}
               height={100}
@@ -128,11 +127,11 @@ const VideoPage = ({ resource }: { resource: Resource }) => {
       </div>
 
       <div
-        className="flex flex-col justify-start items-start gap-4
-      bg-slate-50 rounded-xl p-3 mt-4"
+        className="w-full flex flex-col justify-start items-start gap-4
+      bg-slate-50 rounded-xl p-3 mt-4 overflow-hidden"
       >
         <p
-          className="h-auto text-md md:text-lg lg:text-xl font-normal  whitespace-break-spaces
+          className="h-auto text-md md:text-lg lg:text-xl font-normal  whitespace-break-spaces truncate
         "
         >
           {resource?.description}

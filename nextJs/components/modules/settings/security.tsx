@@ -3,6 +3,7 @@ import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/utils/trpc';
 import { useRouter } from 'next/router';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
@@ -59,19 +60,19 @@ const Security = ({ t }: { t?: any }) => {
     e.preventDefault();
 
     if (formFields.currentPassword.length < 8) {
-      Toast('warning', 'Current password must be at least 8 characters long!');
+      Toast('error', 'Current password must be at least 8 characters long!');
       return;
     }
     if (formFields.newPassword.length < 8) {
-      Toast('warning', 'New password must be at least 8 characters long!');
+      Toast('error', 'New password must be at least 8 characters long!');
       return;
     }
     if (formFields.newPassword === formFields.currentPassword) {
-      Toast('warning', 'New password cannot be the same as current password!');
+      Toast('error', 'New password cannot be the same as current password!');
       return;
     }
     if (formFields.newPassword !== formFields.ConfirmPassword) {
-      Toast('warning', 'Password is not matching!');
+      Toast('error', 'Password is not matching!');
       return;
     }
 
@@ -100,15 +101,24 @@ const Security = ({ t }: { t?: any }) => {
   };
 
   return (
-    <div className="w-4/5 h-autp flex flex-col justify-start items-start gap-4 mt-8">
-      <Label className="w-full sm:w-4/5 max-w-[400px] text-sm sm:text-md">
-        Change your password
+    <div className="w-4/5 h-autp flex flex-col justify-start items-start gap-4">
+      <Label className="hidden lg:block text-md h-auto font-bold w-4/5 text-start">
+        Security
       </Label>
+      <Label className="hidden lg:block text-sm h-auto w-4/5 text-start">
+        Update your account security. Set your new password.
+      </Label>
+      <Separator className="hidden lg:block w-4/5" />
+      {/* <Label className="w-full sm:w-4/5 max-w-[400px] text-sm sm:text-md font-semibold ">
+        Change your password
+      </Label> */}
       <form
-        className="w-full sm:w-4/5 max-w-[400px] h-auto flex flex-col justify-start items-start gap-2"
+        className="w-full sm:w-4/5 max-w-[300px] h-auto flex flex-col justify-start items-start gap-2"
         onSubmit={handleSubmit}
       >
-        <Label className="w-full text-xs md:text-sm">Current Password</Label>
+        <Label className="w-full text-xs md:text-sm font-semibold">
+          Current Password
+        </Label>
         <Input
           placeholder="Current Password"
           value={formFields?.currentPassword}
@@ -116,11 +126,13 @@ const Security = ({ t }: { t?: any }) => {
           required
           onChange={handleChange}
           name="currentPassword"
-          className="w-full h-12 text-black-txt text-xs md:text-sm font-semibold"
-        />{' '}
+          className="w-full h-12 text-black-txt text-xs md:text-sm font-sans"
+        />
         {showNewPassword && (
           <>
-            <Label className="w-full text-xs md:text-sm">New Password</Label>
+            <Label className="w-full text-xs md:text-sm font-semibold">
+              New Password
+            </Label>
             <Input
               placeholder="New Password"
               value={formFields?.newPassword}
@@ -128,9 +140,9 @@ const Security = ({ t }: { t?: any }) => {
               required
               onChange={handleChange}
               name="newPassword"
-              className="w-full h-12 text-black-txt ttext-xs md:text-sm font-semibold"
+              className="w-full h-12 text-black-txt ttext-xs md:text-sm font-sans"
             />
-            <Label className="w-full ttext-xs md:text-sm">
+            <Label className="w-full ttext-xs md:text-sm font-semibold">
               Confirm Password
             </Label>
             <Input
@@ -140,7 +152,7 @@ const Security = ({ t }: { t?: any }) => {
               required
               onChange={handleChange}
               name="ConfirmPassword"
-              className="w-full h-12 text-black-txt text-xs md:text-sm font-semibold"
+              className="w-full h-12 text-black-txt text-xs md:text-sm font-sans"
             />
 
             <Button

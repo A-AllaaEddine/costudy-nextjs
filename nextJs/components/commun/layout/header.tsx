@@ -1,37 +1,21 @@
 import { useRouter } from 'next/router';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import Logo from '../../../public/Logo.svg';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Logo from '../../../public/Logo.svg';
 
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
 import { Separator } from '@/components/ui/separator';
-import { signOut, useSession } from 'next-auth/react';
-import UserPopover from './UserPopover';
+import { useSession } from 'next-auth/react';
 import {
   IoLogoFacebook,
   IoLogoInstagram,
   IoLogoLinkedin,
   IoMdMenu,
 } from 'react-icons/io';
+import UserPopover from './UserPopover';
 
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const Header = () => {
   const router = useRouter();
@@ -58,90 +42,6 @@ const Header = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [lastScrollY]);
-
-  // const resources = [
-  //   { value: 'math', label: 'math', url: '/math', imgUrl: '/math.png' },
-  //   {
-  //     value: 'science',
-  //     label: 'science',
-  //     url: '/science',
-  //     imgUrl: '/science.png',
-  //   },
-  //   {
-  //     value: 'history',
-  //     label: 'history',
-  //     url: '/history',
-  //     imgUrl: '/history.png',
-  //   },
-  //   { value: 'art', label: 'art', url: '/art', imgUrl: '/art.png' },
-  //   { value: 'music', label: 'music', url: '/music', imgUrl: '/music.png' },
-  //   {
-  //     value: 'language',
-  //     label: 'language',
-  //     url: '/language',
-  //     imgUrl: '/language.png',
-  //   },
-  //   { value: 'sports', label: 'sports', url: '/sports', imgUrl: '/sports.png' },
-  //   {
-  //     value: 'technology',
-  //     label: 'technology',
-  //     url: '/technology',
-  //     imgUrl: '/technology.png',
-  //   },
-  //   {
-  //     value: 'geography',
-  //     label: 'geography',
-  //     url: '/geography',
-  //     imgUrl: '/geography.png',
-  //   },
-  //   { value: 'food', label: 'food', url: '/food', imgUrl: '/food.png' },
-  //   { value: 'health', label: 'health', url: '/health', imgUrl: '/health.png' },
-  //   {
-  //     value: 'literature',
-  //     label: 'literature',
-  //     url: '/literature',
-  //     imgUrl: '/literature.png',
-  //   },
-  //   { value: 'nature', label: 'nature', url: '/nature', imgUrl: '/nature.png' },
-  //   {
-  //     value: 'politics',
-  //     label: 'politics',
-  //     url: '/politics',
-  //     imgUrl: '/politics.png',
-  //   },
-  //   {
-  //     value: 'philosophy',
-  //     label: 'philosophy',
-  //     url: '/philosophy',
-  //     imgUrl: '/philosophy.png',
-  //   },
-  //   {
-  //     value: 'economics',
-  //     label: 'economics',
-  //     url: '/economics',
-  //     imgUrl: '/economics.png',
-  //   },
-  //   {
-  //     value: 'fashion',
-  //     label: 'fashion',
-  //     url: '/fashion',
-  //     imgUrl: '/fashion.png',
-  //   },
-  //   { value: 'travel', label: 'travel', url: '/travel', imgUrl: '/travel.png' },
-  //   {
-  //     value: 'mythology',
-  //     label: 'mythology',
-  //     url: '/mythology',
-  //     imgUrl: '/mythology.png',
-  //   },
-  //   {
-  //     value: 'architecture',
-  //     label: 'architecture',
-  //     url: '/architecture',
-  //     imgUrl: '/architecture.png',
-  //   },
-  //   { value: 'film', label: 'film', url: '/film', imgUrl: '/film.png' },
-  // ];
 
   return (
     <>

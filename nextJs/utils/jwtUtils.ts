@@ -1,22 +1,23 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 type Payload = {
-  _id: string;
+  id: string;
+  email?: string;
   exp: number;
 };
 
 export const generateToken = (payload: Payload): string => {
-  return jwt.sign(payload, process.env.JWT_SECRET_PHRASE || "string");
+  return jwt.sign(payload, process.env.JWT_SECRET_PHRASE || 'string');
 };
 
 export const verifyToken = (token: string) => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET_PHRASE || "string"
+      process.env.JWT_SECRET_PHRASE || 'string'
     ) as Payload;
 
-    return { userId: decoded._id };
+    return decoded;
   } catch (error: any) {
     // console.log(error);
     throw new Error(error.message);

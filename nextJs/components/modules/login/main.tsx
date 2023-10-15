@@ -7,6 +7,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
+import ForgetPasswordModal from './ForgetPasswordModal';
 
 const defaultFormFields = {
   email: '',
@@ -16,6 +17,8 @@ const Main = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassInput, setShowPassInput] = useState<boolean>(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
+    useState(false);
 
   const { email, password } = formFields;
 
@@ -45,16 +48,61 @@ const Main = () => {
     e.preventDefault();
 
     if (email.length < 1) {
-      Toast('warning', 'Please type your email!');
+      Toast('error', 'Please type your email!');
       return;
     }
 
     if (password.length < 8) {
       // alert("password must be at least  8 chacacters !");
-      Toast('warning', 'Password must be at least  8 chacacters !');
+      Toast('error', 'Password must be at least  8 chacacters !');
       return;
     }
 
+    // toast.promise(
+    //   new Promise(async (resolve, reject) => {
+    //     setIsLoading(true);
+    //     const resp = await signIn('credentials', {
+    //       email,
+    //       password,
+    //       redirect: false,
+    //     });
+    //     if (!resp?.ok) {
+    //       reject(resp?.error);
+    //     }
+    //     resolve(resp);
+    //   }),
+    //   {
+    //     loading: <Spinner />,
+    //     success: (data) => {
+    //       setIsLoading(false);
+    //       resetFormFields();
+    //       router.push('/');
+
+    //       return 'Signed In';
+    //     },
+
+    //     error: (err) => {
+    //       console.log(err);
+    //       setIsLoading(false);
+    //       switch (err) {
+    //         case 'No User':
+    //           return 'No user with this email';
+
+    //         case 'Wrong Password':
+    //           return 'Wrong Password !';
+
+    //         case 'suspended':
+    //           return 'Your account has been suspended';
+
+    //         case 'banned':
+    //           return 'Your account is banned';
+
+    //         default:
+    //           return 'There was an error siging you in';
+    //       }
+    //     },
+    //   }
+    // );
     try {
       setIsLoading(true);
       const resp = await signIn('credentials', {
@@ -66,23 +114,24 @@ const Main = () => {
       if (!resp?.ok) {
         switch (resp?.error) {
           case 'No User':
-            Toast('warning', 'No user with this email');
+            Toast('error', 'No user with this email');
             break;
           case 'Wrong Password':
-            Toast('warning', 'Wrong Password !');
+            Toast('error', 'Wrong Password !');
             break;
           case 'suspended':
-            Toast('warning', 'Your account has been suspended');
+            Toast('error', 'Your account has been suspended');
             break;
           case 'banned':
-            Toast('warning', 'Your account is banned');
+            Toast('error', 'Your account is banned');
             break;
           default:
-            Toast('error', 'There was an error siging you in!');
+            Toast('error', 'There was an error siging you in');
             break;
         }
         throw resp?.error;
       }
+      Toast('success', 'Signed in.');
       resetFormFields();
       if (router.query.destination) {
         router.push(
@@ -95,13 +144,14 @@ const Main = () => {
       console.log(error);
     }
   };
+
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center">
-      <p className="w-auto h-auto p-2 text-4xl font-bold">
+      <p className="w-auto h-auto p-2 text-center text-xl md:text-4xl font-bold">
         Oh! Is it exams time again? 😏
       </p>
       <form
-        className="w-[30rem] h-auto p-8 flex flex-col justify-center items-center gap-4
+        className="w-4/5 md:w-[30rem] h-auto p-8 flex flex-col justify-center items-center gap-4
           "
         onSubmit={handleSubmit}
       >
@@ -123,7 +173,10 @@ const Main = () => {
             onChange={handleChange}
           />
         )}
-        <p className=" h-10 text-sm font-medium text-black-txt hover:cursor-pointer">
+        <p
+          className=" h-10 text-sm font-medium text-black-txt hover:cursor-pointer"
+          onClick={() => setIsForgotPasswordModalOpen(true)}
+        >
           Forgot password?
         </p>
         <div className="w-full h-12 flex flex-col justify-center items-center">
@@ -135,7 +188,6 @@ const Main = () => {
           >
             {isLoading ? (
               <>
-                {' '}
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Loggin in...</p>
               </>
@@ -146,7 +198,7 @@ const Main = () => {
         </div>
         <Separator className="mt-2 mb-2" />
         <p
-          className="text-md text-center font-semibold flex flex-row justify-between items-center
+          className="text-sm md:text-md text-center font-normal flex flex-row justify-between items-center
         gap-2"
         >
           Not a member?{' '}
@@ -158,6 +210,10 @@ const Main = () => {
           </Link>
         </p>
       </form>
+      <ForgetPasswordModal
+        isOpen={isForgotPasswordModalOpen}
+        setIsOpen={setIsForgotPasswordModalOpen}
+      />
     </div>
   );
 };

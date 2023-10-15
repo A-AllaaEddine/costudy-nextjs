@@ -63,6 +63,13 @@ const VideoUpload = () => {
     error,
   } = trpc.admin.resource.upload.video.useMutation();
 
+  const {
+    mutateAsync: checkResource,
+    isError: isExistError,
+    error: existError,
+    isLoading: isCheckingResource,
+  } = trpc.admin.resource.upload.check.useMutation();
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -84,35 +91,52 @@ const VideoUpload = () => {
     e.preventDefault();
 
     if (!formFields?.title.length) {
-      Toast('warning', 'Please set the title of the resource.');
+      Toast('error', 'Please set the title of the resource.');
       return;
     }
+    const regex = /^[a-zA-Z0-9_ -|]+$/i;
+    const isValid = regex.test(formFields?.title);
+
+    if (!isValid) {
+      Toast(
+        'error',
+        'Only characters, numbers and dashes are allowed in Title field.'
+      );
+      return;
+    }
+
     if (formFields?.description.length < 50) {
-      Toast('warning', 'Description must be at least 50 characters.');
+      Toast('error', 'Description must be at least 50 characters.');
       return;
     }
     if (!formFields?.class.length) {
-      Toast('warning', 'Please set the class of the resource.');
+      Toast('error', 'Please set the class of the resource.');
       return;
     }
     if (!formFields?.major.length) {
-      Toast('warning', 'Please set the major of the resource.');
+      Toast('error', 'Please set the major of the resource.');
       return;
     }
     if (!formFields?.degree.length) {
-      Toast('warning', 'Please set the degree of the resource.');
+      Toast('error', 'Please set the degree of the resource.');
       return;
     }
     if (!formFields?.year.length) {
-      Toast('warning', 'Please set the year of the resource.');
+      Toast('error', 'Please set the year of the resource.');
       return;
     }
     if (!thumbnail) {
-      Toast('warning', 'Please upload a thumbnail.');
+      Toast('error', 'Please upload a thumbnail.');
       return;
     }
 
     try {
+      await checkResource({ title: formFields?.title });
+
+      if (isExistError) {
+        throw isExistError;
+      }
+
       const thumbnailResp = await startThumbnailUpload([thumbnail]);
 
       if (thumbnailResp) {
@@ -209,11 +233,13 @@ const VideoUpload = () => {
           <Button
             className="w-full h-12 text-white text-lg
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
-            hover:bg-[#8449BF] hover:text-white  mt-3"
+            hover:bg-[#8449BF] hover:text-white  mt-3
+            flex justify-center items-center gap-1"
             onClick={() => document.getElementById('thumbnailUpload')?.click()}
             type="button"
+            disabled={isLoading || isThumbnailUploading}
           >
-            {isThumbnailUploading ? (
+            {isLoading || isThumbnailUploading ? (
               <>
                 <Spinner className="text-white h-6 w-6" />
                 <p className="font-semibold">Uploading...</p>
@@ -288,23 +314,27 @@ const VideoUpload = () => {
           onChange={onSelectYear}
           className="w-full h-12 rounded-md bg-white border-[1px] "
         />
-        {isLoading ? (
-          <div
-            className="w-full h-12 flex flex-row justify-center items-center
-            bg-[#8449BF] rounded-md"
-          >
-            <Spinner className="text-[#1D1D1F] h-8 w-8" />
-          </div>
-        ) : (
-          <Button
-            className="w-full h-12 text-white text-lg
+        <Button
+          className="w-full h-12 text-white text-lg
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
             hover:bg-[#8449BF] hover:text-white  mt-3"
-            type="submit"
-          >
-            Submit
-          </Button>
-        )}
+          type="submit"
+          disabled={isLoading || isThumbnailUploading}
+        >
+          {isCheckingResource ? (
+            <>
+              <Spinner className="text-white h-6 w-6" />
+              <p className="font-semibold">Checking...</p>
+            </>
+          ) : isLoading || isThumbnailUploading ? (
+            <>
+              <Spinner className="text-white h-6 w-6" />
+              <p className="font-semibold">Uploading...</p>
+            </>
+          ) : (
+            'Submit'
+          )}
+        </Button>
       </form>
     </div>
   );

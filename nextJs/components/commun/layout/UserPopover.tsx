@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 
 import Link from 'next/link';
 import { IoMdBookmark, IoMdLogOut, IoMdSettings } from 'react-icons/io';
-import { IoCloudUpload } from 'react-icons/io5';
+import { IoAnalyticsSharp, IoCloudUpload } from 'react-icons/io5';
 import { MdSpaceDashboard } from 'react-icons/md';
 
 const UserPopover = () => {
@@ -56,7 +56,7 @@ const UserPopover = () => {
                         : 'text-md'
                     } h-5 text-md font-bold  p-0 m-0 font-sans`}
                   >
-                    {session?.user?.username}
+                    {session?.user?.name}
                   </p>
                   <p
                     className={`${
@@ -97,6 +97,21 @@ const UserPopover = () => {
                 >
                   <MdSpaceDashboard className="w-6 h-6 rounded-3xl" />
                   <p>Dashboard</p>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="h-10 flex gap-2 font-normal text-md  hover:bg-slate-200
+                    hover:cursor-pointer"
+                  onClick={() =>
+                    router.push({
+                      pathname: '/admin/analytics',
+                      query: {
+                        tab: 'behavior',
+                      },
+                    })
+                  }
+                >
+                  <IoAnalyticsSharp className="w-6 h-6 rounded-3xl" />
+                  <p>Analytics</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
