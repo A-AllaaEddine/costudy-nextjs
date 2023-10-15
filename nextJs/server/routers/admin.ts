@@ -894,6 +894,28 @@ export const adminRouter = router({
         }
       }),
     upload: router({
+      check: adminProcedure
+        .input(
+          z.object({
+            title: z.string(),
+          })
+        )
+        .mutation(async ({ input }) => {
+          try {
+            const exist = await prisma.resource.findUnique({
+              where: {
+                title: input?.title,
+              },
+            });
+
+            if (exist) {
+              throw new Error('Resource exist');
+            }
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
       file: adminProcedure
         .input(
           z.object({
@@ -929,16 +951,6 @@ export const adminRouter = router({
         )
         .mutation(async ({ input, ctx: { session } }) => {
           try {
-            const exist = await prisma.resource.findUnique({
-              where: {
-                title: input?.title,
-              },
-            });
-
-            if (exist) {
-              throw new Error('Resource exist');
-            }
-
             await prisma.resource.create({
               data: {
                 ...input,
@@ -980,16 +992,6 @@ export const adminRouter = router({
         )
         .mutation(async ({ input, ctx: { session } }) => {
           try {
-            const exist = await prisma.resource.findUnique({
-              where: {
-                title: input?.title,
-              },
-            });
-
-            if (exist) {
-              throw new Error('Resource exist');
-            }
-
             await prisma.resource.create({
               data: {
                 ...input,

@@ -69,6 +69,13 @@ const FileUpload = () => {
     error,
   } = trpc.admin.resource.upload.file.useMutation();
 
+  const {
+    mutateAsync: checkResource,
+    isError: isExistError,
+    error: existError,
+    isLoading: isCheckingResource,
+  } = trpc.admin.resource.upload.check.useMutation();
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -117,6 +124,11 @@ const FileUpload = () => {
     }
 
     try {
+      await checkResource({ title: formFields?.title });
+
+      if (isExistError) {
+        throw isExistError;
+      }
       const fileResp = await startFileUpload([file]);
       const thumbnailResp = await startThumbnailUpload([thumbnail]);
 
@@ -340,9 +352,19 @@ const FileUpload = () => {
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
             hover:bg-[#8449BF] hover:text-white  mt-3 flex justify-center items-center gap-2"
           type="submit"
-          disabled={isLoading || isThumbnailUploading || isFileUploading}
+          disabled={
+            isLoading ||
+            isThumbnailUploading ||
+            isFileUploading ||
+            isCheckingResource
+          }
         >
-          {isLoading || isThumbnailUploading || isFileUploading ? (
+          {isCheckingResource ? (
+            <>
+              <Spinner className="text-white h-6 w-6" />
+              <p className="font-semibold">Checking...</p>
+            </>
+          ) : isLoading || isThumbnailUploading || isFileUploading ? (
             <>
               <Spinner className="text-white h-6 w-6" />
               <p className="font-semibold">Uploading...</p>

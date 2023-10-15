@@ -131,7 +131,7 @@ const VideoPage = ({ resource }: { resource: Resource }) => {
       bg-slate-50 rounded-xl p-3 mt-4 overflow-hidden"
       >
         <p
-          className="h-auto text-md md:text-lg lg:text-xl font-normal  whitespace-break-spaces
+          className="h-auto text-md md:text-lg lg:text-xl font-normal  whitespace-break-spaces truncate
         "
         >
           {resource?.description}

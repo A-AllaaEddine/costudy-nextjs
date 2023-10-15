@@ -71,7 +71,7 @@ const ResourcesInfinitScroll = ({
     if (data.length >= 9) {
       return (
         <ResourceCard
-          key={i}
+          key={resource.id}
           resource={resource}
           ref={data.length === i + 1 ? lastDocRef : null}
           userBookmarks={userBookmarks}
@@ -80,7 +80,7 @@ const ResourcesInfinitScroll = ({
     } else {
       return (
         <ResourceCard
-          key={i}
+          key={resource.id}
           resource={resource}
           userBookmarks={userBookmarks}
         />
@@ -94,8 +94,8 @@ const ResourcesInfinitScroll = ({
     >
       {isFetching ? (
         <>
-          {Array.from({ length: 2 }, (_, i) => i).map((__, idx) => {
-            return <CardSeleton />;
+          {Array.from({ length: 8 }, (_, i) => i).map((__, idx) => {
+            return <CardSeleton key={idx} />;
           })}
         </>
       ) : (

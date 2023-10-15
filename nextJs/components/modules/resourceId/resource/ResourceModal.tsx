@@ -263,7 +263,11 @@ const ResourceModal = ({
                 font-semibold bg-[#8449BF] pr-4 pl-4 rounded-md  
                  hover:bg-[#8449BF] hover:text-black"
             onClick={() =>
-              router.push(`/${resource?.type?.toLowerCase()}/${resource?.id}`)
+              router.push(
+                `/${resource?.type?.toLowerCase()}/${encodeURIComponent(
+                  resource?.title.replace(' ', '-')
+                )}`
+              )
             }
           >
             More details

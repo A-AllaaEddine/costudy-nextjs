@@ -63,6 +63,13 @@ const VideoUpload = () => {
     error,
   } = trpc.admin.resource.upload.video.useMutation();
 
+  const {
+    mutateAsync: checkResource,
+    isError: isExistError,
+    error: existError,
+    isLoading: isCheckingResource,
+  } = trpc.admin.resource.upload.check.useMutation();
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -113,6 +120,12 @@ const VideoUpload = () => {
     }
 
     try {
+      await checkResource({ title: formFields?.title });
+
+      if (isExistError) {
+        throw isExistError;
+      }
+
       const thumbnailResp = await startThumbnailUpload([thumbnail]);
 
       if (thumbnailResp) {
@@ -290,24 +303,27 @@ const VideoUpload = () => {
           onChange={onSelectYear}
           className="w-full h-12 rounded-md bg-white border-[1px] "
         />
-        {isLoading || isThumbnailUploading ? (
-          <div
-            className="w-full h-12 flex flex-row justify-center items-center
-            bg-[#8449BF] rounded-md"
-          >
-            <Spinner className="text-[#1D1D1F] h-8 w-8" />
-          </div>
-        ) : (
-          <Button
-            className="w-full h-12 text-white text-lg
+        <Button
+          className="w-full h-12 text-white text-lg
             font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
             hover:bg-[#8449BF] hover:text-white  mt-3"
-            type="submit"
-            disabled={isLoading || isThumbnailUploading}
-          >
-            Submit
-          </Button>
-        )}
+          type="submit"
+          disabled={isLoading || isThumbnailUploading}
+        >
+          {isCheckingResource ? (
+            <>
+              <Spinner className="text-white h-6 w-6" />
+              <p className="font-semibold">Checking...</p>
+            </>
+          ) : isLoading || isThumbnailUploading ? (
+            <>
+              <Spinner className="text-white h-6 w-6" />
+              <p className="font-semibold">Uploading...</p>
+            </>
+          ) : (
+            'Submit'
+          )}
+        </Button>
       </form>
     </div>
   );
