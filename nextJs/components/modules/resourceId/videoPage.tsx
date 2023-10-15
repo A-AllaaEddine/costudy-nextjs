@@ -128,7 +128,7 @@ const VideoPage = ({ resource }: { resource: Resource }) => {
 
       <div
         className="w-full flex flex-col justify-start items-start gap-4
-      bg-slate-50 rounded-xl p-3 mt-4"
+      bg-slate-50 rounded-xl p-3 mt-4 overflow-hidden"
       >
         <p
           className="h-auto text-md md:text-lg lg:text-xl font-normal  whitespace-break-spaces

@@ -19,9 +19,16 @@ const Actions = ({
   refetchBookmarkCount?: any;
 }) => {
   const [showLogInAlert, setShowLogInAlert] = useState<boolean>(false);
+  const [isEnabled, setIsEnabled] = useState<boolean>(false);
   const [url, setUrl] = useState<string>('');
 
   const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      setIsEnabled(true);
+    }
+  }, [session]);
 
   useEffect(() => {
     setUrl(window.location.href);
@@ -31,7 +38,9 @@ const Actions = ({
     data: userBookmarks,
     isLoading: isFetchingBookmarks,
     refetch: refechUserBookmarks,
-  } = trpc.bookmarks.get.useQuery();
+  } = trpc.bookmarks.get.useQuery(undefined, {
+    enabled: isEnabled,
+  });
 
   const { mutateAsync: add, isLoading: isAddingToBookmarks } =
     trpc.bookmarks.add.useMutation({

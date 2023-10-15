@@ -126,7 +126,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
         </div>
         <div
           className="flex-1 w-full h-full flex flex-col justify-start items-start gap-4
-         rounded-xl p-3 mt-4 bg-gray-100"
+         rounded-xl p-3 mt-4 bg-gray-100 overflow-hidden"
         >
           <p className="h-auto w-full text-sm md:text-md lg:text-lg font-normal  whitespace-break-spaces">
             {resource?.description}
