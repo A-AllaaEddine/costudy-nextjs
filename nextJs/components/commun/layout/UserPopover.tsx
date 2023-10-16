@@ -41,8 +41,8 @@ const UserPopover = () => {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="mr-4  min-w-[13rem] md:min-w-[14rem]  pt-2 pl-2">
-            <DropdownMenuItem className="font-bold text-md">
+          <DropdownMenuContent className="mr-32  min-w-[13rem] md:min-w-[14rem]  pt-2 pl-2">
+            <DropdownMenuItem className="font-bold text-md rounded-md">
               <div className="w-full h-10 flex gap-2 items-center">
                 <Avatar className="w-10 h-10 rounded-3xl">
                   <AvatarImage src="https://github.com/shadcn.png" />
@@ -74,7 +74,7 @@ const UserPopover = () => {
             {session?.user?.type && (
               <DropdownMenuItem
                 className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
-                hover:cursor-pointer"
+                hover:cursor-pointer rounded-md"
                 onClick={() => router.push('/bookmarks')}
               >
                 <IoMdBookmark className="w-6 h-6 rounded-3xl" />
@@ -85,7 +85,7 @@ const UserPopover = () => {
               <>
                 <DropdownMenuItem
                   className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
-                hover:cursor-pointer"
+                hover:cursor-pointer rounded-md"
                   onClick={() =>
                     router.push({
                       pathname: '/admin/dashboard',
@@ -100,7 +100,7 @@ const UserPopover = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="h-10 flex gap-2 font-normal text-md  hover:bg-slate-200
-                    hover:cursor-pointer"
+                    hover:cursor-pointer rounded-md"
                   onClick={() =>
                     router.push({
                       pathname: '/admin/analytics',
@@ -115,7 +115,7 @@ const UserPopover = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
-                hover:cursor-pointer"
+                hover:cursor-pointer rounded-md"
                   onClick={() => router.push('/admin/upload')}
                 >
                   <IoCloudUpload className="w-6 h-6 rounded-3xl" />
@@ -125,7 +125,7 @@ const UserPopover = () => {
             )}
             <DropdownMenuItem
               className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
-              hover:cursor-pointer"
+              hover:cursor-pointer rounded-md"
               onClick={() => router.push('/settings?tab=account')}
             >
               <IoMdSettings className="w-6 h-6 rounded-3xl" />
@@ -141,8 +141,8 @@ const UserPopover = () => {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => signOutUser()}
-              className="h-10 flex gap-2 font-semibold text-md  text-red-600 hover:bg-red-200
-              hover:cursor-pointer"
+              className="h-10 flex gap-2 font-semibold text-md  text-red-600 hover:text-red-600 hover:bg-red-200
+              hover:cursor-pointer rounded-md"
             >
               <IoMdLogOut className="w-6 h-6 rounded-3xl" />
               <p>Sign out</p>

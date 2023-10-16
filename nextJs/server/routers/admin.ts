@@ -1,13 +1,12 @@
 import { hashPassword, verifyPassword } from '@/utils/bcryptUtils';
 import { prisma } from '@/utils/prisma';
+import { Prisma } from '@prisma/client';
+import { utapi } from 'uploadthing/server';
 import { z } from 'zod';
 import { adminProcedure, router } from '../trpc';
-import { promises } from 'nodemailer/lib/xoauth2';
-import { viewsRouter } from './admin/events/views';
 import { geoRouter } from './admin/events/geo';
 import { techsRouter } from './admin/events/techs';
-import { utapi } from 'uploadthing/server';
-import { Prisma } from '@prisma/client';
+import { viewsRouter } from './admin/events/views';
 
 export const adminRouter = router({
   users: router({

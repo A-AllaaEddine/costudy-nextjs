@@ -171,7 +171,7 @@ const Header = () => {
           of PDFs and Videos for different majors.
         </div>
         <div
-          className=" w-full h-14 flex flex-row justify-center items-center pr-6 pl-6
+          className="max-w-[1600px] m-0 p-0 w-full h-14 flex flex-row justify-center items-center pr-6 pl-6
           border-b-2 border-[#e9e9e9] bg-white"
         >
           <div className="w-auto h-10 flex flex-row justify-center items-center pr-2 pl-2">

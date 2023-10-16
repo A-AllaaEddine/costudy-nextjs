@@ -229,7 +229,7 @@ const FileUpload = () => {
           {filUploadProgress > 5 && (
             <Progress
               value={filUploadProgress}
-              className="mt-2 h-5 bg-white "
+              className="mt-2 h-3 bg-white "
             />
           )}
           <Input
@@ -271,7 +271,7 @@ const FileUpload = () => {
           {thmbUploadProgress > 5 && (
             <Progress
               value={thmbUploadProgress}
-              className="mt-2 h-5"
+              className="mt-2 h-3"
               color="#8449BF"
             />
           )}
