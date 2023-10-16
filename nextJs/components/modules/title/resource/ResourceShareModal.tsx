@@ -1,3 +1,4 @@
+import Toast from '@/components/commun/static/Toast';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +9,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { trpc } from '@/utils/trpc';
 import { useState } from 'react';
 import {
   IoCopy,
@@ -19,7 +19,6 @@ import {
   IoLogoWhatsapp,
   IoShareSocialSharp,
 } from 'react-icons/io5';
-import Toast from '@/components/commun/static/Toast';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -30,7 +29,6 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from 'next-share';
-import { useRouter } from 'next/router';
 
 const ResourceShareModal = ({
   id,
@@ -42,46 +40,6 @@ const ResourceShareModal = ({
   url: string;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedTag, setSelectedTag] = useState<string>('');
-  const [reason, setReason] = useState<string>('');
-
-  const router = useRouter();
-
-  const { mutateAsync: saveReport, isLoading } = trpc.reports.add.useMutation({
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  const handleSubmit = async () => {
-    if (!selectedTag.length) {
-      Toast('error', 'Plaese select a tag.');
-      return;
-    }
-    if (!reason.length) {
-      Toast('error', 'Plaese write a reason.');
-      return;
-    }
-    try {
-      await saveReport({
-        resourceId: id,
-        tag: selectedTag,
-        reason,
-      });
-      Toast('success', 'Report has been submitted successfully.');
-      setSelectedTag('');
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 1000);
-    } catch (error: any) {
-      console.log(error.message);
-      if (error.message === 'already reported') {
-        Toast('error', 'You have already reported this resource.');
-        return false;
-      }
-      Toast('error', 'There was an error submitting the report.');
-    }
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
