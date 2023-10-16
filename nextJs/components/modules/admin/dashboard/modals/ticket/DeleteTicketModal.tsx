@@ -14,7 +14,7 @@ import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { signOut } from 'next-auth/react';
 
-const DeleteReportModal = ({
+const DeleteTicketModal = ({
   reportId,
   refetchReports,
   isOpen,
@@ -44,10 +44,10 @@ const DeleteReportModal = ({
         throw error;
       }
 
-      Toast('success', 'The report has been deleted successfully.');
+      Toast('success', 'The tickethas been deleted successfully.');
     } catch (error: any) {
       console.log(error);
-      Toast('error', 'There was an error deleting the report.');
+      Toast('error', 'There was an error deleting the ticket.');
     }
     setIsOpen(false);
   };
@@ -60,7 +60,7 @@ const DeleteReportModal = ({
           </DialogTitle>
           <DialogDescription className="text-sm sm:text-md">
             This action cannot be undone. This will permanently delete the
-            report and remove its data from the servers.
+            ticket and remove its data from the servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
@@ -93,4 +93,4 @@ const DeleteReportModal = ({
   );
 };
 
-export default DeleteReportModal;
+export default DeleteTicketModal;

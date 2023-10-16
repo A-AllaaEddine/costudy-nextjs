@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SyntheticEvent, useState } from 'react';
-import ReportsInfiniteScroll from './InfiniteScroll';
 import CustomSelect from '@/components/commun/static/Select';
+import TicketsInfiniteScroll from './InfiniteScroll';
 
-const Reports = () => {
+const Tickets = () => {
   const [sort, setSort] = useState<string>('');
   const [filter, setFilter] = useState<string>('');
   const [keyword, setKeyword] = useState<string>('');
@@ -72,7 +72,7 @@ const Reports = () => {
             <div className=" min-w-[2.5rem] min-h-[2.5rem] w-4/5 h-4/5  flex justify-center items-center"></div>
           </div>
           <div className="w-full min-w-[7rem] flex justify-start items-center text-start text-md font-bold truncate">
-            Type
+            Subject
           </div>
           <div
             className={`w-28 min-w-[7rem] h-full flex justify-center items-center
@@ -100,10 +100,10 @@ const Reports = () => {
             <p className="text-md font-bold">Actions</p>
           </div>
         </div>
-        <ReportsInfiniteScroll keyword={keyword} sort={sort} />
+        <TicketsInfiniteScroll keyword={keyword} sort={sort} />
       </div>
     </div>
   );
 };
 
-export default Reports;
+export default Tickets;

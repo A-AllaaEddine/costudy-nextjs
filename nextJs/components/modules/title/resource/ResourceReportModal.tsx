@@ -49,6 +49,7 @@ const ResourceReportModal = ({ resourceId }: { resourceId: string }) => {
       await saveReport({
         resourceId: resourceId,
         tag: selectedTag,
+        type: 'Resource',
         reason,
       });
       Toast('success', 'Report has been submitted successfully.');

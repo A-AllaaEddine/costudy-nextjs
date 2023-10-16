@@ -6,6 +6,7 @@ import OverView from './tabs/Overview';
 import Spinner from '@/components/commun/static/spinner';
 import Users from './tabs/Users';
 import Reports from './tabs/reports/Reports';
+import Tickets from './tabs/tickets/Tickets';
 
 const Main = () => {
   const [tab, setTab] = useState<string>('overview');
@@ -128,10 +129,27 @@ const Main = () => {
                       }}
                     >
                       Reports
+                    </TabsTrigger>{' '}
+                    <TabsTrigger
+                      className="w-auto h-6 sm:text-md font-bold text-sm rounded-lg"
+                      value="tickets"
+                      onClick={() => {
+                        router.push(
+                          {
+                            pathname: '/admin/dashboard',
+                            query: { tab: 'tickets' },
+                          },
+                          undefined,
+                          {
+                            shallow: true,
+                          }
+                        );
+                      }}
+                    >
+                      Tickets
                     </TabsTrigger>
                   </TabsList>
                 </div>
-
                 <TabsContent value="overview" className="w-full ">
                   <OverView />
                 </TabsContent>
@@ -143,6 +161,9 @@ const Main = () => {
                 </TabsContent>
                 <TabsContent value="reports" className="w-full">
                   <Reports />
+                </TabsContent>{' '}
+                <TabsContent value="tickets" className="w-full">
+                  <Tickets />
                 </TabsContent>
               </Tabs>
             </div>

@@ -8,12 +8,13 @@ export const reportsRouter = router({
       z.object({
         resourceId: z.string(),
         tag: z.string(),
+        type: z.string(),
         reason: z.string(),
       })
     )
     .mutation(async ({ input, ctx: { session } }) => {
       try {
-        const exist = await prisma.report.findUnique({
+        const exist = await prisma.report.findFirst({
           where: {
             user_id: session?.user?.id,
             resource_id: input?.resourceId,
@@ -25,18 +26,11 @@ export const reportsRouter = router({
         }
         await prisma.report.create({
           data: {
-            user: {
-              connect: {
-                id: session?.user?.id, // Connect to the user by ObjectID
-              },
-            },
-            resource: {
-              connect: {
-                id: input?.resourceId, // Connect to the resource by ObjectID
-              },
-            },
+            user_id: session?.user?.id, // Connect to the user by ObjectID
+            type: input?.type,
+            resource_id: input?.resourceId, // Connect to the resource by ObjectID
             tag: input?.tag,
-            status: 'New',
+            status: 'Open',
             reason: input?.reason,
             createdAt: new Date(),
             updatedAt: new Date(),

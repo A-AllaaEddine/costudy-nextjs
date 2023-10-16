@@ -7,6 +7,7 @@ import { adminProcedure, router } from '../trpc';
 import { geoRouter } from './admin/events/geo';
 import { techsRouter } from './admin/events/techs';
 import { viewsRouter } from './admin/events/views';
+import { Input } from '@mui/base';
 
 export const adminRouter = router({
   users: router({
@@ -1006,7 +1007,20 @@ export const adminRouter = router({
     }),
   }),
   reports: router({
-    get: adminProcedure
+    getParents: adminProcedure.query(async ({ input }) => {
+      try {
+        const reports = await prisma.report.findMany({
+          where: {
+            NOT: [{ status: 'Duplicate' }],
+          },
+        });
+        return reports || [];
+      } catch (error: any) {
+        console.log(error);
+        throw error;
+      }
+    }),
+    getMany: adminProcedure
       .input(
         z.object({
           cursor: z.string().nullish(),
@@ -1026,12 +1040,11 @@ export const adminRouter = router({
           reason?: {
             contains: string;
           };
+          status?: string;
         } = {};
 
         const orderBy: {
-          createdAt?: 'asc';
-          totalDownloads?: 'asc';
-          totalViews?: 'asc';
+          createdAt?: 'desc';
         } = {};
 
         if (keyword) {
@@ -1039,6 +1052,9 @@ export const adminRouter = router({
         }
         if (tag) {
           where.tag = tag;
+        }
+        if (sort) {
+          where.status = sort;
         }
 
         try {
@@ -1065,6 +1081,186 @@ export const adminRouter = router({
           throw error;
         }
       }),
+    get: adminProcedure
+      .input(
+        z.object({
+          id: z.string(),
+        })
+      )
+      .query(async ({ input }) => {
+        try {
+          const report = await prisma.report.findUnique({
+            where: {
+              id: input?.id,
+            },
+          });
+          return report || {};
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
+    update: adminProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          status: z.string().optional(),
+          parent: z.string().optional(),
+          tag: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { status, tag, parent } = input;
+
+        try {
+          if (status === 'Duplicate') {
+            await prisma.report.update({
+              where: {
+                id: input?.id,
+              },
+              data: {
+                status: status,
+                parentReportId: parent,
+                updatedAt: new Date(),
+              },
+            });
+            return;
+          }
+
+          await prisma.report.update({
+            where: {
+              id: input?.id,
+            },
+            data: {
+              status,
+              tag,
+              parentReportId: { unset: true },
+              updatedAt: new Date(),
+            },
+          });
+          // await prisma.report.updateMany({
+          //   where: {
+          //     parentReportId: input?.id,
+          //   },
+          //   data: {
+          //     status,
+          //     tag,
+          //     updatedAt: new Date(),
+          //   },
+          // });
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
+    delete: adminProcedure
+      .input(
+        z.object({
+          id: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        try {
+          await prisma.$transaction([
+            prisma.report.delete({
+              where: {
+                id: input?.id,
+              },
+            }),
+            prisma.report.deleteMany({
+              where: {
+                parentReportId: input?.id,
+              },
+            }),
+          ]);
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
+  }),
+  tickets: router({
+    getMany: adminProcedure
+      .input(
+        z.object({
+          cursor: z.string().nullish(),
+          keyword: z.string().optional(),
+          tag: z.string().optional(),
+          sort: z.string().optional(),
+        })
+      )
+      .query(async ({ input }) => {
+        const { cursor, keyword, tag, sort } = input;
+
+        console.log(Input);
+        const limit = 30;
+
+        const where: {
+          name?: string;
+          tag?: string;
+          subject?: {
+            contains: string;
+          };
+          status?: string;
+        } = {};
+
+        const orderBy: {
+          createdAt?: 'desc';
+        } = {};
+
+        if (keyword) {
+          where.subject = { contains: keyword };
+        }
+        if (tag) {
+          where.tag = tag;
+        }
+        if (sort) {
+          where.status = sort;
+        }
+
+        try {
+          const data = await prisma.ticket.findMany({
+            take: limit + 1,
+            where: where,
+
+            cursor: cursor ? { id: cursor } : undefined,
+            orderBy,
+          });
+
+          let nextPage: typeof cursor | undefined = undefined;
+          if (data.length > limit) {
+            const nextItem = data.pop();
+            nextPage = nextItem!.id;
+          }
+          return {
+            data,
+            nextPage,
+          };
+        } catch (error: any) {
+          console.log(error);
+
+          throw error;
+        }
+      }),
+    get: adminProcedure
+      .input(
+        z.object({
+          id: z.string(),
+        })
+      )
+      .query(async ({ input }) => {
+        try {
+          const report = await prisma.ticket.findUnique({
+            where: {
+              id: input?.id,
+            },
+          });
+          return report || {};
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
     update: adminProcedure
       .input(
         z.object({
@@ -1075,8 +1271,9 @@ export const adminRouter = router({
       )
       .mutation(async ({ input }) => {
         const { status, tag } = input;
+
         try {
-          await prisma.report.update({
+          await prisma.ticket.update({
             where: {
               id: input?.id,
             },
@@ -1099,7 +1296,7 @@ export const adminRouter = router({
       )
       .mutation(async ({ input }) => {
         try {
-          await prisma.report.delete({
+          await prisma.ticket.delete({
             where: {
               id: input?.id,
             },

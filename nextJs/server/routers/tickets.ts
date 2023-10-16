@@ -17,7 +17,9 @@ export const ticketsRouter = router({
         const exist = await prisma.ticket.findUnique({
           where: {
             email: input?.email,
-            status: 'Closed',
+            NOT: {
+              status: 'Closed',
+            },
           },
         });
 
@@ -28,7 +30,7 @@ export const ticketsRouter = router({
         await prisma.ticket.create({
           data: {
             ...input,
-            status: 'New',
+            status: 'Open',
             createdAt: new Date(),
             updatedAt: new Date(),
           },
