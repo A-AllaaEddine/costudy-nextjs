@@ -81,17 +81,22 @@ export type Report = {
   id?: string;
   tag: string;
   reason: string;
-  status:
-    | 'New'
-    | 'Assigned'
-    | 'In Progress'
-    | 'Resolved'
-    | 'Closed'
-    | 'Reopened'
-    | 'Deferred'
-    | 'Duplicate';
+  status: 'Open' | 'Forwarded' | 'Resolved' | 'Closed' | 'Duplicate';
   user_id: string;
   resource_id: string;
+  parentReportId?: string;
+  type: 'Resource' | 'Website';
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Ticket = {
+  id: string;
+  tag: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'Open' | 'Forwarded' | 'Resolved' | 'Closed' | 'Duplicate';
   createdAt: Date;
   updatedAt: Date;
 };

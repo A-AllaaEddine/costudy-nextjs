@@ -11,6 +11,11 @@ import Toast from '@/components/commun/static/Toast';
 import { Resource } from '@/types/types';
 import Spinner from '@/components/commun/static/spinner';
 import { addDownload } from '@/components/commun/analytics/EventTrigger';
+import dynamic from 'next/dynamic';
+
+const PdfViewer = dynamic(() => import('@/components/modules/title/sample'), {
+  ssr: false,
+});
 
 const FilePage = ({ resource }: { resource: Resource }) => {
   const router = useRouter();
@@ -93,8 +98,11 @@ const FilePage = ({ resource }: { resource: Resource }) => {
           pl-3 pr-3 md:pl-8 md:pr-8 lg:pl-12 lg:pr-12 mb-8 gap-2 md:gap-5 "
     >
       <div className="w-full lg:w-1/2 h-full  sm:h-1/2 bg-gray-100 rounded-xl">
-        <div className="w-full h-full lg:aspect-square relative">
-          <Image
+        <div
+          className="w-full h-full max-h-[500px] border border-slate-200
+        rounded-lg lg:aspect-square relative"
+        >
+          {/* <Image
             src={resource?.thumbnail?.url || '/resource-img.png'}
             alt="Thumbnail"
             width={100}
@@ -102,9 +110,10 @@ const FilePage = ({ resource }: { resource: Resource }) => {
             quality={100}
             unoptimized
             className="w-full h-full aspect-auto rounded-xl border-[1px] border-slate-200"
-          />
+          /> */}
+          <PdfViewer url={resource?.file?.url!} />
           <p
-            className="w-auto h-7 pr-2 pl-2  font-semibold bg-[#FF6584] rounded-lg
+            className="w-auto h-7 px-2  font-semibold bg-[#FF6584] rounded-lg
             text-white absolute bottom-5 left-5"
           >
             {resource?.type.toUpperCase()}

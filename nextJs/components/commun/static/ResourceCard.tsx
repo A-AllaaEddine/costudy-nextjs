@@ -16,7 +16,7 @@ import {
   AiFillFileWord,
   AiFillVideoCamera,
 } from 'react-icons/ai';
-import ResourceModal from '@/components/modules/resourceId/resource/ResourceModal';
+import ResourceModal from '@/components/modules/title/resource/ResourceModal';
 import ToolTip from './ToolTip';
 
 const ResourceCard = forwardRef(

@@ -14,7 +14,7 @@ import CustomSelect from '@/components/commun/static/Select';
 import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 
-const ReportStatusModal = ({
+const TicketStatusModal = ({
   reportId,
   refetchReports,
   isOpen,
@@ -25,8 +25,6 @@ const ReportStatusModal = ({
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [isEnabled, setIsEnabled] = useState<boolean>(false);
-  const [reports, setReports] = useState<any>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>('Status');
   const [parentReport, setParentReport] = useState<string>('');
   const {
@@ -34,21 +32,11 @@ const ReportStatusModal = ({
     isLoading,
     isError,
     error,
-  } = trpc.admin.reports.update.useMutation({
+  } = trpc.admin.tickets.update.useMutation({
     onSuccess: () => {
       refetchReports();
     },
   });
-
-  const { data } = trpc.admin.reports.getParents.useQuery(undefined, {
-    enabled: isEnabled,
-  });
-
-  useEffect(() => {
-    if (data) {
-      setReports(data);
-    }
-  }, [data]);
 
   const changesStatus = async () => {
     if (selectedStatus === 'Status') {
@@ -63,7 +51,6 @@ const ReportStatusModal = ({
       await updateReportStatus({
         id: reportId,
         status: selectedStatus,
-        parent: parentReport,
       });
       if (isError) {
         throw error;
@@ -81,7 +68,6 @@ const ReportStatusModal = ({
     return () => {
       setParentReport('');
       setSelectedStatus('Status');
-      setIsEnabled(false);
     };
   }, []);
 
@@ -98,9 +84,6 @@ const ReportStatusModal = ({
     if (status === 'Status') {
       setSelectedStatus('Status');
       return;
-    }
-    if (status === 'Duplicate') {
-      setIsEnabled(true);
     }
     setSelectedStatus(status);
   };
@@ -129,21 +112,6 @@ const ReportStatusModal = ({
           contenClassName="h-auto"
           value={parentReport || statusOptions[0].label}
         />
-        {selectedStatus === 'Duplicate' && (
-          <CustomSelect
-            onChange={onParentReportSelect}
-            options={[
-              { value: 'Report', label: 'Report' },
-              ...reports
-                ?.filter((report: any) => report.id !== reportId)
-                .map((report: any) => {
-                  return { value: report.id, label: report.reason };
-                }),
-            ]}
-            className="bg-white rounded-md h-10"
-            contenClassName="h-auto"
-          />
-        )}
         <DialogFooter className="gap-2">
           <Button
             className="w-auto h-10 flex justify-center items-center
@@ -173,4 +141,4 @@ const ReportStatusModal = ({
   );
 };
 
-export default ReportStatusModal;
+export default TicketStatusModal;

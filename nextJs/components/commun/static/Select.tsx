@@ -39,7 +39,7 @@ const CustomSelect = ({
           //   value?.length! > 11 && 'whitespace-nowrap animate-filter'
           // }`}
           >
-            <SelectValue placeholder={options[0].label} />
+            <SelectValue placeholder={options[0]?.label} />
           </p>
         </div>
       </SelectTrigger>

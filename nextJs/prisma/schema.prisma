@@ -56,13 +56,16 @@ model Report {
    tag             String
    reason          String
    status          String
-   user_id         String    @db.ObjectId @unique
-   resource_id     String    @db.ObjectId @unique
+   type            String
+   user_id         String    @db.ObjectId 
+   resource_id     String    @db.ObjectId 
    createdAt       DateTime  @db.Date
    updatedAt       DateTime  @db.Date
+   parentReportId   String?    @db.ObjectId  
 
    user            User      @relation(fields: [user_id ], references: [id], onDelete: Cascade) 
    resource        Resource  @relation(fields: [resource_id ], references: [id], onDelete: Cascade) 
+
 
    @@map("reports")
 }

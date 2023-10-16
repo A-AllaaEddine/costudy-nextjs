@@ -1,5 +1,5 @@
 import Meta from '@/components/commun/static/Meta';
-import Main from '@/components/modules/resourceId/main';
+import Main from '@/components/modules/title/main';
 import { Resource } from '@/types/types';
 import { prisma } from '@/utils/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -27,7 +27,6 @@ export const getServerSideProps = async ({
 }) => {
   const { type, title } = query;
 
-  console.log((title as string)?.replaceAll(/\-/g, ' ').replaceAll(/\_/g, '|'));
   try {
     const resource = await prisma.resource.findUnique({
       where: {

@@ -107,13 +107,13 @@ const OverView = () => {
               <CardTitle className="text-md font-bold">Recent Users</CardTitle>
               <ImUsers />
             </div>
-            <CardDescription className="text-sm">
-              {isFetchingLatestUsers ? (
-                <Skeleton className="w-48 mt-1 h-4" />
-              ) : (
-                `${lastest?.monthUsers} users joined this month.`
-              )}
-            </CardDescription>
+            {isFetchingLatestUsers ? (
+              <Skeleton className="w-48 mt-1 h-4" />
+            ) : (
+              <CardDescription className="text-sm">
+                {lastest?.monthUsers} users joined this month.
+              </CardDescription>
+            )}
           </CardHeader>
           <CardContent
             className="flex flex-col justify-start items-center gap-1

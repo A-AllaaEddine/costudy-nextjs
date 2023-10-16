@@ -4,6 +4,11 @@ const nextConfig = {
   images: {
     domains: ['localhost', 'example.com', 'www.google.com'],
   },
+  webpack: (config) => {
+    config.resolve.alias.canvas = false;
+
+    return config;
+  },
   async rewrites() {
     return [
       {
