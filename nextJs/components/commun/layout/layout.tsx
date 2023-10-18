@@ -12,7 +12,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <Header />
       <NextTopLoader showSpinner={false} color={'#e6a0ff'} height={5} />
       <Toaster containerClassName="text-sm sm:text-lg" />
-      <main className="lg:max-w-[1600px] m-auto w-full p-0 flex-grow  bg-white pt-24">
+      <main className="lg:max-w-[1600px] m-auto w-full pb-20 p-0 flex-grow  bg-white pt-24">
         {children}
       </main>
       <Footer />

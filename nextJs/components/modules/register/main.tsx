@@ -190,18 +190,18 @@ const Main = () => {
             )}
           </Button>
         </div>
-        <p className="text-sm text-center font-normal">
+        <p className="whitespace-break-spaces  text-xs text-center font-normal">
           By creating an account, you agree to our
           <Link
             href={'/terms'}
-            className="w-auto whitespace-nowrap pl-1 pr-1 font-bold"
+            className="w-auto  pl-1 pr-1 font-bold "
           >
             Terms of Service
           </Link>
           and
           <Link
             href={'/privacy'}
-            className="w-auto whitespace-nowrap pl-1 pr-1 font-bold"
+            className="w-auto  pl-1 pr-1 font-bold"
           >
             Privacy Policy
           </Link>

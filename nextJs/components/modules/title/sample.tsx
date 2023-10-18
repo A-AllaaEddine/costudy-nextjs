@@ -17,10 +17,10 @@ const PdfViewer = ({ url }: { url: string }) => {
   }
 
   return (
-    <div className="w-full h-[300px] md:h-[500px] overflow-y-auto flex justify-start items-start">
+    <div className="w-full  h-[300px] md:h-[500px] overflow-y-auto flex justify-start md:justify-center items-start">
       <Document
         loading={() => (
-          <div className="w-[300px] h-[500px]  flex justify-center items-center font-bold">
+          <div className="w-full h-[500px]  flex justify-center items-center font-bold">
             <p>Loading...</p>
           </div>
         )}

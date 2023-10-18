@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <div
       className="w-full h-auto pt-2 bg-[#8449BF] bg-opacity-10  border-t-2
-      flex justify-center items-center
+      lg:flex justify-center items-center hidden
     "
     >
       <div className="max-w-[1600px] m-0 p-0 flex flex-col justify-start items-center">

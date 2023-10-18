@@ -185,7 +185,7 @@ const ResourceModal = ({
             height={100}
             quality={100}
             unoptimized
-            className="w-auto h-56 rounded-xl mt-6 aspect-auto border-[1px] border-slate-200"
+            className="w-auto h-1/2 min-h-[50%] rounded-xl mt-6 aspect-auto border-[1px] border-slate-200"
           />
           <DialogTitle
             className={`w-[250px] md:w-[400px] truncate whitespace-nowrap  h-12 text-start  overflow-hidden  text-lg  md:text-2xl font-bold 
@@ -224,7 +224,7 @@ const ResourceModal = ({
           </div>
         </DialogHeader>
         <div className="flex flex-col justify-start items-start gap-5 overflow-hidden">
-          <p className="w-full h-24 text-sm font-normal truncate whitespace-normal">
+          <p className="w-full max-h-[6rem] h-auto text-sm font-normal truncate whitespace-normal">
             {resource?.description}
           </p>
           <div>

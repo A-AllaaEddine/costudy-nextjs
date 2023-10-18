@@ -31,8 +31,8 @@ const LogInAlertModal = ({
           <Button
             type="submit"
             className="w-auto  text-white text-lg
-                    font-semibold bg-[#FF8A20] pr-4 pl-4 rounded-md  
-                     hover:bg-[#FF8A20] hover:text-black"
+                    font-semibold bg-[#8449BF] pr-4 pl-4 rounded-md  
+                     hover:bg-[#8449BF] hover:text-black"
             onClick={() =>
               router.push({
                 pathname: '/login',

@@ -93,24 +93,15 @@ const FilePage = ({ resource }: { resource: Resource }) => {
 
   return (
     <div
-      className="w-full  lg:w-4/5 h-full flex flex-col lg:flex-row justify-start md:justify-center
+      className="w-full  lg:w-4/5 h-full flex flex-col justify-start md:justify-center
        items-center md:items-start pt-8
           pl-3 pr-3 md:pl-8 md:pr-8 lg:pl-12 lg:pr-12 mb-8 gap-2 md:gap-5 "
     >
-      <div className="w-full lg:w-1/2 h-full  sm:h-1/2 bg-gray-100 rounded-xl">
+      <div className="w-full  h-full  sm:h-1/2 bg-gray-100 rounded-xl">
         <div
           className="w-full h-full max-h-[500px] border border-slate-200
         rounded-lg lg:aspect-square relative"
         >
-          {/* <Image
-            src={resource?.thumbnail?.url || '/resource-img.png'}
-            alt="Thumbnail"
-            width={100}
-            height={100}
-            quality={100}
-            unoptimized
-            className="w-full h-full aspect-auto rounded-xl border-[1px] border-slate-200"
-          /> */}
           <PdfViewer url={resource?.file?.url!} />
           <p
             className="w-auto h-7 px-2  font-semibold bg-[#FF6584] rounded-lg
@@ -120,7 +111,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
           </p>
         </div>
       </div>
-      <div className="w-full lg:w-1/2 h-full flex flex-col justify-start items-start gap-2 md:gap-4">
+      <div className="w-full h-full flex flex-col justify-start items-start gap-2 md:gap-4">
         <div
           className="w-full h-12 flex-1 flex flex-col md:flex-row justify-between items-start 
             md:items-center  bg-gray-100 rounded-xl p-3"

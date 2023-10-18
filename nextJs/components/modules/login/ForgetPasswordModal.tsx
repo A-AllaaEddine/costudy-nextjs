@@ -59,7 +59,7 @@ const ForgetPasswordModal = ({
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent>
+      <DialogContent className='max-w-[90%]'>
         <DialogHeader>
           <DialogTitle>Reset your password</DialogTitle>
           <DialogDescription>
