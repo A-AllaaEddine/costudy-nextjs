@@ -136,6 +136,11 @@ const Header = () => {
                   <IoLogoLinkedin className="w-7 h-7" />
                 </Link>
               </div>
+              <div className="w-full h-10 mb-3 flex flex-row justify-start items-center">
+                <p className="text-black-txt text-sm  font-semibold">
+                  © 2023 CoStudy.
+                </p>
+              </div>
             </SheetContent>
           </Sheet>
 
