@@ -1,4 +1,3 @@
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +12,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/utils/trpc';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { IoFlagSharp } from 'react-icons/io5';
 
 const tags = [
@@ -30,7 +30,12 @@ const ResourceReportModal = ({ resourceId }: { resourceId: string }) => {
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [reason, setReason] = useState<string>('');
 
-  const { mutateAsync: saveReport, isLoading } = trpc.reports.add.useMutation({
+  const {
+    mutateAsync: saveReport,
+    isError,
+    error,
+    isLoading,
+  } = trpc.reports.add.useMutation({
     onError: (error) => {
       console.log(error);
     },
@@ -38,33 +43,47 @@ const ResourceReportModal = ({ resourceId }: { resourceId: string }) => {
 
   const handleSubmit = async () => {
     if (!selectedTag.length) {
-      Toast('error', 'Plaese select a tag.');
+      toast.error('Plaese select a tag.');
       return;
     }
     if (!reason.length) {
-      Toast('error', 'Plaese write a reason.');
+      toast.error('Plaese write a reason.');
       return;
     }
-    try {
-      await saveReport({
-        resourceId: resourceId,
-        tag: selectedTag,
-        type: 'Resource',
-        reason,
-      });
-      Toast('success', 'Report has been submitted successfully.');
-      setSelectedTag('');
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 1000);
-    } catch (error: any) {
-      console.log(error.message);
-      if (error.message === 'already reported') {
-        Toast('error', 'You have already reported this resource.');
-        return false;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await saveReport({
+            resourceId: resourceId,
+            tag: selectedTag,
+            type: 'Resource',
+            reason,
+          });
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Submitting...',
+        success: () => {
+          setSelectedTag('');
+          setTimeout(() => {
+            setIsOpen(false);
+          }, 1000);
+          return 'Submitted.';
+        },
+        error: (err) => {
+          if (err.message === 'already reported') {
+            return 'You have already reported this resource.';
+          }
+          return 'There was an error submitting the report.';
+        },
       }
-      Toast('error', 'There was an error submitting the report.');
-    }
+    );
   };
 
   return (

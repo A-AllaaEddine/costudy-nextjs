@@ -1,12 +1,11 @@
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { verifyToken } from '@/utils/jwtUtils';
 import { trpc } from '@/utils/trpc';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { SyntheticEvent, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const Main = ({
   payload,
@@ -38,13 +37,13 @@ const Main = ({
     if (error) {
       setIsCheckingToken(false);
       if (error === 'invalid signature') {
-        Toast('error', 'The token is invalid or expired.');
+        toast.error('The token is invalid or expired.');
         return;
       } else if (error === 'jwt expired') {
-        Toast('error', 'The token has expired.');
+        toast.error('The token has expired.');
         return;
       } else {
-        Toast('error', 'There was an error verifying the token.');
+        toast.error('There was an error verifying the token.');
         return;
       }
     } else {
@@ -56,54 +55,62 @@ const Main = ({
     e.preventDefault();
 
     if (formFields.newPassword.length < 8) {
-      Toast('error', 'Password must be at least  8 chacacters!');
+      toast.error('Password must be at least  8 chacacters!');
       return;
     }
     if (formFields.confirmPassword !== formFields.newPassword) {
-      Toast('error', 'Passwords do not match!');
+      toast.error('Passwords do not match!');
       return;
     }
 
-    try {
-      await resetPassword({
-        id: payload?.id!,
-        password: formFields.newPassword,
-      });
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await resetPassword({
+            id: payload?.id!,
+            password: formFields.newPassword,
+          });
+          if (isError) {
+            throw resetError;
+          }
 
-      if (isError) {
-        throw resetError;
-      }
-      Toast('success', 'Your password has been reset.');
-      console.log({ email: payload?.email, password: formFields.newPassword });
-      const resp = await signIn('credentials', {
-        email: payload?.email,
-        password: formFields.newPassword,
-        redirect: false,
-      });
-      if (!resp?.ok) {
-        switch (resp?.error) {
-          case 'No User':
-            Toast('error', 'No user with this email');
-            break;
-          case 'Wrong Password':
-            Toast('error', 'Wrong Password !');
-            break;
-          case 'suspended':
-            Toast('error', 'Your account has been suspended');
-            break;
-          case 'banned':
-            Toast('error', 'Your account is banned');
-            break;
-          default:
-            Toast('error', 'There was an error siging you in!');
-            throw resp?.error;
+          const resp = await signIn('credentials', {
+            email: payload?.email,
+            password: formFields.newPassword,
+            redirect: false,
+          });
+          if (resp?.error) {
+            throw new Error(resp?.error);
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
         }
+      }),
+      {
+        loading: 'Reseting...',
+        success: () => {
+          return 'Password updated.';
+        },
+        error: (err) => {
+          switch (err) {
+            case 'No User':
+              return 'No user with this email';
+
+            case 'Wrong Password':
+
+            case 'suspended':
+              return 'Your account has been suspended';
+
+            case 'banned':
+              return 'Your account is banned';
+
+            default:
+              return 'There was an error siging you in!';
+          }
+        },
       }
-      router.push('/');
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error saving the new password.');
-    }
+    );
   };
 
   return (

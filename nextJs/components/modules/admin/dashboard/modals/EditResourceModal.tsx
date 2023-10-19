@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   ChangeEvent,
@@ -16,16 +15,15 @@ import {
   useState,
 } from 'react';
 
-import Toast from '@/components/commun/static/Toast';
-import Spinner from '@/components/commun/static/spinner';
-import { trpc } from '@/utils/trpc';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import CustomSelect from '@/components/commun/static/Select';
-import { Report, Resource } from '@/types/types';
-import { Textarea } from '@/components/ui/textarea';
-import { useUploadThing } from '@/utils/uploadthing';
+import Spinner from '@/components/commun/static/spinner';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
+import { trpc } from '@/utils/trpc';
+import { useUploadThing } from '@/utils/uploadthing';
+import toast from 'react-hot-toast';
 
 type FormFields = {
   title: string;
@@ -163,20 +161,29 @@ const EditResourceModal = ({
   }, [resource]);
 
   const handleSubmit = async () => {
-    try {
-      //   await
-      await updateResource({ id: resourceId });
-      if (isUpdatingResourceError) {
-        throw updatingResourceError;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updateResource({ id: resourceId });
+          if (isUpdatingResourceError) {
+            throw updatingResourceError;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error.message);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          setIsOpen(false);
+          return 'Saved.';
+        },
+        error: () => {
+          return 'There was an error saving the data.';
+        },
       }
-
-      Toast('success', 'User informations has been updated successfully.');
-
-      setIsOpen(false);
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error updating the user informations.');
-    }
+    );
   };
 
   const handleChange = (

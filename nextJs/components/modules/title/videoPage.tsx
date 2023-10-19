@@ -31,7 +31,6 @@ const VideoPage = ({ resource }: { resource: Resource }) => {
     {
       onError: (error: any) => {
         console.log(error);
-        // Toast('error', 'There was an error getting user bookmarks.');
       },
     }
   );

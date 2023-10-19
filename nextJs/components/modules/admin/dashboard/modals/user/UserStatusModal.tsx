@@ -11,8 +11,8 @@ import { trpc } from '@/utils/trpc';
 import { Dispatch, SetStateAction, useState } from 'react';
 
 import CustomSelect from '@/components/commun/static/Select';
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
+import toast from 'react-hot-toast';
 
 const StatusModal = ({
   userId,
@@ -38,18 +38,30 @@ const StatusModal = ({
   });
 
   const changesStatu = async () => {
-    try {
-      await updateUserInfo({ id: userId, accountStatus: selectedStatus });
-      if (isError) {
-        throw error;
-      }
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updateUserInfo({ id: userId, accountStatus: selectedStatus });
+          if (isError) {
+            throw error;
+          }
 
-      Toast('success', 'User account status has been updated successfully.');
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error updating the user account status.');
-    }
-    setIsOpen(false);
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          setIsOpen(false);
+          return 'Status saved.';
+        },
+        error: () => {
+          return 'There was an error saving the status.';
+        },
+      }
+    );
   };
 
   const statusOptions = [

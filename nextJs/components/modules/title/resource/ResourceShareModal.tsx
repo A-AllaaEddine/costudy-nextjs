@@ -1,4 +1,3 @@
-import Toast from '@/components/commun/static/Toast';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -29,6 +28,7 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from 'next-share';
+import toast from 'react-hot-toast';
 
 const ResourceShareModal = ({
   id,
@@ -127,9 +127,7 @@ const ResourceShareModal = ({
           <Input readOnly={true} value={url} className="w-full truncate p-2" />
           <CopyToClipboard
             text={url}
-            onCopy={() =>
-              Toast('success', 'Link has been copied successfully.')
-            }
+            onCopy={() => toast.success('Link has been copied successfully.')}
           >
             <IoCopy
               className="w-10 h-10 p-2 rounded-full bg-slate-200

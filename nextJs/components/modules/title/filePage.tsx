@@ -12,6 +12,7 @@ import { Resource } from '@/types/types';
 import Spinner from '@/components/commun/static/spinner';
 import { addDownload } from '@/components/commun/analytics/EventTrigger';
 import dynamic from 'next/dynamic';
+import toast from 'react-hot-toast';
 
 const PdfViewer = dynamic(() => import('@/components/modules/title/sample'), {
   ssr: false,
@@ -41,7 +42,6 @@ const FilePage = ({ resource }: { resource: Resource }) => {
     {
       onError: (error: any) => {
         console.log(error);
-        // Toast('error', 'There was an error getting user bookmarks.');
       },
     }
   );
@@ -58,7 +58,6 @@ const FilePage = ({ resource }: { resource: Resource }) => {
     {
       onError: (error: any) => {
         console.log(error);
-        // Toast('error', 'There was an error getting user bookmarks.');
       },
     }
   );
@@ -74,10 +73,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
       router.push(resource?.file?.url!);
     } catch (error: any) {
       console.log(error);
-      Toast(
-        'error',
-        'There was an error while getting the file from the server.'
-      );
+      toast.error('There was an error while getting the file from the server.');
     }
   };
 

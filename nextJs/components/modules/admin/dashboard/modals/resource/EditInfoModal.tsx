@@ -1,5 +1,4 @@
 import CustomSelect from '@/components/commun/static/Select';
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +21,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import toast from 'react-hot-toast';
 
 const EditInfoModal = ({
   resource,
@@ -71,20 +71,37 @@ const EditInfoModal = ({
     e.preventDefault();
 
     if (formFields?.description.length < 50) {
-      Toast('error', 'Description must be at least 50 characters.');
+      toast.error('Description must be at least 50 characters.');
       return;
     }
-    try {
-      await updateResource({
-        id: resource?.id!,
-        ...formFields,
-      });
-      Toast('success', 'Resource has been updated successfully.');
-      setIsOpen(false);
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error updating the resource.');
-    }
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updateResource({
+            id: resource?.id!,
+            ...formFields,
+          });
+
+          if (isError) {
+            throw error;
+          }
+
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          setIsOpen(false);
+          return 'Saved.';
+        },
+        error: () => {
+          return 'There was an error saving the data.';
+        },
+      }
+    );
   };
 
   const onSelectMajor = (selectedMajor: string) => {

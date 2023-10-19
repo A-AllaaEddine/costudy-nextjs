@@ -1,15 +1,15 @@
 import LogInAlertModal from '@/components/commun/modals/LogInAlertModal';
-import Toast from '@/components/commun/static/Toast';
 import { Button } from '@/components/ui/button';
 import { Resource } from '@/types/types';
 import { trpc } from '@/utils/trpc';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { GoCodeReview } from 'react-icons/go';
 import { IoBookmark, IoBookmarkOutline, IoFlagSharp } from 'react-icons/io5';
 import ResourceRatingModal from './resource/ResourceRatingModal';
-import ResourceShareModal from './resource/ResourceShareModal';
 import ResourceReportModal from './resource/ResourceReportModal';
+import ResourceShareModal from './resource/ResourceShareModal';
 
 const Actions = ({
   resource,
@@ -66,43 +66,61 @@ const Actions = ({
   const addToBookmarks = async () => {
     if (!session?.user) {
       setShowLogInAlert(true);
-      // Toast('error', 'You must be logged in to add to your favorites.');
       return;
     }
-    try {
-      await add({
-        id: resource?.id!,
-        class: resource?.class,
-        degree: resource?.degree,
-        major: resource?.major,
-        year: resource?.year,
-      });
-      // setIsBookmarked(true);
-      Toast('success', 'Resource has been added successfully.');
-    } catch (error: any) {
-      console.log(error);
-      if (error.message === 'Bookmark exists already.') {
-        Toast('error', 'You have already Bookmarked this resource.');
-        return;
+
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await add({
+            id: resource?.id!,
+            class: resource?.class,
+            degree: resource?.degree,
+            major: resource?.major,
+            year: resource?.year,
+          });
+
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Adding...',
+        success: () => {
+          return 'Added to bookmarks.';
+        },
+        error: (err) => {
+          if (err.message === 'Bookmark exists already.') {
+            return 'You have already Bookmarked this resource.';
+          }
+          return 'There was an error adding the resource to your bookmarks.';
+        },
       }
-      Toast(
-        'error',
-        'There was an error adding the resource to your bookmarks.'
-      );
-    }
+    );
   };
 
   const removeFromBookmarks = async () => {
-    try {
-      await remove({ id: resource?.id! });
-      Toast('success', 'Resource has been removed successfully.');
-    } catch (error: any) {
-      console.log(error);
-      Toast(
-        'error',
-        'There was an error adding the resource to your bookmarks.'
-      );
-    }
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await remove({ id: resource?.id! });
+
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Removing...',
+        success: () => {
+          return 'Removed from bookmarks.';
+        },
+        error: () => {
+          return 'There was an error removing the resource from your bookmarks.';
+        },
+      }
+    );
   };
 
   return (

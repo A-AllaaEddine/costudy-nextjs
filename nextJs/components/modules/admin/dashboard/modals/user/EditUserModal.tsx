@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   ChangeEvent,
@@ -16,11 +15,11 @@ import {
   useState,
 } from 'react';
 
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
-import { trpc } from '@/utils/trpc';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { trpc } from '@/utils/trpc';
+import toast from 'react-hot-toast';
 
 type FormFields = {
   name: string;
@@ -78,20 +77,30 @@ const EditModal = ({
   }, [user]);
 
   const handleSubmit = async () => {
-    try {
-      //   await
-      await updateUserInfo({ ...formFields, id: userId });
-      if (isUpdatingUserInfoError) {
-        throw updatingUserInfoError;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updateUserInfo({ ...formFields, id: userId });
+          if (isUpdatingUserInfoError) {
+            throw updatingUserInfoError;
+          }
+
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          setIsOpen(false);
+          return 'Saved.';
+        },
+        error: () => {
+          return 'There was an error saving the data.';
+        },
       }
-
-      Toast('success', 'User informations has been updated successfully.');
-
-      setIsOpen(false);
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error updating the user informations.');
-    }
+    );
   };
 
   const handleChange = (

@@ -1,5 +1,3 @@
-import Toast from '@/components/commun/static/Toast';
-import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -8,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import ForgetPasswordModal from './ForgetPasswordModal';
+import toast from 'react-hot-toast';
 
 const defaultFormFields = {
   email: '',
@@ -15,7 +14,6 @@ const defaultFormFields = {
 };
 const Main = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassInput, setShowPassInput] = useState<boolean>(false);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
     useState(false);
@@ -48,101 +46,58 @@ const Main = () => {
     e.preventDefault();
 
     if (email.length < 1) {
-      Toast('error', 'Please type your email!');
+      toast.error('Please type your email!');
       return;
     }
 
     if (password.length < 8) {
       // alert("password must be at least  8 chacacters !");
-      Toast('error', 'Password must be at least  8 chacacters !');
+      toast.error('Password must be at least  8 chacacters !');
       return;
     }
 
-    // toast.promise(
-    //   new Promise(async (resolve, reject) => {
-    //     setIsLoading(true);
-    //     const resp = await signIn('credentials', {
-    //       email,
-    //       password,
-    //       redirect: false,
-    //     });
-    //     if (!resp?.ok) {
-    //       reject(resp?.error);
-    //     }
-    //     resolve(resp);
-    //   }),
-    //   {
-    //     loading: <Spinner />,
-    //     success: (data) => {
-    //       setIsLoading(false);
-    //       resetFormFields();
-    //       router.push('/');
-
-    //       return 'Signed In';
-    //     },
-
-    //     error: (err) => {
-    //       console.log(err);
-    //       setIsLoading(false);
-    //       switch (err) {
-    //         case 'No User':
-    //           return 'No user with this email';
-
-    //         case 'Wrong Password':
-    //           return 'Wrong Password !';
-
-    //         case 'suspended':
-    //           return 'Your account has been suspended';
-
-    //         case 'banned':
-    //           return 'Your account is banned';
-
-    //         default:
-    //           return 'There was an error siging you in';
-    //       }
-    //     },
-    //   }
-    // );
-    try {
-      setIsLoading(true);
-      const resp = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
-      setIsLoading(false);
-      if (!resp?.ok) {
-        switch (resp?.error) {
-          case 'No User':
-            Toast('error', 'No user with this email');
-            break;
-          case 'Wrong Password':
-            Toast('error', 'Wrong Password !');
-            break;
-          case 'suspended':
-            Toast('error', 'Your account has been suspended');
-            break;
-          case 'banned':
-            Toast('error', 'Your account is banned');
-            break;
-          default:
-            Toast('error', 'There was an error siging you in');
-            break;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        const resp = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+        });
+        if (!resp?.ok) {
+          reject(resp?.error);
         }
-        throw resp?.error;
+        resolve(resp);
+      }),
+      {
+        loading: 'Signing in...',
+        success: (data) => {
+          resetFormFields();
+          router.push('/');
+
+          return 'Signed In';
+        },
+
+        error: (err) => {
+          console.log(err);
+          switch (err) {
+            case 'No User':
+              return 'No user with this email';
+
+            case 'Wrong Password':
+              return 'Wrong Password !';
+
+            case 'suspended':
+              return 'Your account has been suspended';
+
+            case 'banned':
+              return 'Your account is banned';
+
+            default:
+              return 'There was an error siging you in';
+          }
+        },
       }
-      Toast('success', 'Signed in.');
-      resetFormFields();
-      if (router.query.destination) {
-        router.push(
-          `${decodeURIComponent(router.query.destination as string)}`
-        );
-        return;
-      }
-      router.push('/');
-    } catch (error) {
-      console.log(error);
-    }
+    );
   };
 
   return (
@@ -186,14 +141,7 @@ const Main = () => {
               hover:bg-[#8449BF] hover:text-white flex justify-center items-center gap-2"
             type="submit"
           >
-            {isLoading ? (
-              <>
-                <Spinner className="text-white h-6 w-6" />
-                <p className="font-semibold">Loggin in...</p>
-              </>
-            ) : (
-              'Log in'
-            )}
+            Log in
           </Button>
         </div>
         <Separator className="mt-2 mb-2" />

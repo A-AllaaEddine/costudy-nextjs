@@ -12,12 +12,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { Rating } from 'react-simple-star-rating';
 
+import Spinner from '@/components/commun/static/spinner';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { trpc } from '@/utils/trpc';
+import toast from 'react-hot-toast';
 import { GoCodeReview } from 'react-icons/go';
-import Toast from '@/components/commun/static/Toast';
-import Spinner from '@/components/commun/static/spinner';
 
 const ResourceRatingModal = ({ id }: { id: string }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -25,44 +25,60 @@ const ResourceRatingModal = ({ id }: { id: string }) => {
   const [review, setReview] = useState<string>('');
   const [isRecommended, setIsRecommended] = useState<boolean>(true);
 
-  const { mutateAsync: saveReview, isLoading } =
-    trpc.reviews.resource.add.useMutation({
-      onError: (error) => {
-        console.log(error);
-      },
-    });
+  const {
+    mutateAsync: saveReview,
+    isError,
+    error,
+    isLoading,
+  } = trpc.reviews.resource.add.useMutation({
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      Toast('error', 'Please select a rating!');
+      toast.error('Please select a rating!');
       return;
     }
     if (!review.length) {
-      Toast('error', 'Please leave your review!');
+      toast.error('Please leave your review!');
       return;
     }
 
-    try {
-      await saveReview({
-        id: id,
-        rating,
-        review,
-        isRecommended,
-      });
-      Toast('success', 'Your review has been submitted successfully.');
-      setReview('');
-      setIsOpen(false);
-    } catch (error: any) {
-      console.log(error);
-      if (error.message === 'Review exists already.') {
-        Toast('error', 'You have already reviewed this resource.');
-        return;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await saveReview({
+            id: id,
+            rating,
+            review,
+            isRecommended,
+          });
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Submitting...',
+        success: () => {
+          setReview('');
+          setIsOpen(false);
+          return 'Submitted.';
+        },
+        error: (err) => {
+          console.log(err);
+          if (err.message === 'Review exists already.') {
+            return 'You have already reviewed this resource.';
+          }
+          return 'There was an error submitting your review. Please try again later.';
+        },
       }
-      Toast(
-        'error',
-        'There was an error submitting your review. Please try again later.'
-      );
-    }
+    );
   };
 
   return (

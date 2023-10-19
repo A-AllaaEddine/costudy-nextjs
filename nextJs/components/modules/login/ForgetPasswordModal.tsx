@@ -1,18 +1,18 @@
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import {
-  DialogHeader,
   Dialog,
   DialogContent,
-  DialogTitle,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { trpc } from '@/utils/trpc';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const ForgetPasswordModal = ({
   isOpen,
@@ -35,31 +35,42 @@ const ForgetPasswordModal = ({
     e.preventDefault();
 
     if (!email.length) {
-      Toast('error', 'Please enter your email address.');
+      toast.error('Please enter your email address.');
       return;
     }
 
-    try {
-      await sendEmail({ email });
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await sendEmail({ email });
 
-      if (isError) {
-        throw error;
-      }
+          if (isError) {
+            throw error;
+          }
 
-      Toast('success', 'An email has been sent to reset your password.');
-      setIsOpen(false);
-    } catch (error: any) {
-      console.log(error);
-      if (error.message === 'no user') {
-        Toast('error', 'No user with this email!');
-        return;
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Sending...',
+        success: () => {
+          setIsOpen(false);
+          return 'An email has been sent to reset your password.';
+        },
+        error: (err) => {
+          if (err.message === 'no user') {
+            return 'No user with this email!';
+          }
+          return 'There was an error sending reset email.';
+        },
       }
-      Toast('error', 'There was an error sending reset email.');
-    }
+    );
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className='max-w-[90%]'>
+      <DialogContent className="max-w-[90%]">
         <DialogHeader>
           <DialogTitle>Reset your password</DialogTitle>
           <DialogDescription>

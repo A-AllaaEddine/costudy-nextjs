@@ -1,19 +1,19 @@
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import {
-  DialogHeader,
   Dialog,
   DialogContent,
-  DialogTitle,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Resource } from '@/types/types';
 import { trpc } from '@/utils/trpc';
 import { useUploadThing } from '@/utils/uploadthing';
 import { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
-import { Label } from '@/components/ui/label';
-import { Resource } from '@/types/types';
+import toast from 'react-hot-toast';
 
 const EditThumbnail = ({
   resource,
@@ -54,19 +54,42 @@ const EditThumbnail = ({
     try {
       const thumbnailResp = await startThumbnailUpload([thumbnail]);
       if (!thumbnailResp) {
-        Toast('error', 'There was an error uploading the thumbnail.');
+        toast.error('There was an error uploading the thumbnail.');
         return;
       }
-      await updateResource({
-        id: resource?.id!,
-        thumbnail: thumbnailResp[0],
-      });
-      setThumbnail(null);
-      Toast('success', 'Resource has been updated successfully.');
-      setIsOpen(false);
+
+      toast.promise(
+        new Promise(async (resolve, reject) => {
+          try {
+            await updateResource({
+              id: resource?.id!,
+              thumbnail: thumbnailResp[0],
+            });
+
+            if (isError) {
+              throw error;
+            }
+
+            resolve(true);
+          } catch (error: any) {
+            reject(error);
+          }
+        }),
+        {
+          loading: 'Saving...',
+          success: () => {
+            setThumbnail(null);
+            setIsOpen(false);
+            return 'Saved.';
+          },
+          error: () => {
+            return 'There was an error saving the data';
+          },
+        }
+      );
     } catch (error: any) {
       console.log(error);
-      Toast('error', 'There was an error updating the resource.');
+      toast.error('There was an error updating the resource.');
     }
   };
 

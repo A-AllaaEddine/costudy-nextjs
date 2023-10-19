@@ -9,12 +9,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { trpc } from '@/utils/trpc';
+import { useState } from 'react';
 import { Rating } from 'react-simple-star-rating';
 import Spinner from '../static/spinner';
-import { trpc } from '@/utils/trpc';
-import Toast from '../static/Toast';
-import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 const WebsiteRatingModal = ({ t }: { t?: any }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -34,33 +33,41 @@ const WebsiteRatingModal = ({ t }: { t?: any }) => {
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      Toast('error', 'Please select a rating!');
+      toast.error('Please select a rating!');
       return;
     }
     if (!review.length) {
-      Toast('error', 'Please leave your review!');
+      toast.error('Please leave your review!');
       return;
     }
 
-    try {
-      await saveReview({
-        rating,
-        review,
-      });
-      Toast('success', 'Your review has been submitted successfully.');
-      setReview('');
-      setIsOpen(false);
-    } catch (error: any) {
-      console.log(error);
-      if (error.message === 'Review exists already.') {
-        Toast('error', 'You have already submitted a review.');
-        return;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await saveReview({
+            rating,
+            review,
+          });
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error.message);
+        }
+      }),
+      {
+        loading: 'Submitting...',
+        success: () => {
+          setReview('');
+          setIsOpen(false);
+          return 'Review submitted.';
+        },
+        error: () => {
+          return 'You have already submitted a review.';
+        },
       }
-      Toast(
-        'error',
-        'There was an error submitting your review. Please try again later.'
-      );
-    }
+    );
   };
 
   return (
