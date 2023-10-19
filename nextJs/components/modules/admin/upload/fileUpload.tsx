@@ -1,5 +1,4 @@
 import CustomSelect from '@/components/commun/static/Select';
-import Toast from '@/components/commun/static/Toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,10 +7,11 @@ import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import { trpc } from '@/utils/trpc';
 import { useUploadThing } from '@/utils/uploadthing';
 
+import Spinner from '@/components/commun/static/spinner';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import Spinner from '@/components/commun/static/spinner';
 import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
 type FormFields = {
   title: string;
@@ -90,91 +90,101 @@ const FileUpload = () => {
     e.preventDefault();
 
     if (!formFields?.title.length) {
-      Toast('error', 'Please set the title of the resource.');
+      toast.error('Please set the title of the resource.');
       return;
     }
     const regex = /^[a-zA-Z0-9_ -|]+$/i;
     const isValid = regex.test(formFields?.title);
 
     if (!isValid) {
-      Toast(
-        'error',
+      toast.error(
         'Only characters, numbers and dashes are allowed in Title field.'
       );
       return;
     }
     if (formFields?.description.length < 50) {
-      Toast('error', 'Description must be at least 50 characters.');
+      toast.error('Description must be at least 50 characters.');
       return;
     }
 
     if (!formFields?.class.length) {
-      Toast('error', 'Please set the class of the resource.');
+      toast.error('Please set the class of the resource.');
       return;
     }
     if (!formFields?.major.length) {
-      Toast('error', 'Please set the major of the resource.');
+      toast.error('Please set the major of the resource.');
       return;
     }
     if (!formFields?.degree.length) {
-      Toast('error', 'Please set the degree of the resource.');
+      toast.error('Please set the degree of the resource.');
       return;
     }
     if (!formFields?.year.length) {
-      Toast('error', 'Please set the year of the resource.');
+      toast.error('Please set the year of the resource.');
       return;
     }
     if (!file) {
-      Toast('error', 'Please upload a file.');
+      toast.error('Please upload a file.');
       return;
     }
     if (!thumbnail) {
-      Toast('error', 'Please upload a thumbnail.');
+      toast.error('Please upload a thumbnail.');
       return;
     }
 
-    try {
-      await checkResource({ title: formFields?.title });
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await checkResource({ title: formFields?.title });
 
-      if (isExistError) {
-        throw isExistError;
-      }
-      const fileResp = await startFileUpload([file]);
-      const thumbnailResp = await startThumbnailUpload([thumbnail]);
+          if (isExistError) {
+            throw isExistError;
+          }
+          const fileResp = await startFileUpload([file]);
+          const thumbnailResp = await startThumbnailUpload([thumbnail]);
 
-      if (!fileResp) {
-        Toast('error', 'There was an error uploading the file.');
-        return;
+          if (!fileResp) {
+            throw new Error('There was an error uploading the file.');
+          }
+          if (!thumbnailResp) {
+            throw new Error('There was an error uploading the thumbnail.');
+          }
+          if (fileResp && thumbnailResp) {
+            await submitResource({
+              title: formFields?.title,
+              description: formFields?.description,
+              class: formFields?.class,
+              major: formFields?.major,
+              degree: formFields?.degree,
+              year: formFields?.year,
+              by: formFields?.by,
+              type: formFields?.type,
+              thumbnail: thumbnailResp[0],
+              file: fileResp[0],
+            });
+          }
+
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Upaloding...',
+        success: () => {
+          router.reload();
+          resetFormFields();
+          return 'Resource uploaded.';
+        },
+        error: (err) => {
+          console.log(err);
+          if (err.message === 'Resource exist') {
+            return 'The resource already exist.';
+          }
+          return 'There was an error submitting the resource.';
+        },
       }
-      if (!thumbnailResp) {
-        Toast('error', 'There was an error uploading the thumbnail.');
-        return;
-      }
-      if (fileResp && thumbnailResp) {
-        await submitResource({
-          title: formFields?.title,
-          description: formFields?.description,
-          class: formFields?.class,
-          major: formFields?.major,
-          degree: formFields?.degree,
-          year: formFields?.year,
-          by: formFields?.by,
-          type: formFields?.type,
-          thumbnail: thumbnailResp[0],
-          file: fileResp[0],
-        });
-        Toast('success', 'Resource has been uploaded successfully.');
-        router.reload();
-        resetFormFields();
-      }
-    } catch (error: any) {
-      console.log(error);
-      if (error.message === 'Resource exist') {
-        Toast('error', 'The resource already exist.');
-        return;
-      }
-      Toast('error', 'There was an error submitting the resource.');
-    }
+    );
   };
 
   const onSelectMajor = (selectedMajor: string) => {

@@ -10,9 +10,8 @@ import {
 import { trpc } from '@/utils/trpc';
 import { Dispatch, SetStateAction } from 'react';
 
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
-import { signOut } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 const DeleteTicketModal = ({
   reportId,
@@ -38,18 +37,30 @@ const DeleteTicketModal = ({
 
   const deleteReportFunc = async () => {
     // delete account logic
-    try {
-      await deleteReport({ id: reportId });
-      if (isError) {
-        throw error;
-      }
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await deleteReport({ id: reportId });
+          if (isError) {
+            throw error;
+          }
 
-      Toast('success', 'The tickethas been deleted successfully.');
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error deleting the ticket.');
-    }
-    setIsOpen(false);
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Deleting...',
+        success: () => {
+          setIsOpen(false);
+          return 'Deleted.';
+        },
+        error: () => {
+          return 'There was an error deleting the ticket.';
+        },
+      }
+    );
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -1,4 +1,3 @@
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/utils/trpc';
 import { useRouter } from 'next/router';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type FormFields = {
   currentPassword: string;
@@ -28,13 +28,7 @@ const Security = ({ t }: { t?: any }) => {
     isError,
     error,
     isLoading,
-  } = trpc.user.update.useMutation({
-    onSuccess: () => {
-      Toast('success', 'Password updated successfully!');
-      resetFormFields();
-      router.reload();
-    },
-  });
+  } = trpc.user.update.useMutation();
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -60,44 +54,54 @@ const Security = ({ t }: { t?: any }) => {
     e.preventDefault();
 
     if (formFields.currentPassword.length < 8) {
-      Toast('error', 'Current password must be at least 8 characters long!');
+      toast.error('Current password must be at least 8 characters long!');
       return;
     }
     if (formFields.newPassword.length < 8) {
-      Toast('error', 'New password must be at least 8 characters long!');
+      toast.error('New password must be at least 8 characters long!');
       return;
     }
     if (formFields.newPassword === formFields.currentPassword) {
-      Toast('error', 'New password cannot be the same as current password!');
+      toast.error('New password cannot be the same as current password!');
       return;
     }
     if (formFields.newPassword !== formFields.ConfirmPassword) {
-      Toast('error', 'Password is not matching!');
+      toast.error('Password is not matching!');
       return;
     }
 
-    try {
-      await updatePassword({
-        currentPassword: formFields.currentPassword,
-        newPassword: formFields.newPassword,
-      });
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updatePassword({
+            currentPassword: formFields.currentPassword,
+            newPassword: formFields.newPassword,
+          });
 
-      if (isError) {
-        throw error;
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          resetFormFields();
+          router.reload();
+          return 'Password updated';
+        },
+        error: (err) => {
+          console.log(error);
+          if (err.message === 'Wrong Password') {
+            return 'Wrong Password !';
+          }
+          return 'There was an error while updating your password';
+        },
       }
-    } catch (error: any) {
-      console.log(error);
-      switch (error.message) {
-        case 'Wrong Password':
-          Toast('error', 'Wrong Password !');
-          break;
-        default:
-          Toast(
-            'error',
-            'There was an error while updating your password. Please try again later.'
-          );
-      }
-    }
+    );
   };
 
   return (

@@ -10,9 +10,9 @@ import {
 import { trpc } from '@/utils/trpc';
 import { Dispatch, SetStateAction } from 'react';
 
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
 import { Resource } from '@/types/types';
+import toast from 'react-hot-toast';
 
 const DeleteResourceModal = ({
   resource,
@@ -38,18 +38,29 @@ const DeleteResourceModal = ({
 
   const deleteResourceFunc = async () => {
     // delete account logic
-    try {
-      await deleteResource({ id: resource.id! });
-      if (isError) {
-        throw error;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await deleteResource({ id: resource.id! });
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Deleting...',
+        success: () => {
+          setIsOpen(false);
+          return 'Deleted';
+        },
+        error: () => {
+          return 'There was an error deleting the resource.';
+        },
       }
-
-      Toast('success', 'The resource has been deleted successfully.');
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error deleting the resource.');
-    }
-    setIsOpen(false);
+    );
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

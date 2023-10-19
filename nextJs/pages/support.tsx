@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Spinner from '@/components/commun/static/spinner';
 import { trpc } from '@/utils/trpc';
-import Toast from '@/components/commun/static/Toast';
+import toast from 'react-hot-toast';
 
 type FormFields = {
   email: string;
@@ -46,40 +46,51 @@ const Support = () => {
     e.preventDefault();
 
     if (!formFields?.email.length) {
-      Toast('error', 'Please enter a valid email!');
+      toast.error('Please enter a valid email!');
       return;
     }
     if (!formFields?.subject.length) {
-      Toast('error', 'Please write your subject!');
+      toast.error('Please write your subject!');
       return;
     }
     if (!formFields?.message.length) {
-      Toast('error', 'Please write your message!');
+      toast.error('Please write your message!');
       return;
     }
     if (!selectedTag) {
-      Toast('error', 'Please select a tag!');
+      toast.error('Please select a tag!');
       return;
     }
 
-    try {
-      await opneTicket({
-        ...formFields,
-        tag: selectedTag,
-      });
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await opneTicket({
+            ...formFields,
+            tag: selectedTag,
+          });
 
-      if (isError) {
-        throw error;
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error.message);
+        }
+      }),
+      {
+        loading: 'Submitting...',
+        success: () => {
+          return 'Submitted.';
+        },
+        error: (err) => {
+          if (err.message === 'ticket exist') {
+            return 'You have already opened a ticket.';
+          }
+          return 'There was an error processing your request!';
+        },
       }
-      Toast('success', 'Your ticket has been successfully submitted.');
-    } catch (error: any) {
-      console.log(error);
-      if (error.message === 'ticket exist') {
-        Toast('error', 'You have already opened a ticket.');
-        return;
-      }
-      Toast('error', 'There was an error processing your request!');
-    }
+    );
   };
 
   return (

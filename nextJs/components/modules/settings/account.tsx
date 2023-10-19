@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/utils/trpc';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 
 type FormFields = {
   name: string;
@@ -26,33 +27,40 @@ const Account = ({ userData, refetch }: { userData: any; refetch: any }) => {
     isLoading,
     isError,
     error,
-  } = trpc.user.update.useMutation({
-    onSuccess: () => {
-      refetch();
-      update({
-        name: formFields.name,
-        username: formFields.username,
-        email: formFields.email,
-      });
-      Toast('success', 'Your informations have been saved successfully!');
-    },
-  });
+  } = trpc.user.update.useMutation();
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
 
-    try {
-      await updateUserInfo(formFields);
-      if (isError) {
-        throw error;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updateUserInfo(formFields);
+          if (isError) {
+            throw error;
+          }
+
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          refetch();
+          update({
+            name: formFields.name,
+            username: formFields.username,
+            email: formFields.email,
+          });
+          return 'Saved.';
+        },
+        error: () => {
+          return 'There was an error saving the data.';
+        },
       }
-    } catch (error: any) {
-      console.log(error);
-      Toast(
-        'error',
-        'There was an error saving your informations! Please try again!'
-      );
-    }
+    );
   };
 
   const handleChange = (

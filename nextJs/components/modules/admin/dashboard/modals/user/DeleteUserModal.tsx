@@ -6,14 +6,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { trpc } from '@/utils/trpc';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
-import { signOut } from 'next-auth/react';
 import Spinner from '@/components/commun/static/spinner';
-import Toast from '@/components/commun/static/Toast';
+import toast from 'react-hot-toast';
 
 const DeleteUserModal = ({
   userId,
@@ -39,18 +37,29 @@ const DeleteUserModal = ({
 
   const deleteAccount = async () => {
     // delete account logic
-    try {
-      await deleteUser({ id: userId });
-      if (isError) {
-        throw error;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await deleteUser({ id: userId });
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Deleting...',
+        success: () => {
+          setIsOpen(false);
+          return 'User Deleted.';
+        },
+        error: () => {
+          return 'There was an error deleting the user';
+        },
       }
-
-      Toast('success', "The user's account has been deleted successfully.");
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error deleting the user account.');
-    }
-    setIsOpen(false);
+    );
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

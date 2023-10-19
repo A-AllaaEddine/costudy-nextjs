@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/dialog';
 import { trpc } from '@/utils/trpc';
 import { useState } from 'react';
-import Toast from '../static/Toast';
 import Spinner from '../static/spinner';
 import { signOut } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 const DeleteModal = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -26,24 +26,32 @@ const DeleteModal = () => {
 
   const deleteAccount = async () => {
     // delete account logic
-    try {
-      await deleteUser();
-      if (isError) {
-        throw error;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await deleteUser();
+          if (isError) {
+            throw error;
+          }
+          await signOut({
+            callbackUrl: '/',
+          });
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Deleting...',
+        success: () => {
+          setIsOpen(false);
+          return 'Account deleted.';
+        },
+        error: () => {
+          return 'There was an error deleting your account.';
+        },
       }
-
-      Toast('success', 'your account has been deleted successfully.');
-      await signOut({
-        callbackUrl: '/',
-      });
-    } catch (error: any) {
-      console.log(error);
-      Toast(
-        'error',
-        'There was an error deleting your account. Please try again later.'
-      );
-    }
-    setIsOpen(false);
+    );
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

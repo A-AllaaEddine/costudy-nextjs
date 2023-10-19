@@ -11,8 +11,8 @@ import { trpc } from '@/utils/trpc';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import CustomSelect from '@/components/commun/static/Select';
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
+import toast from 'react-hot-toast';
 
 const TicketStatusModal = ({
   reportId,
@@ -40,28 +40,40 @@ const TicketStatusModal = ({
 
   const changesStatus = async () => {
     if (selectedStatus === 'Status') {
-      Toast('error', 'Please select a status.');
+      toast.error('Please select a status.');
       return;
     }
     if (selectedStatus === 'Duplicate' && !parentReport?.length) {
-      Toast('error', 'Please select a parent report.');
+      toast.error('Please select a parent report.');
       return;
     }
-    try {
-      await updateReportStatus({
-        id: reportId,
-        status: selectedStatus,
-      });
-      if (isError) {
-        throw error;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updateReportStatus({
+            id: reportId,
+            status: selectedStatus,
+          });
+          if (isError) {
+            throw error;
+          }
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          setIsOpen(false);
+          return 'Status changed.';
+        },
+        error: () => {
+          console.log(error);
+          return 'There was an error saving the status.';
+        },
       }
-
-      Toast('success', 'User account status has been updated successfully.');
-    } catch (error: any) {
-      console.log(error);
-      Toast('error', 'There was an error updating the user account status.');
-    }
-    setIsOpen(false);
+    );
   };
 
   useEffect(() => {

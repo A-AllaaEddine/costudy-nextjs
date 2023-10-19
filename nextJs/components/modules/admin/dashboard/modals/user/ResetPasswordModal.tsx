@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -16,11 +15,11 @@ import {
   useState,
 } from 'react';
 
-import Toast from '@/components/commun/static/Toast';
 import Spinner from '@/components/commun/static/spinner';
-import { signOut } from 'next-auth/react';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { signOut } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 type FormFields = {
   newPassowrd: string;
@@ -70,36 +69,44 @@ const ResetPasswordModal = ({
     e.preventDefault();
 
     if (formFields.newPassowrd.length < 8) {
-      Toast('error', 'Password must be at least  8 chacacters !');
+      toast.error('Password must be at least  8 chacacters !');
       return;
     }
 
     if (formFields.confirmPassowrd !== formFields.newPassowrd) {
-      Toast('error', 'Password is not matching !');
+      toast.error('Password is not matching !');
       return;
     }
 
-    try {
-      await updateUserPassword({
-        id: userId!,
-        newPassword: formFields.newPassowrd,
-      });
-      if (isError) {
-        throw error;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          await updateUserPassword({
+            id: userId!,
+            newPassword: formFields.newPassowrd,
+          });
+          if (isError) {
+            throw error;
+          }
+          await signOut({
+            callbackUrl: '/',
+          });
+          resolve(true);
+        } catch (error: any) {
+          reject(error);
+        }
+      }),
+      {
+        loading: 'Saving...',
+        success: () => {
+          setIsOpen(false);
+          return 'Saved.';
+        },
+        error: () => {
+          return 'There was an error saving the new password.';
+        },
       }
-
-      Toast('success', 'your account has been deleted successfully.');
-      await signOut({
-        callbackUrl: '/',
-      });
-    } catch (error: any) {
-      console.log(error);
-      Toast(
-        'error',
-        'There was an error deleting your account. Please try again later.'
-      );
-    }
-    setIsOpen(false);
+    );
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

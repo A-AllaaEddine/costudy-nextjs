@@ -14,6 +14,7 @@ import { useUploadThing } from '@/utils/uploadthing';
 import { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Resource } from '@/types/types';
+import toast from 'react-hot-toast';
 
 const EditFileModal = ({
   resource,
@@ -52,19 +53,36 @@ const EditFileModal = ({
     try {
       const fileResp = await startFileUpload([file]);
       if (!fileResp) {
-        Toast('error', 'There was an error uploading the file.');
+        toast.error('There was an error uploading the file.');
         return;
       }
-      await updateResource({
-        id: resource?.id!,
-        file: fileResp[0],
-      });
-      setFile(null);
-      Toast('success', 'Resource has been updated successfully.');
-      setIsOpen(false);
+      toast.promise(
+        new Promise(async (resolve, reject) => {
+          try {
+            await updateResource({
+              id: resource?.id!,
+              file: fileResp[0],
+            });
+            resolve(true);
+          } catch (error: any) {
+            reject(error);
+          }
+        }),
+        {
+          loading: 'Uploading...',
+          success: () => {
+            setFile(null);
+            setIsOpen(false);
+            return 'Uploaded.';
+          },
+          error: () => {
+            return 'There was an error uploading the resource.';
+          },
+        }
+      );
     } catch (error: any) {
       console.log(error);
-      Toast('error', 'There was an error updating the resource.');
+      toast.error('There was an error updating the resource.');
     }
   };
 
