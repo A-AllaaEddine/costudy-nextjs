@@ -27,10 +27,7 @@ export const userRouter = router({
         password: z.string(),
       })
     )
-    .mutation(async ({ input, ctx: { session } }) => {
-      if (session) {
-        throw new Error('Not allowed');
-      }
+    .mutation(async ({ input }) => {
       const { email, name, password, username } = input;
 
       try {

@@ -1,10 +1,6 @@
+'use client';
 import CustomSelect from '@/components/commun/static/Select';
-import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import { useCallback, useRef, useState } from 'react';
-import ResourceCard from '../../commun/static/ResourceCard';
+import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import BookmarksInfinitScroll from './InfiniteScroll';
 
@@ -67,11 +63,6 @@ const Main = () => {
     degree: '',
     year: '',
   });
-
-  const router = useRouter();
-  const { data: session } = useSession();
-
-  const { keyword, major, degree, year } = hookData;
 
   const onSelectMajor = (selectedMajor: string) => {
     if (selectedMajor === 'All Majors') {

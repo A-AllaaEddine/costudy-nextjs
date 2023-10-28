@@ -18,7 +18,7 @@ import {
 import Spinner from '@/components/commun/static/spinner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import toast from 'react-hot-toast';
 
 type FormFields = {
@@ -45,6 +45,7 @@ const EditModal = ({
     username: '',
     email: '',
   });
+  const [isEnalbed, setIsEnabled] = useState<boolean>(false);
 
   const {
     data: user,
@@ -52,9 +53,21 @@ const EditModal = ({
     isError: isFetchingUserError,
     error: userFetchingError,
     refetch: refetchUserInfo,
-  } = trpc.admin.user.get.useQuery({
-    id: userId,
-  });
+  } = trpc.admin.user.get.useQuery(
+    {
+      id: userId,
+    },
+    {
+      enabled: isEnalbed,
+    }
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsEnabled(true);
+      refetchUserInfo();
+    }
+  }, [isOpen]);
 
   const {
     mutateAsync: updateUserInfo,

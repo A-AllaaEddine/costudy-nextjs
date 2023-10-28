@@ -1,7 +1,8 @@
+'use client';
+
 import LogInAlertModal from '@/components/commun/modals/LogInAlertModal';
 import { Button } from '@/components/ui/button';
 import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -10,13 +11,16 @@ import { IoBookmark, IoBookmarkOutline, IoFlagSharp } from 'react-icons/io5';
 import ResourceRatingModal from './resource/ResourceRatingModal';
 import ResourceReportModal from './resource/ResourceReportModal';
 import ResourceShareModal from './resource/ResourceShareModal';
+import { trpc } from '@/app/_trpc/client';
 
 const Actions = ({
   resource,
   refetchBookmarkCount,
+  refetchReviewsData,
 }: {
   resource: Resource;
   refetchBookmarkCount?: any;
+  refetchReviewsData?: any;
 }) => {
   const [showLogInAlert, setShowLogInAlert] = useState<boolean>(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(false);
@@ -25,7 +29,7 @@ const Actions = ({
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user?.id) {
+    if (session?.user) {
       setIsEnabled(true);
     }
   }, [session]);
@@ -40,6 +44,7 @@ const Actions = ({
     refetch: refechUserBookmarks,
   } = trpc.bookmarks.get.useQuery(undefined, {
     enabled: isEnabled,
+    refetchOnWindowFocus: false,
   });
 
   const { mutateAsync: add, isLoading: isAddingToBookmarks } =
@@ -47,6 +52,7 @@ const Actions = ({
       onSuccess: () => {
         refetchBookmarkCount();
         refechUserBookmarks();
+        refetchReviewsData();
       },
       onError: (error: any) => {
         console.log(error);
@@ -57,6 +63,7 @@ const Actions = ({
       onSuccess: () => {
         refetchBookmarkCount();
         refechUserBookmarks();
+        refetchReviewsData();
       },
       onError: (error: any) => {
         console.log(error);
@@ -125,7 +132,7 @@ const Actions = ({
 
   return (
     <div className="w-auto h-6 md:h-10 flex flex-row items-center p-2 gap-1 ">
-      {session?.user?.id ? (
+      {session?.user ? (
         <ResourceRatingModal id={resource?.id!} />
       ) : (
         <Button
@@ -161,7 +168,7 @@ const Actions = ({
         url={url}
       />
 
-      {session?.user?.id ? (
+      {session?.user ? (
         <ResourceReportModal resourceId={resource?.id!} />
       ) : (
         <Button

@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 import { IoMdBookmark, IoMdLogOut, IoMdSettings } from 'react-icons/io';
@@ -17,6 +17,8 @@ import { MdSpaceDashboard } from 'react-icons/md';
 const UserPopover = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
+
+  const pathname = usePathname();
 
   const signOutUser = async () => {
     await signOut({
@@ -41,7 +43,7 @@ const UserPopover = () => {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="mr-32  min-w-[13rem] md:min-w-[14rem]  pt-2 pl-2">
+          <DropdownMenuContent className="mr-6 min-w-[13rem] md:min-w-[14rem]  pt-2 pl-2">
             <DropdownMenuItem className="font-bold text-md rounded-md">
               <div className="w-full h-10 flex gap-2 items-center">
                 <Avatar className="w-10 h-10 rounded-3xl">
@@ -71,7 +73,7 @@ const UserPopover = () => {
               </div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {session?.user?.type && (
+            {session?.user?.type !== 'admin' && (
               <DropdownMenuItem
                 className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
                 hover:cursor-pointer rounded-md"
@@ -86,14 +88,7 @@ const UserPopover = () => {
                 <DropdownMenuItem
                   className="h-10 flex gap-2 font-semibold text-md  hover:bg-slate-200
                 hover:cursor-pointer rounded-md"
-                  onClick={() =>
-                    router.push({
-                      pathname: '/admin/dashboard',
-                      query: {
-                        tab: 'overview',
-                      },
-                    })
-                  }
+                  onClick={() => router.push('/admin/dashboard/overview')}
                 >
                   <MdSpaceDashboard className="w-6 h-6 rounded-3xl" />
                   <p>Dashboard</p>
@@ -101,14 +96,7 @@ const UserPopover = () => {
                 <DropdownMenuItem
                   className="h-10 flex gap-2 font-normal text-md  hover:bg-slate-200
                     hover:cursor-pointer rounded-md"
-                  onClick={() =>
-                    router.push({
-                      pathname: '/admin/analytics',
-                      query: {
-                        tab: 'behavior',
-                      },
-                    })
-                  }
+                  onClick={() => router.push('/admin/dashboard?tab=behavior')}
                 >
                   <IoAnalyticsSharp className="w-6 h-6 rounded-3xl" />
                   <p>Analytics</p>
@@ -156,7 +144,7 @@ const UserPopover = () => {
           href={{
             pathname: '/login',
             query: {
-              destination: router.asPath,
+              destination: pathname,
             },
           }}
         >

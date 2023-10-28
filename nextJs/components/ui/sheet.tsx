@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -7,8 +8,8 @@ import Logo from '@/public/Logo.svg';
 
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { poppins } from '@/pages/_app';
+import { useRouter } from 'next/navigation';
+import { poppins } from '@/app/layout';
 
 const Sheet = SheetPrimitive.Root;
 

@@ -1,7 +1,8 @@
+import { trpc } from '@/app/_trpc/client';
 import ResourceCard from '@/components/commun/static/ResourceCard';
 import CardSeleton from '@/components/commun/static/ResourceCardSkeleton';
 import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
+
 import { useCallback, useRef } from 'react';
 
 const BookmarksInfinitScroll = ({
@@ -20,7 +21,7 @@ const BookmarksInfinitScroll = ({
   const {
     data: bookmarks,
     fetchNextPage,
-    isFetching,
+    isLoading,
     isFetchingNextPage,
     hasNextPage,
     isError,
@@ -45,7 +46,7 @@ const BookmarksInfinitScroll = ({
   const intObserver = useRef<IntersectionObserver | null>();
   const lastDocRef = useCallback(
     (doc: Element | null) => {
-      if (isFetching || isFetchingNextPage) return;
+      if (isLoading || isFetchingNextPage) return;
 
       if (intObserver.current) intObserver.current.disconnect();
 
@@ -58,7 +59,7 @@ const BookmarksInfinitScroll = ({
       });
       if (doc) intObserver.current.observe(doc);
     },
-    [isFetching, isFetchingNextPage, hasNextPage]
+    [isLoading, isFetchingNextPage, hasNextPage]
   );
 
   const content = data?.map((bookmark: Resource, i: number) => {
@@ -92,7 +93,7 @@ const BookmarksInfinitScroll = ({
          pb-12"
     >
       {content}
-      {isFetching && (
+      {isLoading && (
         <>
           {Array.from({ length: 2 }, (_, i) => i).map((__, idx) => {
             return <CardSeleton key={idx} />;
@@ -100,24 +101,13 @@ const BookmarksInfinitScroll = ({
         </>
       )}
       {isFetchingNextPage && (
-        // <div
-        //   style={{
-        //     width: '100%',
-        //     height: 500,
-        //     display: 'flex',
-        //     justifyContent: 'center',
-        //     alignItems: 'center',
-        //   }}
-        // >
-        //   <Spinner className="text-[#8449BF] w-10 h-10" />
-        // </div>
         <>
           {Array.from({ length: 2 }, (_, i) => i).map((__, idx) => {
             return <CardSeleton />;
           })}
         </>
       )}
-      {!isFetching && !isFetchingNextPage && !content?.length && (
+      {!isLoading && !isFetchingNextPage && !content?.length && (
         <div className="h-full w-full flex  flex-col justify-start pt-64 items-center">
           <p className="font-bold text-slate-400 md:text-2xl lg:text-4xl">
             No resource has been found

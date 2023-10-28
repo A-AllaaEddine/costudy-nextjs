@@ -10,7 +10,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 
 import CustomSelect from '@/components/commun/static/Select';
 import Spinner from '@/components/commun/static/spinner';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
 import {
   Bar,

@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Select,
   SelectContent,
@@ -48,7 +50,7 @@ const CustomSelect = ({
           return (
             <SelectItem
               key={idx}
-              className={`w-full h-10 text-sm font-semibold
+              className={`w-full h-10 text-sm font-normal
                       hover:bg-[#C8ADE4]  hover:cursor-pointer `}
               value={option.value}
             >

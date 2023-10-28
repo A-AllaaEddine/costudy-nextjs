@@ -1,7 +1,7 @@
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { trpc } from '@/utils/trpc';
-import { Skeleton } from '@mui/material';
+import { trpc } from '@/app/_trpc/client';
+import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { ErrorBoundary } from 'react-error-boundary';
 import { MdOutlineOpenInNew } from 'react-icons/md';

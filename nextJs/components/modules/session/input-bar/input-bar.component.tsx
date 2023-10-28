@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import styles from './InputBar.module.scss';
@@ -25,13 +25,13 @@ const InputBar = ({ scrollToLastMessage, socket }: Props) => {
     try {
       // setStatus("sending");
 
-      await socket.emit('chatMessage', router.query.sessionId, {
-        type: 'text',
-        body: newMessage,
-        senderId: session?.user?.id,
-        senderName: session?.user?.name,
-        timestamp: new Date(),
-      });
+      // await socket.emit('chatMessage', router.query.sessionId, {
+      //   type: 'text',
+      //   body: newMessage,
+      //   senderId: session?.user?.id,
+      //   senderName: session?.user?.name,
+      //   timestamp: new Date(),
+      // });
 
       // setStatus("sent");
       setNewMessage('');

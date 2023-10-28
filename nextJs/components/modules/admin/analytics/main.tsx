@@ -1,5 +1,7 @@
+'use client';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Behavior from './tabs/Behavior';
 import Geographical from './tabs/Geographical';
@@ -8,13 +10,6 @@ import Technology from './tabs/Technology';
 const Main = () => {
   const [tab, setTab] = useState<string>('summary');
   const router = useRouter();
-
-  useEffect(() => {
-    if (router.isReady && router.query.tab) {
-      setTab((router.query.tab as string) || 'summary');
-      setTimeout(() => {}, 1000);
-    }
-  }, [router]);
 
   const geographicalOptions = [
     { value: 'city', label: 'City' },
@@ -29,16 +24,7 @@ const Main = () => {
   ];
 
   const onSelectGeographical = (selectedGeo: string) => {
-    router.push(
-      {
-        pathname: '/admin/analytics',
-        query: {
-          type: selectedGeo,
-        },
-      },
-      undefined,
-      { shallow: true }
-    );
+    router.push(`/admin/analytics?tab=${selectedGeo}`);
   };
 
   return (
@@ -76,16 +62,7 @@ const Main = () => {
                   className="w-auto h-6 sm:text-md font-bold text-sm rounded-lg"
                   value="behavior"
                   onClick={() => {
-                    router.push(
-                      {
-                        pathname: '/admin/analytics',
-                        query: { tab: 'behavior' },
-                      },
-                      undefined,
-                      {
-                        shallow: true,
-                      }
-                    );
+                    router.push('/admin/analytics?tab=behavior');
                   }}
                 >
                   Behavior
@@ -94,16 +71,7 @@ const Main = () => {
                   className="w-auto h-6 sm:text-md font-bold text-sm rounded-lg"
                   value="acquisition"
                   onClick={() => {
-                    router.push(
-                      {
-                        pathname: '/admin/analytics',
-                        query: { tab: 'acquisition' },
-                      },
-                      undefined,
-                      {
-                        shallow: true,
-                      }
-                    );
+                    router.push('/admin/analytics?tab=acquisition');
                   }}
                 >
                   Acquisition
@@ -130,16 +98,7 @@ const Main = () => {
                   className="w-auto h-6 sm:text-md font-bold text-sm rounded-lg"
                   value="technology"
                   onClick={() => {
-                    router.push(
-                      {
-                        pathname: '/admin/analytics',
-                        query: { tab: 'technology' },
-                      },
-                      undefined,
-                      {
-                        shallow: true,
-                      }
-                    );
+                    router.push('/admin/analytics?tab=technology');
                   }}
                 >
                   Technology

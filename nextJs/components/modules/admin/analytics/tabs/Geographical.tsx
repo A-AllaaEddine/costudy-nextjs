@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import CustomSelect from '@/components/commun/static/Select';
 import GeoGraph from '../graphs/GeoGraph';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 
 const Geographical = () => {
   const [selectedGeo, setSelectedGeo] = useState<string>('continent');

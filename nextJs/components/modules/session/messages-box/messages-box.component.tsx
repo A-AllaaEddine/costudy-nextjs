@@ -1,6 +1,6 @@
 import useMessagesDocs from '@/hooks/useMessagesDocs';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import {
   Dispatch,
   SetStateAction,
@@ -38,11 +38,11 @@ const MessageBox = ({ socket, setMessages, messages }: Props) => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (router.isReady) {
-      setHookData({ page: 1, sessionId: router.query.sessionId as string });
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     setHookData({ page: 1, sessionId: router.query.sessionId as string });
+  //   }
+  // }, [router]);
 
   useEffect(() => {
     socket?.on('message', (data) => {

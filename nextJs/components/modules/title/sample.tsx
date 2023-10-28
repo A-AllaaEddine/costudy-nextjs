@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 
@@ -27,9 +29,9 @@ const PdfViewer = ({ url }: { url: string }) => {
         file={{ url }}
         onLoadSuccess={onDocumentLoadSuccess}
       >
-        {/* {Array.from(new Array(numPages), (el, index) => (
-            ))} */}
-        <Page pageNumber={1} />
+        {Array.from(new Array(numPages), (el, index) => (
+          <Page key={index} pageNumber={index + 1} />
+        ))}
       </Document>
     </div>
   );

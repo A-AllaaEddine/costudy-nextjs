@@ -1,9 +1,10 @@
+'use client';
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { poppins } from '@/pages/_app';
+import { poppins } from '@/app/layout';
 
 const Dialog = DialogPrimitive.Root;
 

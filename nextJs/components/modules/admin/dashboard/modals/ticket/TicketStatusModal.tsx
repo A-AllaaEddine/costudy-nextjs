@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import CustomSelect from '@/components/commun/static/Select';
@@ -15,26 +15,26 @@ import Spinner from '@/components/commun/static/spinner';
 import toast from 'react-hot-toast';
 
 const TicketStatusModal = ({
-  reportId,
-  refetchReports,
+  ticketId,
+  refetchTickets,
   isOpen,
   setIsOpen,
 }: {
-  reportId: string;
-  refetchReports?: any;
+  ticketId: string;
+  refetchTickets?: any;
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Status');
   const [parentReport, setParentReport] = useState<string>('');
   const {
-    mutateAsync: updateReportStatus,
+    mutateAsync: updateTicketStatus,
     isLoading,
     isError,
     error,
   } = trpc.admin.tickets.update.useMutation({
     onSuccess: () => {
-      refetchReports();
+      refetchTickets();
     },
   });
 
@@ -50,8 +50,8 @@ const TicketStatusModal = ({
     toast.promise(
       new Promise(async (resolve, reject) => {
         try {
-          await updateReportStatus({
-            id: reportId,
+          await updateTicketStatus({
+            id: ticketId,
             status: selectedStatus,
           });
           if (isError) {

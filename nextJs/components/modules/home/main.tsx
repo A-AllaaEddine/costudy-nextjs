@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import HomePageImg from '../../../public/home-bg.svg';
 import ResourcesList from './resources-list';
-import { ErrorBoundary } from 'react-error-boundary';
 
 const Main = () => {
   return (
@@ -43,24 +42,7 @@ const Main = () => {
           <span className="text-[#8449BF] leading-normal">Resources.</span>
         </p>
 
-        <ErrorBoundary
-          FallbackComponent={({ error, resetErrorBoundary }) => {
-            return (
-              <div className="w-full flex justify-center items-center h-72 pl-2 pr-2 md:pl-8 md:pr-8  mt-12  mb-12">
-                <p className="text-md  font-sans">Something went wrong...</p>
-                <p
-                  className="text-md ml-2 mr-2 underline hover:text-[#8449BF]
-                  hover:cursor-pointer font-bold"
-                  onClick={() => resetErrorBoundary()}
-                >
-                  Retry
-                </p>
-              </div>
-            );
-          }}
-        >
-          <ResourcesList />
-        </ErrorBoundary>
+        <ResourcesList />
       </div>
     </div>
   );

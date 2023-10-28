@@ -1,12 +1,13 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
-import ForgetPasswordModal from './ForgetPasswordModal';
 import toast from 'react-hot-toast';
+import ForgetPasswordModal from './ForgetPasswordModal';
 
 const defaultFormFields = {
   email: '',
@@ -21,6 +22,7 @@ const Main = () => {
   const { email, password } = formFields;
 
   const router = useRouter();
+  const params = useSearchParams();
 
   const handleChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -72,7 +74,11 @@ const Main = () => {
         loading: 'Signing in...',
         success: (data) => {
           resetFormFields();
-          router.push('/');
+          if (params.get('destination')) {
+            router.push(params.get('destination')!);
+          } else {
+            router.push('/');
+          }
 
           return 'Signed In';
         },

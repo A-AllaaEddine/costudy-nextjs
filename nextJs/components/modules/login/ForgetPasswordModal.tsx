@@ -1,3 +1,4 @@
+import { trpc } from '@/app/_trpc/client';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,7 +10,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { trpc } from '@/utils/trpc';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -70,7 +70,7 @@ const ForgetPasswordModal = ({
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-[90%]">
+      <DialogContent className="w-[90%] md:w-full">
         <DialogHeader>
           <DialogTitle>Reset your password</DialogTitle>
           <DialogDescription>

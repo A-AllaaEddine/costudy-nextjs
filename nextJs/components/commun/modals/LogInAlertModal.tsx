@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -7,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction } from 'react';
 
 const LogInAlertModal = ({
@@ -18,6 +19,8 @@ const LogInAlertModal = ({
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="w-[90%] md:w-4/5 rounded-md">
@@ -34,12 +37,9 @@ const LogInAlertModal = ({
                     font-semibold bg-[#8449BF] pr-4 pl-4 rounded-md  
                      hover:bg-[#8449BF] hover:text-black"
             onClick={() =>
-              router.push({
-                pathname: '/login',
-                query: {
-                  destination: encodeURIComponent(router.asPath),
-                },
-              })
+              router.push(
+                `/login${pathname !== '/' ? '?destination=' + pathname : null}`
+              )
             }
           >
             Log in

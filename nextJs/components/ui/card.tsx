@@ -1,7 +1,8 @@
+'use client';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
-import { poppins } from '@/pages/_app';
+import { poppins } from '@/app/layout';
 
 const Card = React.forwardRef<
   HTMLDivElement,

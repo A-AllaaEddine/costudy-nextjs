@@ -7,31 +7,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { Dispatch, SetStateAction } from 'react';
 
 import Spinner from '@/components/commun/static/spinner';
 import toast from 'react-hot-toast';
 
 const DeleteTicketModal = ({
-  reportId,
-  refetchReports,
+  ticketId,
+  refetchTickets,
   isOpen,
   setIsOpen,
 }: {
-  reportId: string;
-  refetchReports: any;
+  ticketId: string;
+  refetchTickets: any;
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const {
-    mutateAsync: deleteReport,
+    mutateAsync: deleteTicket,
     isLoading,
     isError,
     error,
   } = trpc.admin.reports.delete.useMutation({
     onSuccess: () => {
-      refetchReports();
+      refetchTickets();
     },
   });
 
@@ -40,7 +40,7 @@ const DeleteTicketModal = ({
     toast.promise(
       new Promise(async (resolve, reject) => {
         try {
-          await deleteReport({ id: reportId });
+          await deleteTicket({ id: ticketId });
           if (isError) {
             throw error;
           }

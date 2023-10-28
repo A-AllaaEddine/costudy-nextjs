@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const { withUt } = require('uploadthing/tw');
+const { fontFamily } = require('tailwindcss/defaultTheme');
 
 module.exports = withUt({
   darkMode: ['class'],
@@ -33,8 +34,7 @@ module.exports = withUt({
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       fontFamily: {
-        sans: ['var(--font-poppins)'],
-        mono: ['var(--font-roboto-mono)'],
+        poppins: ['var(--font-poppins)', ...fontFamily.sans],
       },
     },
   },

@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { useUploadThing } from '@/utils/uploadthing';
 import { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import { Label } from '@/components/ui/label';

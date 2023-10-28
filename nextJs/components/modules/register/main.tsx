@@ -1,13 +1,15 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { signIn } from 'next-auth/react';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 
-import { trpc } from '@/utils/trpc';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { trpc } from '@/app/_trpc/client';
 
 const defaultFomFields = {
   name: '',
@@ -82,6 +84,10 @@ const Main = () => {
       new Promise(async (resolve, reject) => {
         try {
           await mutateAsync({ name, username, email, password });
+          if (isError) {
+            throw error;
+          }
+
           const resp = await signIn('credentials', {
             email,
             password,

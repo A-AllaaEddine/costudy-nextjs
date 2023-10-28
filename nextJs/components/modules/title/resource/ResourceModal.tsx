@@ -1,3 +1,6 @@
+'use client';
+
+import { trpc } from '@/app/_trpc/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,11 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
@@ -39,6 +42,7 @@ const ResourceModal = ({
   const router = useRouter();
   const { data: session } = useSession();
   const [isBoomarked, setIsBookmarked] = useState<boolean>(false);
+  const [isEnabled, setIsEnabled] = useState<boolean>(false);
 
   const {
     data: downloadCount,
@@ -53,6 +57,7 @@ const ResourceModal = ({
       onError: (error: any) => {
         console.log(error);
       },
+      enabled: isEnabled,
     }
   );
   const {
@@ -68,8 +73,17 @@ const ResourceModal = ({
       onError: (error: any) => {
         console.log(error);
       },
+      enabled: isEnabled,
     }
   );
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsEnabled(true);
+      refetchBookmarkCount();
+      refetchDownloadCount();
+    }
+  }, [isOpen]);
 
   const { mutateAsync: add, isLoading: isAddingToBookmarks } =
     trpc.bookmarks.add.useMutation({
@@ -194,7 +208,7 @@ const ResourceModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="w-[93%] sm:w-4/5 ">
-        <DialogHeader>
+        <DialogHeader className="h-auto">
           <Image
             src={resource?.thumbnail?.url || '/resource-img.png'}
             alt="resource"
@@ -202,7 +216,7 @@ const ResourceModal = ({
             height={100}
             quality={100}
             unoptimized
-            className="w-auto h-1/2 min-h-[50%] rounded-xl mt-6 aspect-auto border-[1px] border-slate-200"
+            className="w-auto min-h-[200px]  rounded-xl mt-6 aspect-auto border-[1px] bg-slate-200 border-slate-200"
           />
           <DialogTitle
             className={`w-[250px] md:w-[400px] truncate whitespace-nowrap  h-12 text-start  overflow-hidden  text-lg  md:text-2xl font-bold 
@@ -213,16 +227,24 @@ const ResourceModal = ({
           <div className="h-6 flex justify-between items-center">
             <div className="w-auto h-6 flex gap-1">
               {badgeType[resource?.type]}
-              <Badge variant="secondary" className="flex gap-1">
-                {isFetchingDownloadCount ? 0 : formatNumber(downloadCount!)}
-                {isErrorDownloadCount && 0}
-                <IoMdCloudDownload />
-              </Badge>
-              <Badge variant="secondary" className="flex gap-1">
-                {isFetchingBookmarkCount ? 0 : formatNumber(bookmarkCount!)}
-                {isErrorFetchingBookmarkCount && 0}
-                <IoBookmark />
-              </Badge>
+              {isFetchingDownloadCount ? (
+                <Skeleton className="w-10 rounded-full" />
+              ) : (
+                <Badge variant="secondary" className="flex gap-1">
+                  {formatNumber(downloadCount!)}
+                  {isErrorDownloadCount && 0}
+                  <IoMdCloudDownload />
+                </Badge>
+              )}
+              {isFetchingBookmarkCount ? (
+                <Skeleton className="w-10 rounded-full" />
+              ) : (
+                <Badge variant="secondary" className="flex gap-1">
+                  {formatNumber(bookmarkCount!)}
+                  {isErrorFetchingBookmarkCount && 0}
+                  <IoBookmark />
+                </Badge>
+              )}
             </div>
             <div className="w-auto h-6 flex gap-1">
               {session?.user?.type !== 'admin' &&
@@ -240,7 +262,7 @@ const ResourceModal = ({
             </div>
           </div>
         </DialogHeader>
-        <div className="flex flex-col justify-start items-start gap-5 overflow-hidden">
+        <div className="w-full h-full  flex flex-col justify-start items-start gap-5 overflow-hidden">
           <p className="w-full max-h-[6rem] h-auto text-sm font-normal truncate whitespace-normal">
             {resource?.description}
           </p>
