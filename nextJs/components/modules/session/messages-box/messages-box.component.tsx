@@ -38,11 +38,11 @@ const MessageBox = ({ socket, setMessages, messages }: Props) => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (router.isReady) {
-      setHookData({ page: 1, sessionId: router.query.sessionId as string });
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     setHookData({ page: 1, sessionId: router.query.sessionId as string });
+  //   }
+  // }, [router]);
 
   useEffect(() => {
     socket?.on('message', (data) => {

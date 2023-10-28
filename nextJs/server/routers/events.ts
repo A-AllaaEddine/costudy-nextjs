@@ -88,16 +88,8 @@ export const eventsRouter = router({
             await prisma.$transaction([
               prisma.download.create({
                 data: {
-                  user: {
-                    connect: {
-                      id: session?.user?.id, // Connect to the user by ObjectID
-                    },
-                  },
-                  resource: {
-                    connect: {
-                      id: input?.id, // Connect to the resource by ObjectID
-                    },
-                  },
+                  user_id: session?.user?.id, // Connect to the user by ObjectID
+                  resource_id: input?.id, // Connect to the resource by ObjectID
                   username: session?.user?.username,
                   createdAt: new Date(),
                 },

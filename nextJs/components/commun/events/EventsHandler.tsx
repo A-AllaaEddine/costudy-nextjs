@@ -59,13 +59,7 @@ const EventsHandler = () => {
 
 export default EventsHandler;
 
-export const addDownload = ({
-  userId,
-  refetch,
-}: {
-  userId: string;
-  refetch?: any;
-}) => {
+export const addDownload = ({ id, refetch }: { id: string; refetch?: any }) => {
   const {
     mutateAsync: addDownloadEvent,
     isLoading: isLoadingDownloadEvent,
@@ -80,7 +74,7 @@ export const addDownload = ({
   const addEvent = async () => {
     try {
       await addDownloadEvent({
-        id: userId,
+        id,
       });
 
       if (isErrorDownloadEvent) {
