@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { Input } from '@/components/ui/input';
@@ -15,13 +15,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { ErrorBoundary } from 'react-error-boundary';
 
 const TicketDetailsModal = ({
-  reportId,
-  refetchReports,
+  ticketId,
+  refetchTickets,
   isOpen,
   setIsOpen,
 }: {
-  reportId: string;
-  refetchReports?: any;
+  ticketId: string;
+  refetchTickets?: any;
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
@@ -50,7 +50,7 @@ const TicketDetailsModal = ({
             );
           }}
         >
-          <Content reportId={reportId} />
+          <Content ticketId={ticketId} />
         </ErrorBoundary>
       </DialogContent>
     </Dialog>
@@ -59,13 +59,13 @@ const TicketDetailsModal = ({
 
 export default TicketDetailsModal;
 
-const Content = ({ reportId }: { reportId: string }) => {
+const Content = ({ ticketId }: { ticketId: string }) => {
   const [isEnabled, setIsEnabled] = useState<boolean>(false);
   const [details, setDetails] = useState<any>({});
 
   const { data, isLoading, isError, error } = trpc.admin.tickets.get.useQuery(
     {
-      id: reportId,
+      id: ticketId,
     },
     {
       enabled: isEnabled,

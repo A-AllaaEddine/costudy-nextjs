@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,11 +16,18 @@ import { Rating } from 'react-simple-star-rating';
 import Spinner from '@/components/commun/static/spinner';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { trpc } from '@/utils/trpc';
+
 import toast from 'react-hot-toast';
 import { GoCodeReview } from 'react-icons/go';
+import { trpc } from '@/app/_trpc/client';
 
-const ResourceRatingModal = ({ id }: { id: string }) => {
+const ResourceRatingModal = ({
+  id,
+  refetchReviewsData,
+}: {
+  id: string;
+  refetchReviewsData?: any;
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [rating, setRating] = useState<number>(0);
   const [review, setReview] = useState<string>('');
@@ -31,6 +39,9 @@ const ResourceRatingModal = ({ id }: { id: string }) => {
     error,
     isLoading,
   } = trpc.reviews.resource.add.useMutation({
+    onSuccess: () => {
+      refetchReviewsData();
+    },
     onError: (error) => {
       console.log(error);
     },

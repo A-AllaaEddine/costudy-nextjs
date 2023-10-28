@@ -1,3 +1,4 @@
+'use client';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { IoFlagSharp } from 'react-icons/io5';

@@ -86,8 +86,8 @@ model Ticket {
 model Download {
    id              String    @id @default(auto()) @map("_id") @db.ObjectId
    username        String    @unique
-   user_id         String    @db.ObjectId @unique
-   resource_id     String    @db.ObjectId @unique
+   user_id         String    @db.ObjectId 
+   resource_id     String    @db.ObjectId 
    createdAt       DateTime  @db.Date
 
    user            User      @relation(fields: [user_id ], references: [id])
@@ -109,7 +109,6 @@ model User {
   updatedAt           DateTime? @db.Date
   username            String    @unique
   Bookmarks           Bookmark[]
-  Views               View[]
   Report              Report[]
   resourcesReview     resourcesReview[]
   WebsiteReview       WebsiteReview[]
@@ -136,10 +135,10 @@ model Bookmark {
 
 model View {
   id                String    @id @default(auto()) @map("_id") @db.ObjectId 
-  user_id           String    @db.ObjectId @unique
-  resource_id       String    @db.ObjectId @unique
-  user              User      @relation(fields: [user_id ], references: [id])
-  resource          Resource  @relation(fields: [resource_id ], references: [id], onDelete: Cascade)
+  resource_title    String    
+  event_type        String 
+  createdAt         DateTime 
+  resource          Resource  @relation(fields: [resource_title ], references: [title], onDelete: Cascade)
 
   @@map("views")
 }

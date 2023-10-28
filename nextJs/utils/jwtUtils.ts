@@ -10,7 +10,7 @@ export const generateToken = (payload: Payload): string => {
   return jwt.sign(payload, process.env.JWT_SECRET_PHRASE || 'string');
 };
 
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string): Payload => {
   try {
     const decoded = jwt.verify(
       token,

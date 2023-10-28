@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import {
   ChangeEvent,
   Dispatch,
@@ -39,6 +39,7 @@ const EditInfoModal = ({
   useEffect(() => {
     setFormFields(resource);
   }, [resource]);
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -238,7 +239,7 @@ const EditInfoModal = ({
           <DialogFooter className="mt-5">
             <Button
               className="w-auto h-10 flex justify-center items-center
-            bg-white text-black sm:text-md text-sm hover:bg-white border-[1px font-bold]"
+            bg-white border border-slate-200 rounded-md text-black sm:text-md text-sm hover:bg-white border-[1px font-bold]"
               type="button"
               onClick={() => setIsOpen(false)}
             >

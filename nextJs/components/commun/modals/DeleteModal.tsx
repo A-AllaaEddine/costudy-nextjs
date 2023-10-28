@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,11 +10,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { trpc } from '@/utils/trpc';
 import { useState } from 'react';
 import Spinner from '../static/spinner';
 import { signOut } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import { trpc } from '@/app/_trpc/client';
 
 const DeleteModal = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

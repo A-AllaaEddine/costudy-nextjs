@@ -1,3 +1,5 @@
+'use client';
+
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -6,18 +8,45 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import ResourceCard from '../../commun/static/ResourceCard';
 
 import CardSeleton from '@/components/commun/static/ResourceCardSkeleton';
-import { trpc } from '@/utils/trpc';
-import { useRouter } from 'next/router';
+
+import { trpc } from '@/app/_trpc/client';
+import { ErrorBoundary } from 'react-error-boundary';
+import Link from 'next/link';
 
 const ResourcesList = () => {
-  const router = useRouter();
+  return (
+    <ErrorBoundary
+      FallbackComponent={({ error, resetErrorBoundary }) => {
+        return (
+          <div className="w-full flex justify-center items-center h-72 pl-2 pr-2 md:pl-8 md:pr-8  mt-12  mb-12">
+            <p className="text-md  font-sans">Something went wrong...</p>
+            <p
+              className="text-md ml-2 mr-2 underline hover:text-[#8449BF]
+                  hover:cursor-pointer font-bold"
+              onClick={() => resetErrorBoundary()}
+            >
+              Retry
+            </p>
+          </div>
+        );
+      }}
+    >
+      <Content />
+    </ErrorBoundary>
+  );
+};
 
+export default ResourcesList;
+
+const Content = () => {
   const {
     data: resources,
     isLoading,
     isError,
     error,
-  } = trpc.resources.home.get.useQuery();
+  } = trpc.resources.home.get.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   if (isError) {
     throw new Error(error.message);
@@ -27,20 +56,20 @@ const ResourcesList = () => {
     <div className="w-full h-72 pl-2 pr-2 md:pl-8 md:pr-8  mt-12  mb-12">
       {!isLoading && resources?.length ? (
         <div className="w-full flex justify-end items-center">
-          <p
+          <Link
             className="text-md font-semibold  text-end h-8
-          hover:cursor-pointer hover:text-[#8449BF]"
-            onClick={() => router.push('/resources')}
+        hover:cursor-pointer hover:text-[#8449BF]"
+            href={'/resources'}
           >
             More...
-          </p>
+          </Link>
         </div>
       ) : null}
 
       {isLoading ? (
         <div
           className="w-full h-auto flex justify-start items-center gap-7 overflow-y-hidden overflow-x-scroll
-          p-4 scrollbar-hide"
+        p-4 scrollbar-hide"
         >
           {Array.from({ length: 6 }, (_, i) => i).map((__, idx) => {
             return <CardSeleton key={idx} />;
@@ -87,5 +116,3 @@ const ResourcesList = () => {
     </div>
   );
 };
-
-export default ResourcesList;

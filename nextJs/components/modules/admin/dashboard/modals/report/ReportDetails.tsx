@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import CustomSelect from '@/components/commun/static/Select';

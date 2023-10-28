@@ -1,6 +1,6 @@
 import { prisma } from '@/utils/prisma';
 import { z } from 'zod';
-import { publicProcedure, router } from '../trpc';
+import { protectedProcedure, publicProcedure, router } from '../trpc';
 
 export const eventsRouter = router({
   page: router({
@@ -65,7 +65,7 @@ export const eventsRouter = router({
       }),
   }),
   downloads: router({
-    add: publicProcedure
+    add: protectedProcedure
       .input(
         z.object({
           id: z.string(),
@@ -74,16 +74,16 @@ export const eventsRouter = router({
       .mutation(async ({ input, ctx: { session } }) => {
         try {
           if (session?.user?.id) {
-            const exist = await prisma.download.findUnique({
-              where: {
-                user_id: session?.user?.id,
-                resource_id: input?.id,
-              },
-            });
+            // const exist = await prisma.download.findUnique({
+            //   where: {
+            //     user_id: session?.user?.id,
+            //     resource_id: input?.id,
+            //   },
+            // });
 
-            if (exist) {
-              return;
-            }
+            // if (exist) {
+            //   return;
+            // }
 
             await prisma.$transaction([
               prisma.download.create({
@@ -141,5 +141,37 @@ export const eventsRouter = router({
           }
         }),
     }),
+  }),
+  views: router({
+    resource: publicProcedure
+      .input(
+        z.object({
+          title: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        try {
+          // const exist = await prisma.view.findFirst({
+          //   where: {
+          //     resource_title: input?.title,
+          //   },
+          // });
+
+          // if (exist) {
+          //   return;
+          // }
+
+          await prisma.view.create({
+            data: {
+              resource_title: input?.title,
+              event_type: 'resource_view',
+              createdAt: new Date(),
+            },
+          });
+        } catch (error: any) {
+          console.log(error);
+          throw error;
+        }
+      }),
   }),
 });

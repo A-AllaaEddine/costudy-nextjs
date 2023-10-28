@@ -8,7 +8,7 @@ const Main = ({ resource }: { resource: Resource }) => {
       className=" w-full h-full flex flex-col justify-start items-center 
       pl-3 pr-3 md:pl-8 md:pr-8 "
     >
-      {resource?.type === 'video' && <VideoPage resource={resource} />}
+      {/* {resource?.type === 'video' && <VideoPage resource={resource} />} */}
       {resource?.type !== 'video' && <FilePage resource={resource} />}
     </div>
   );

@@ -1,10 +1,12 @@
+'use client';
+
+import { trpc } from '@/app/_trpc/client';
 import Spinner from '@/components/commun/static/spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { trpc } from '@/utils/trpc';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -18,7 +20,8 @@ const defaultFormFields = {
   newPassword: '',
   ConfirmPassword: '',
 };
-const Security = ({ t }: { t?: any }) => {
+
+const Security = () => {
   const [formFields, setFormFields] = useState<FormFields>(defaultFormFields);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
 
@@ -90,7 +93,7 @@ const Security = ({ t }: { t?: any }) => {
         loading: 'Saving...',
         success: () => {
           resetFormFields();
-          router.reload();
+          router.refresh();
           return 'Password updated';
         },
         error: (err) => {
@@ -112,14 +115,11 @@ const Security = ({ t }: { t?: any }) => {
       <Label className="hidden lg:block text-sm h-auto w-4/5 text-start">
         Update your account security. Set your new password.
       </Label>
-      <Separator className="hidden lg:block w-4/5" />
-      {/* <Label className="w-full sm:w-4/5 max-w-[400px] text-sm sm:text-md font-semibold ">
-        Change your password
-      </Label> */}
       <form
         className="w-full sm:w-4/5 max-w-[300px] h-auto flex flex-col justify-start items-start gap-2"
         onSubmit={handleSubmit}
       >
+        <Separator className="hidden lg:block w-full" />
         <Label className="w-full text-xs md:text-sm font-semibold">
           Current Password
         </Label>
@@ -161,8 +161,8 @@ const Security = ({ t }: { t?: any }) => {
 
             <Button
               className="w-full h-12 text-white text-lg
-              font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
-              hover:bg-[#8449BF] hover:text-white flex justify-center items-center gap-2"
+                font-semibold bg-black border-2 border-[#1D1D1F] hover:border-[#8449BF]
+                hover:bg-[#8449BF] hover:text-white flex justify-center items-center gap-2"
               type="submit"
             >
               {isLoading ? (

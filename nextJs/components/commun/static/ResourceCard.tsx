@@ -1,4 +1,5 @@
-import { Resource } from '@/types/types';
+'use client';
+
 import { ForwardedRef, forwardRef, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -10,13 +11,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+import ResourceModal from '@/components/modules/title/resource/ResourceModal';
 import {
   AiFillFilePdf,
   AiFillFilePpt,
   AiFillFileWord,
   AiFillVideoCamera,
 } from 'react-icons/ai';
-import ResourceModal from '@/components/modules/title/resource/ResourceModal';
 import ToolTip from './ToolTip';
 
 const ResourceCard = forwardRef(

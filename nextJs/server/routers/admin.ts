@@ -7,7 +7,6 @@ import { adminProcedure, router } from '../trpc';
 import { geoRouter } from './admin/events/geo';
 import { techsRouter } from './admin/events/techs';
 import { viewsRouter } from './admin/events/views';
-import { Input } from '@mui/base';
 
 export const adminRouter = router({
   users: router({
@@ -21,7 +20,7 @@ export const adminRouter = router({
       .query(async ({ input }) => {
         const { cursor, keyword } = input;
 
-        const limit = 30;
+        const limit = 3;
 
         const where: {
           name?: string;
@@ -36,10 +35,9 @@ export const adminRouter = router({
           const data = await prisma.user.findMany({
             take: limit + 1,
             where: where,
-
             cursor: cursor ? { id: cursor } : undefined,
             orderBy: {
-              createdAt: 'asc',
+              createdAt: 'desc',
             },
           });
 
@@ -683,38 +681,39 @@ export const adminRouter = router({
         const limit = 10;
 
         const where: {
-          OR: [
+          OR?: [
             {
               title: {
                 contains: string;
               };
             },
           ];
-        } = {
-          OR: [
+        } = {};
+        if (keyword) {
+          where.OR = [
             {
               title: {
                 contains: keyword!,
               },
             },
-          ],
-        };
+          ];
+        }
 
         const orderBy: {
-          createdAt?: 'asc';
-          totalDownloads?: 'asc';
-          totalViews?: 'asc';
+          createdAt?: 'desc';
+          totalDownloads?: 'desc';
+          totalViews?: 'desc';
         } = {};
 
         switch (sort) {
           case 'downloads':
-            orderBy.totalDownloads = 'asc';
+            orderBy.totalDownloads = 'desc';
             break;
           case 'views':
-            orderBy.totalViews = 'asc';
+            orderBy.totalViews = 'desc';
             break;
           default:
-            orderBy.createdAt = 'asc';
+            orderBy.createdAt = 'desc';
             break;
         }
 
@@ -1192,7 +1191,6 @@ export const adminRouter = router({
       .query(async ({ input }) => {
         const { cursor, keyword, tag, sort } = input;
 
-        console.log(Input);
         const limit = 30;
 
         const where: {
@@ -1313,13 +1311,13 @@ export const adminRouter = router({
         growth: adminProcedure
           .input(
             z.object({
-              id: z.string(),
+              title: z.string(),
               type: z.string(),
               range: z.string(),
             })
           )
           .query(async ({ input }) => {
-            if (!input?.id) return [];
+            if (!input?.title) return [];
             const { range } = input;
 
             try {
@@ -1390,10 +1388,9 @@ export const adminRouter = router({
                       0,
                       0
                     );
-                    const page = `/${input?.type}/${input.id}`;
-                    const hourlyCount = await prisma.pageView.count({
+                    const hourlyCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: startHour,
                           lte: endHour,
@@ -1427,10 +1424,9 @@ export const adminRouter = router({
                       0,
                       0
                     );
-                    const page = `/${input?.type}/${input.id}`;
-                    const hourlyCount = await prisma.pageView.count({
+                    const hourlyCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: startHour,
                           lte: endHour,
@@ -1462,10 +1458,9 @@ export const adminRouter = router({
                       0,
                       0
                     );
-                    const page = `/${input?.type}/${input.id}`;
-                    const dailyCount = await prisma.pageView.count({
+                    const dailyCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: startDay,
                           lte: endDay,
@@ -1506,11 +1501,10 @@ export const adminRouter = router({
                       999
                     );
 
-                    const page = `/${input?.type}/${input.id}`;
                     // Calculate the user count for the current day
-                    const dailyCount = await prisma.pageView.count({
+                    const dailyCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: startOfDay,
                           lte: endOfDay,
@@ -1560,11 +1554,10 @@ export const adminRouter = router({
                       0
                     );
 
-                    const page = `/${input?.type}/${input.id}`;
                     // Calculate the user count for the current day
-                    const dailyCount = await prisma.pageView.count({
+                    const dailyCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: startDay,
                           lt: endDay,
@@ -1609,11 +1602,10 @@ export const adminRouter = router({
                       0
                     );
 
-                    const page = `/${input?.type}/${input.id}`;
                     // Calculate the user count for the current day
-                    const dailyCount = await prisma.pageView.count({
+                    const dailyCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: startDay,
                           lt: endDay,
@@ -1646,11 +1638,10 @@ export const adminRouter = router({
                       999
                     ); // Last day of the month at 23:59:59.999
 
-                    const page = `/${input?.type}/${input.id}`;
                     // Calculate the user count for the current month
-                    const userCount = await prisma.pageView.count({
+                    const userCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: firstDayOfMonth,
                           lte: lastDayOfMonth,
@@ -1688,11 +1679,10 @@ export const adminRouter = router({
                       999
                     );
 
-                    const page = `/${input?.type}/${input.id}`;
                     // Calculate the user count for the current month
-                    const userCount = await prisma.pageView.count({
+                    const userCount = await prisma.view.count({
                       where: {
-                        page,
+                        resource_title: input?.title,
                         createdAt: {
                           gte: firstDayOfMonth,
                           lte: lastDayOfMonth,

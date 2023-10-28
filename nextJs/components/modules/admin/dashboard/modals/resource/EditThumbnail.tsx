@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { useUploadThing } from '@/utils/uploadthing';
 import { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import toast from 'react-hot-toast';

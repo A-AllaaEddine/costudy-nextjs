@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import styles from './InputBar.module.scss';

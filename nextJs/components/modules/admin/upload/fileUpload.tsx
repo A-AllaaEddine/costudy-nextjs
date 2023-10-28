@@ -4,13 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { useUploadThing } from '@/utils/uploadthing';
 
 import Spinner from '@/components/commun/static/spinner';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 type FormFields = {
@@ -172,7 +172,7 @@ const FileUpload = () => {
       {
         loading: 'Upaloding...',
         success: () => {
-          router.reload();
+          router.refresh();
           resetFormFields();
           return 'Resource uploaded.';
         },

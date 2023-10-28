@@ -1,4 +1,6 @@
-import { useRouter } from 'next/router';
+'use client';
+
+import { usePathname, useRouter } from 'next/navigation';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,6 +26,8 @@ const Header = () => {
   const [hideNavbar, setHideNavbar] = useState<boolean>(false);
   const [lastScrollY, setLastScrollY] = useState<number>(0);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,7 +57,7 @@ const Header = () => {
       >
         <div
           className="w-full h-8 p-1 flex justify-center items-center
-        bg-[#8449BF] text-white text-xs sm:text-md font-semibold"
+        bg-[#8449BF] text-white text-xs sm:text-md font-normal"
         >
           <p className="whitespace-nowrap animate-scrolling">
             Study Sessions are coming soon... In the meantime, explore our
@@ -74,7 +78,7 @@ const Header = () => {
               className="flex flex-col justify-start items-center gap-3"
             >
               <p
-                className="w-full h-8 text-md font-semibold
+                className="w-full h-8 text-md font-normal
               flex justify-start items-center"
                 onClick={() => {
                   setIsMenuOpen(false);
@@ -85,7 +89,7 @@ const Header = () => {
               </p>
               <Separator />
               <p
-                className="w-full h-8  text-md font-semibold
+                className="w-full h-8  text-md font-normal
               flex justify-start items-center"
                 onClick={() => {
                   setIsMenuOpen(false);
@@ -95,27 +99,27 @@ const Header = () => {
                 About
               </p>
               <p
-                className="w-full h-8  text-md font-semibold
+                className="w-full h-8  text-md font-normal
               flex justify-start items-center"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  router.push('/about');
+                  router.push('/terms-and-conditions');
                 }}
               >
                 Terms and Conditions
               </p>
               <p
-                className="w-full h-8  text-md font-semibold
+                className="w-full h-8  text-md font-normal
               flex justify-start items-center"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  router.push('/about');
+                  router.push('/cookie-policy');
                 }}
               >
                 Cookie Policy
               </p>
               <p
-                className="w-full h-8  text-md font-semibold
+                className="w-full h-8  text-md font-normal
               flex justify-start items-center"
                 onClick={() => {
                   setIsMenuOpen(false);
@@ -137,7 +141,7 @@ const Header = () => {
                 </Link>
               </div>
               <div className="w-full h-10 mb-3 flex flex-row justify-start items-center">
-                <p className="text-black-txt text-sm  font-semibold">
+                <p className="text-black-txt text-sm  font-normal">
                   © 2023 CoStudy.
                 </p>
               </div>
@@ -165,12 +169,12 @@ const Header = () => {
       <div
         className={`fixed ${
           hideNavbar ? 'top-[-12rem]' : 'top-0'
-        } transition-all z-10 h-auto w-full hidden  lg:visible lg:flex lg:flex-col justify-center items-center font-sans
+        } transition-all z-10 h-auto w-full hidden  lg:visible lg:flex lg:flex-col justify-center items-center 
           `}
       >
         <div
           className="w-full h-8 flex justify-center items-center
-        bg-[#8449BF] text-white text-md font-semibold"
+        bg-[#8449BF] text-white text-md font-normal"
         >
           Study Sessions are coming soon... In the meantime, explore our library
           of PDFs and Videos for different majors.
@@ -192,68 +196,9 @@ const Header = () => {
             />
           </div>
           <div className="w-full h-full flex flex-row justify-center items-center gap-3">
-            {/* <NavigationMenu className="h-8 ml-6 rounded-3xl  bg-[#8449BF] bg-opacity-10 ">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger
-                className=" h-8 text-md rounded-3xl bg-white-bg  hover:bg-transparent hover:text-[#8449BF]
-                  "
-              >
-                Resources
-              </NavigationMenuTrigger>
-              <NavigationMenuContent
-                className="bg-white-bg min-w-[650px] h-[340px] flex flex-wrap gap-2 p-4
-                    overflow-y-scroll overflow-x-hidden z-10 "
-              >
-                {resources.map((resource, idx) => {
-                  return (
-                    <div
-                      key={idx}
-                      className="w-48 h-14 bg-white-bg hover:bg-slate-200 rounded-md
-                            flex flex-col justify-center items-center"
-                    >
-                      <NavigationMenuLink
-                        className={`
-                                  w-full h-full font-semibold  flex flex-row justify-start items-center gap-5
-                                  p-3 bg-white-bg hover:bg-slate-200 rounded-md`}
-                        href={resource.url}
-                      >
-                        <Image
-                          src={resource.imgUrl}
-                          alt={resource.value}
-                          width={100}
-                          height={100}
-                          unoptimized
-                          className="w-8 h-8"
-                          priority={true}
-                        />
-                        <div
-                          className="overflow-hidden w-4/6 h-6 flex flex-row 
-                  justify-center items-end"
-                        >
-                          <p
-                            className={`${
-                              resource.value.length > 11
-                                ? 'text-md  whitespace-nowrap animate-scrolling'
-                                : 'text-md'
-                            } h-full w-full `}
-                          >
-                            {resource.value}
-                          </p>
-                        </div>
-                      </NavigationMenuLink>
-
-                      <Separator className="w-5/6" />
-                    </div>
-                  );
-                })}
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu> */}
             <Link
               href={'/resources'}
-              className=" h-8 font-semibold hover:cursor-pointer
+              className=" h-8 font-[500] hover:cursor-pointer
              text-black pr-4 pl-4 rounded-full 
             flex flex-row justify-center items-center hover:text-[#8449BF]
             bg-[#8449BF] bg-opacity-10"
@@ -266,9 +211,9 @@ const Header = () => {
             >
               <Link
                 href={'/about'}
-                className="font-semibold hover:cursor-pointer
+                className=" hover:cursor-pointer
                  text-black pr-2 pl-2 rounded-full h-full
-                flex flex-row justify-center items-center hover:text-[#8449BF]"
+                flex flex-row justify-center items-center hover:text-[#8449BF] font-[500]"
               >
                 About
               </Link>
@@ -282,9 +227,9 @@ const Header = () => {
               </Link> */}
               <Link
                 href={'/support'}
-                className="font-semibold hover:cursor-pointer
+                className=" hover:cursor-pointer
              text-black pr-2 pl-2 rounded-full h-full
-            flex flex-row justify-center items-center hover:text-[#8449BF]"
+            flex flex-row justify-center items-center hover:text-[#8449BF]  font-[500]"
               >
                 Support
               </Link>
@@ -305,20 +250,17 @@ const Header = () => {
                 <Link
                   href={{
                     pathname: '/login',
-                    query:
-                      router.asPath === '/'
-                        ? {}
-                        : { destination: router.asPath },
+                    query: pathname === '/' ? {} : { destination: pathname },
                   }}
                   className="w-auto h-full pr-2 pl-2 text-black
-                  flex justify-center items-center font-semibold hover:text-[#8449BF]"
+                  flex justify-center items-center font-normal hover:text-[#8449BF]"
                 >
                   Login
                 </Link>
                 <Link
                   href={'/register'}
                   className="w-auto h-full pr-2 pl-2 text-black
-                  flex justify-center items-center border-2 border-[#B8146E] rounded-full font-semibold
+                  flex justify-center items-center border-2 border-[#B8146E] rounded-full font-normal
                   hover:text-[#8449BF] hover:border-[#8449BF]"
                 >
                   Register

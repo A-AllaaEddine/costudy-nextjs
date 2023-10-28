@@ -13,7 +13,7 @@ const Footer = () => {
       <div className="max-w-[1600px] m-0 p-0 flex flex-col justify-start items-center">
         <div
           className="flex flex-row flex-wrap justify-center gap-3 h-auto mt-2 pr-3 pl-3 
-      text-black font-semibold"
+      text-black font-normal"
         >
           <Link href="/about" className="hover:text-[#8449BF]">
             About
@@ -40,7 +40,7 @@ const Footer = () => {
           </Link>
         </div>
         <div className=" h-10 mb-3 flex flex-row justify-center items-center">
-          <p className="text-black-txt text-sm  font-semibold">
+          <p className="text-black-txt text-sm  font-normal">
             © 2023 CoStudy.
           </p>
         </div>

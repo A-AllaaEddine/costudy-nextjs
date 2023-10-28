@@ -1,7 +1,7 @@
 import ToolTip from '@/components/commun/static/ToolTip';
 import { Badge } from '@/components/ui/badge';
 import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Suspense } from 'react';
@@ -9,7 +9,7 @@ import { IoBookmark, IoStar, IoThumbsUpSharp } from 'react-icons/io5';
 import Actions from './actions';
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 
-const VideoPage = ({ resource }: { resource: Resource }) => {
+const VideoPage = async ({ resource }: { resource: Resource }) => {
   const {
     data: reviewData,
     isFetching: isFetchingReviews,

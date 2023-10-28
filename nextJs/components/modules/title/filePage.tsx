@@ -1,18 +1,19 @@
+'use client';
+
+import { trpc } from '@/app/_trpc/client';
+import { addDownload } from '@/components/commun/analytics/EventTrigger';
 import ToolTip from '@/components/commun/static/ToolTip';
+import Spinner from '@/components/commun/static/spinner';
 import { Badge } from '@/components/ui/badge';
-import { trpc } from '@/utils/trpc';
-import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Resource } from '@/types/types';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { IoMdCloudDownload } from 'react-icons/io';
 import { IoBookmark, IoStar, IoThumbsUpSharp } from 'react-icons/io5';
 import Actions from './actions';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/router';
-import Toast from '@/components/commun/static/Toast';
-import { Resource } from '@/types/types';
-import Spinner from '@/components/commun/static/spinner';
-import { addDownload } from '@/components/commun/analytics/EventTrigger';
-import dynamic from 'next/dynamic';
-import toast from 'react-hot-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const PdfViewer = dynamic(() => import('@/components/modules/title/sample'), {
   ssr: false,
@@ -25,10 +26,15 @@ const FilePage = ({ resource }: { resource: Resource }) => {
     data: reviewData,
     isFetching: isFetchingReviews,
     isError: isErrorFetchingReviews,
-    refetch: refetchReviewsCount,
-  } = trpc.reviews.count.get.useQuery({
-    id: resource?.id!,
-  });
+    refetch: refetchReviewsData,
+  } = trpc.reviews.count.get.useQuery(
+    {
+      id: resource?.id!,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const {
     data: bookmarkCount,
@@ -40,9 +46,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
       id: resource?.id!,
     },
     {
-      onError: (error: any) => {
-        console.log(error);
-      },
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -56,9 +60,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
       id: resource?.id!,
     },
     {
-      onError: (error: any) => {
-        console.log(error);
-      },
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -161,57 +163,81 @@ const FilePage = ({ resource }: { resource: Resource }) => {
           <ToolTip
             tooltip="Downloads"
             children={
-              <Badge
-                variant="secondary"
-                className="flex gap-1 w-auto h-6 md:h-8
-              text-sm sm:text-md"
-              >
-                {isFetchingDownloadCount ? 0 : formatNumber(downloadCount!)}
-                {isErrorDownloadCount && 0}
-                <IoMdCloudDownload className="w-3 h-3 sm:w-4 sm:h-4" />
-              </Badge>
+              <>
+                {isFetchingDownloadCount ? (
+                  <Skeleton className="w-12 h-6 md:h-8 rounded-full" />
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="flex gap-1 w-auto h-6 md:h-8
+                text-sm sm:text-md"
+                  >
+                    {formatNumber(downloadCount!)}
+                    {isErrorDownloadCount && 0}
+                    <IoMdCloudDownload className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Badge>
+                )}
+              </>
             }
           />
           <ToolTip
             tooltip="Rating"
             children={
-              <Badge
-                variant="secondary"
-                className="flex gap-1 w-auto h-6 md:h-8
-              text-sm sm:text-md"
-              >
-                {isFetchingReviews ? 0 : reviewData?.rating}
-                {isErrorFetchingReviews && 0}
-                <IoStar className="w-3 h-3 sm:w-4 sm:h-4" />
-              </Badge>
+              <>
+                {isFetchingReviews ? (
+                  <Skeleton className="w-12 h-6 md:h-8 rounded-full" />
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="flex gap-1 w-auto h-6 md:h-8
+                  text-sm sm:text-md"
+                  >
+                    {reviewData?.rating}
+                    {isErrorFetchingReviews && 0}
+                    <IoStar className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Badge>
+                )}
+              </>
             }
           />
           <ToolTip
             tooltip="Recommendation"
             children={
-              <Badge
-                variant="secondary"
-                className="flex gap-1 w-auto h-6 md:h-8
-              text-sm sm:text-md"
-              >
-                {isFetchingReviews ? 0 : reviewData?.recommendation}
-                {isErrorFetchingReviews && 0}%
-                <IoThumbsUpSharp className="w-3 h-3 sm:w-4 sm:h-4" />
-              </Badge>
+              <>
+                {isFetchingReviews ? (
+                  <Skeleton className="w-12 h-6 md:h-8 rounded-full" />
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="flex gap-1 w-auto h-6 md:h-8
+                  text-sm sm:text-md"
+                  >
+                    {reviewData?.recommendation}
+                    {isErrorFetchingReviews && 0}%
+                    <IoThumbsUpSharp className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Badge>
+                )}
+              </>
             }
           />
           <ToolTip
             tooltip="Bookamrks"
             children={
-              <Badge
-                variant="secondary"
-                className="flex gap-1 w-auto h-6 md:h-8
-              text-sm sm:text-md"
-              >
-                {isFetchingBookmarkCount ? 0 : formatNumber(bookmarkCount!)}
-                {isErrorFetchingBookmarkCount && 0}
-                <IoBookmark className="w-3 h-3 sm:w-4 sm:h-4" />
-              </Badge>
+              <>
+                {isFetchingBookmarkCount ? (
+                  <Skeleton className="w-12 h-6 md:h-8 rounded-full" />
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="flex gap-1 w-auto h-6 md:h-8
+                  text-sm sm:text-md"
+                  >
+                    {formatNumber(bookmarkCount!)}
+                    {isErrorFetchingBookmarkCount && 0}
+                    <IoBookmark className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Badge>
+                )}
+              </>
             }
           />
         </div>
@@ -235,6 +261,7 @@ const FilePage = ({ resource }: { resource: Resource }) => {
           <Actions
             resource={resource}
             refetchBookmarkCount={refetchBookmarkCount}
+            refetchReviewsData={refetchReviewsData}
           />
         </div>
       </div>

@@ -1,8 +1,14 @@
+'use client';
+
+'use client';
+
+import { trpc } from '@/app/_trpc/client';
 import ResourceCard from '@/components/commun/static/ResourceCard';
 import CardSeleton from '@/components/commun/static/ResourceCardSkeleton';
 import { Resource } from '@/types/types';
-import { trpc } from '@/utils/trpc';
-import { useCallback, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const ResourcesInfinitScroll = ({
   hookData,
@@ -15,13 +21,25 @@ const ResourcesInfinitScroll = ({
     year: string;
   };
 }) => {
+  const [isEnabled, setIsEnabled] = useState<boolean>(false);
+
+  const { data: session } = useSession();
+
   const { data: userBookmarks, isLoading: isFetchingBookmarks } =
-    trpc.bookmarks.get.useQuery();
+    trpc.bookmarks.get.useQuery(undefined, {
+      enabled: isEnabled,
+    });
+
+  useEffect(() => {
+    if (session?.user) {
+      setIsEnabled(true);
+    }
+  }, [session]);
 
   const {
     data: resources,
     fetchNextPage,
-    isFetching,
+    isLoading,
     isFetchingNextPage,
     hasNextPage,
     isError,
@@ -37,6 +55,7 @@ const ResourcesInfinitScroll = ({
 
     {
       getNextPageParam: (lastPage) => lastPage.nextPage,
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -51,7 +70,7 @@ const ResourcesInfinitScroll = ({
   const intObserver = useRef<IntersectionObserver | null>();
   const lastDocRef = useCallback(
     (doc: Element | null) => {
-      if (isFetching || isFetchingNextPage) return;
+      if (isLoading || isFetchingNextPage) return;
 
       if (intObserver.current) intObserver.current.disconnect();
 
@@ -64,7 +83,7 @@ const ResourcesInfinitScroll = ({
       });
       if (doc) intObserver.current.observe(doc);
     },
-    [isFetching, isFetchingNextPage, hasNextPage]
+    [isLoading, isFetchingNextPage, hasNextPage]
   );
 
   const content = data?.map((resource: Resource, i: number) => {
@@ -92,7 +111,7 @@ const ResourcesInfinitScroll = ({
       className="w-full h-full flex flex-wrap justify-center sm:justify-start item gap-4 mt-6
          pb-12"
     >
-      {isFetching ? (
+      {isLoading ? (
         <>
           {Array.from({ length: 8 }, (_, i) => i).map((__, idx) => {
             return <CardSeleton key={idx} />;
@@ -108,7 +127,7 @@ const ResourcesInfinitScroll = ({
           })}
         </>
       )}
-      {!isFetching && !isFetchingNextPage && !content?.length && (
+      {!isLoading && !isFetchingNextPage && !content?.length && (
         <div className="h-full w-full flex  flex-col justify-start pt-64 items-center">
           <p className="font-bold text-slate-400 md:text-2xl lg:text-4xl">
             No resource has been found

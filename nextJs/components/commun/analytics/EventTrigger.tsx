@@ -1,10 +1,14 @@
+'use client';
+
+import { trpc } from '@/app/_trpc/client';
 import { generateSalt } from '@/utils/bcryptUtils';
-import { trpc } from '@/utils/trpc';
-import { useRouter } from 'next/router';
+
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 const EventTrigger = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
   let generateIdPromise: any = '';
 
@@ -163,10 +167,10 @@ const EventTrigger = () => {
   // };
 
   useEffect(() => {
-    if (router.isReady) {
-      pageEvent({ page: router.asPath });
+    if (pathname) {
+      pageEvent({ page: pathname });
     }
-  }, [router]);
+  }, [pathname]);
 
   return <></>;
 };

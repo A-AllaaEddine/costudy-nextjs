@@ -1,5 +1,5 @@
 import Spinner from '@/components/commun/static/spinner';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
   CartesianGrid,

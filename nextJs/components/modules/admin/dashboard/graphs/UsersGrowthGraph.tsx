@@ -1,6 +1,8 @@
+'use client';
+
 import CustomSelect from '@/components/commun/static/Select';
 import Spinner from '@/components/commun/static/spinner';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/app/_trpc/client';
 import { useState } from 'react';
 import {
   Bar,
@@ -12,12 +14,20 @@ import {
   YAxis,
   CartesianGrid,
 } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const UsersGrowthGraph = () => {
   const [selectedRange, setSelectedRange] = useState<string>('today');
-  const { data: growth, isLoading } = trpc.admin.users.growth.useQuery({
-    range: selectedRange,
-  });
+
+  const { data: growth, isLoading } = trpc.admin.users.growth.useQuery(
+    {
+      range: selectedRange,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
   const rangeOptions = [
     { value: 'today', label: 'Today' },
     { value: 'yesterday', label: 'Yesterday' },
@@ -39,13 +49,13 @@ const UsersGrowthGraph = () => {
           options={rangeOptions}
           onChange={onSelectRange}
           className="bg-white rounded-md"
-          contenClassName="h-auto"
+          contenClassName="h-auto font-normal"
         />
       </div>
       <ResponsiveContainer width="100%" height={350}>
         {isLoading ? (
           <div className="w-full h-full flex justify-center items-center">
-            <Spinner className="text-[#8449BF] w-10 h-10" />
+            <Skeleton className="w-full h-full" />
           </div>
         ) : (
           <LineChart

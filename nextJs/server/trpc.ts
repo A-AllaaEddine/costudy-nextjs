@@ -1,6 +1,7 @@
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { initTRPC, TRPCError } from '@trpc/server';
+import { getServerSession } from 'next-auth';
 import superjson from 'superjson';
-import { Context } from './context';
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
 // For instance, the use of a t variable
@@ -8,7 +9,7 @@ import { Context } from './context';
 
 // Base router and procedure helpers
 
-export const t = initTRPC.context<Context>().create({
+export const t = initTRPC.create({
   transformer: superjson,
 
   //
@@ -20,25 +21,27 @@ export const t = initTRPC.context<Context>().create({
 
 export const router = t.router;
 
-const isAuthed = t.middleware(({ next, ctx }) => {
-  if (!ctx.session?.user?.email) {
+const isAuthed = t.middleware(async ({ next, ctx }) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
     });
   }
   return next({
-    ctx,
+    ctx: { ...ctx, session },
   });
 });
 
-const isAdmin = t.middleware(({ next, ctx }) => {
-  if (ctx.session?.user?.type !== 'admin') {
+const isAdmin = t.middleware(async ({ next, ctx }) => {
+  const session = await getServerSession(authOptions);
+  if (session?.user?.type !== 'admin') {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
     });
   }
   return next({
-    ctx,
+    ctx: { ...ctx, session },
   });
 });
 export const middleware = t.middleware;
