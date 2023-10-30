@@ -812,7 +812,6 @@ export const adminRouter = router({
               (deletedRes.file as Prisma.JsonObject)?.fileKey! as string
             );
           }
-          console.log(filesToDelete);
           await utapi.deleteFiles(filesToDelete);
         } catch (error: any) {
           console.log(error);
