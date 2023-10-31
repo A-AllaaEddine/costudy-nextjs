@@ -14,6 +14,7 @@ import Meta from '@/components/commun/static/Meta';
 
 import WebsiteRatingModal from '@/components/modules/about/WebsiteRatingModal';
 import WechatModal from '@/components/modules/about/WechatModal';
+import { Metadata } from 'next';
 
 const perks = [
   { value: 'Create your Study Space', label: 'Create your Study Space' },
@@ -31,6 +32,11 @@ const bgColor: Record<string, string> = {
   '3': 'bg-[#8449BF] bg-opacity-20',
   '4': 'bg-[#FF6584] bg-opacity-40',
   '5': 'bg-[#8449BF] bg-opacity-40',
+};
+
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'Track your website status.',
 };
 
 const About = () => {

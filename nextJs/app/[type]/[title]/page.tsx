@@ -2,7 +2,21 @@ import Meta from '@/components/commun/static/Meta';
 import Main from '@/components/modules/title/main';
 import { Resource } from '@/types/types';
 import { prisma } from '@/utils/prisma';
+import { Metadata } from 'next';
 
+export const generateMetadata = async ({
+  params,
+}: {
+  params: {
+    type: string;
+    title: string;
+  };
+}): Promise<Metadata> => {
+  return {
+    title: `${params.type} | ${params.title}`,
+    description: 'See more details...',
+  };
+};
 const ResourcePage = async ({ params }: { params: { title: string } }) => {
   const { title } = params;
 

@@ -1,5 +1,11 @@
 import Meta from '@/components/commun/static/Meta';
 import Main from '@/components/modules/bookmarks/main';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Bookmarks',
+  description: 'Browse your bookmarks.',
+};
 
 const Resources = () => {
   return (

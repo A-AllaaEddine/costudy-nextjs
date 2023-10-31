@@ -1,6 +1,12 @@
 import Meta from '@/components/commun/static/Meta';
 import Main from '@/components/modules/register/main';
 import { isLoggedIn } from '@/utils/serserSideUtils';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Register | CoStudy',
+  description: 'Register now and join the community.',
+};
 
 const SignUp = async () => {
   await isLoggedIn({ login: true });
