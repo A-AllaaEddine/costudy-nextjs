@@ -43,7 +43,10 @@ const UserPopover = () => {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="mr-6 min-w-[13rem] md:min-w-[14rem]  pt-2 pl-2">
+          <DropdownMenuContent
+            align="end"
+            className=" min-w-[13rem] md:min-w-[14rem]  pt-2 pl-2"
+          >
             <DropdownMenuItem className="font-bold text-md rounded-md">
               <div className="w-full h-10 flex gap-2 items-center">
                 <Avatar className="w-10 h-10 rounded-3xl">

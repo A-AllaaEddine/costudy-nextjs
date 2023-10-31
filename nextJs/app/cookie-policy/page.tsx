@@ -1,3 +1,10 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Cookie Policy',
+  description: 'Read our cookies policy.',
+};
+
 const CookiePolicy = () => {
   return (
     <div

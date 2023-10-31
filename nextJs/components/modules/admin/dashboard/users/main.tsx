@@ -6,9 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UsersTable } from '../tables/UsersTable';
 import { columns } from '../tables/UsersColumns';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const Main = () => {
   const [keyword, setKeyword] = useState<string>('');
+  const [filter, setFilter] = useState<string>('');
 
   const {
     data,
@@ -33,14 +36,9 @@ const Main = () => {
     }
   );
 
-  console.log('data: ', data);
-  console.log('hasNextPage: ', hasNextPage);
-  console.log('hasPreviousPage: ', hasPreviousPage);
-  // const users = data?.pages.reduce((acc: any, page) => {
-  //   return [...acc, ...page.data];
-  // }, []);
-
-  const users = data?.pages[data.pages.length - 1].data;
+  const users = data?.pages.reduce((acc: any, page) => {
+    return [...acc, ...page.data];
+  }, []);
 
   return (
     <Card
@@ -53,6 +51,20 @@ const Main = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="w-full flex flex-col justify-start items-center gap-4">
+        <div className="w-full flex items-center py-4 gap-2">
+          <Input
+            placeholder="Filter users..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="max-w-sm"
+          />
+          <Button
+            className="hover:bg-[#8449BF]"
+            onClick={() => setKeyword(filter)}
+          >
+            Filter
+          </Button>
+        </div>
         {isLoading ? (
           <Skeleton className="w-full h-[500px]" />
         ) : (
@@ -62,9 +74,7 @@ const Main = () => {
             refetchUsers={refetchUsers}
             isFetching={isFetching}
             fetchNextPage={fetchNextPage}
-            fetchPreviousPage={fetchPreviousPage}
             hasNextPage={hasNextPage}
-            hasPreviousPage={hasPreviousPage}
           />
         )}
       </CardContent>

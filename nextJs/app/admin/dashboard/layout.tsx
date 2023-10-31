@@ -4,10 +4,10 @@ import { isAdmin } from '@/utils/serserSideUtils';
 import { Metadata } from 'next';
 import { ReactNode } from 'react';
 
-export const metadata: Metadata = {
-  title: 'Dashboard | CoStudy',
-  description: 'Track your website status.',
-};
+// export const metadata: Metadata = {
+//   title: 'Dashboard | CoStudy',
+//   description: 'Track your website status.',
+// };
 
 const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   await isAdmin();

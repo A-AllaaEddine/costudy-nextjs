@@ -20,15 +20,27 @@ export const adminRouter = router({
       .query(async ({ input }) => {
         const { cursor, keyword } = input;
 
-        const limit = 3;
+        const limit = 30;
 
         const where: {
-          name?: string;
+          OR?: [
+            {
+              name: {
+                contains: string;
+              };
+            },
+          ];
           type: 'user';
         } = { type: 'user' };
 
         if (keyword) {
-          where.name = keyword;
+          where.OR = [
+            {
+              name: {
+                contains: keyword,
+              },
+            },
+          ];
         }
 
         try {
@@ -665,6 +677,45 @@ export const adminRouter = router({
           throw new Error(error.message);
         }
       }),
+    batch: router({
+      update: adminProcedure
+        .input(
+          z.object({ usersIds: z.array(z.string()), accountStatus: z.string() })
+        )
+        .mutation(async ({ input }) => {
+          try {
+            await prisma.user.updateMany({
+              where: {
+                id: {
+                  in: input?.usersIds,
+                },
+              },
+              data: {
+                accountStatus: input?.accountStatus,
+              },
+            });
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
+      delete: adminProcedure
+        .input(z.object({ usersIds: z.array(z.string()) }))
+        .mutation(async ({ input }) => {
+          try {
+            await prisma.user.deleteMany({
+              where: {
+                id: {
+                  in: input?.usersIds,
+                },
+              },
+            });
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
+    }),
   }),
   resources: router({
     get: adminProcedure
@@ -1003,6 +1054,24 @@ export const adminRouter = router({
           }
         }),
     }),
+    batch: router({
+      delete: adminProcedure
+        .input(z.object({ resourcesIds: z.array(z.string()) }))
+        .mutation(async ({ input }) => {
+          try {
+            await prisma.resource.deleteMany({
+              where: {
+                id: {
+                  in: input?.resourcesIds,
+                },
+              },
+            });
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
+    }),
   }),
   reports: router({
     getParents: adminProcedure.query(async ({ input }) => {
@@ -1176,6 +1245,45 @@ export const adminRouter = router({
           throw error;
         }
       }),
+    batch: router({
+      update: adminProcedure
+        .input(
+          z.object({ reportsIds: z.array(z.string()), status: z.string() })
+        )
+        .mutation(async ({ input }) => {
+          try {
+            await prisma.report.updateMany({
+              where: {
+                id: {
+                  in: input?.reportsIds,
+                },
+              },
+              data: {
+                status: input?.status,
+              },
+            });
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
+      delete: adminProcedure
+        .input(z.object({ reportsIds: z.array(z.string()) }))
+        .mutation(async ({ input }) => {
+          try {
+            await prisma.report.deleteMany({
+              where: {
+                id: {
+                  in: input?.reportsIds,
+                },
+              },
+            });
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
+    }),
   }),
   tickets: router({
     getMany: adminProcedure
@@ -1303,6 +1411,45 @@ export const adminRouter = router({
           throw error;
         }
       }),
+    batch: router({
+      update: adminProcedure
+        .input(
+          z.object({ ticketsIds: z.array(z.string()), status: z.string() })
+        )
+        .mutation(async ({ input }) => {
+          try {
+            await prisma.ticket.updateMany({
+              where: {
+                id: {
+                  in: input?.ticketsIds,
+                },
+              },
+              data: {
+                status: input?.status,
+              },
+            });
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
+      delete: adminProcedure
+        .input(z.object({ ticketsIds: z.array(z.string()) }))
+        .mutation(async ({ input }) => {
+          try {
+            await prisma.ticket.deleteMany({
+              where: {
+                id: {
+                  in: input?.ticketsIds,
+                },
+              },
+            });
+          } catch (error: any) {
+            console.log(error);
+            throw error;
+          }
+        }),
+    }),
   }),
   events: router({
     resource: router({

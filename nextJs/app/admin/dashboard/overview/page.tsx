@@ -6,6 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { isAdmin } from '@/utils/serserSideUtils';
 import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: 'Overview | CoStudy',
+  description: 'Track your website status.',
+};
+
 const OverView = async () => {
   return (
     <Card

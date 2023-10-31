@@ -5,6 +5,12 @@ import { Label } from '@/components/ui/label';
 import SupportImg from '@/public/support-img.svg';
 
 import TicketForm from '@/components/modules/support/TicketForm';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Support',
+  description: 'Track your website status.',
+};
 
 const Support = () => {
   return (
