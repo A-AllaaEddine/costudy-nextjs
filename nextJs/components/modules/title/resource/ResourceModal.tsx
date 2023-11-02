@@ -216,7 +216,7 @@ const ResourceModal = ({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {/* <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="hidden md:block sm:w-4/5 ">
           <DialogHeader className="h-auto">
             <Image
@@ -323,10 +323,13 @@ const ResourceModal = ({
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent side={'bottom'} className="w-full rounded-lg md:hidden">
+        <SheetContent
+          side={'bottom'}
+          className="w-full max-w-[600px] m-auto   rounded-lg overflow-y-auto pb-12"
+        >
           <SheetHeader>
             <Image
               src={resource?.thumbnail?.url || '/resource-img.png'}
