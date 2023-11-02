@@ -9,3 +9,21 @@ declare module 'next-auth' {
     user: authenticationUser;
   }
 }
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    user: {
+      id: string;
+      accountStatus: string;
+      username: string;
+      email: string;
+      emailVerified: boolean;
+      name: string;
+      profilePicture: string;
+      type: string;
+      bookmarks: string[];
+      createdAt: Date;
+      updatedAt: Date | null;
+    };
+  }
+}
