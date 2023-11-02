@@ -36,6 +36,13 @@ export const authOptions: AuthOptions = {
             throw new Error('Wrong Password');
           }
 
+          if (user?.accountStatus === 'suspended') {
+            throw new Error('suspended');
+          }
+          if (user?.accountStatus === 'banned') {
+            throw new Error('banned');
+          }
+
           if (user) {
             return { ...user, password: '' };
           }
@@ -55,23 +62,23 @@ export const authOptions: AuthOptions = {
     signIn: '/login',
   },
   callbacks: {
-    async signIn({ user }) {
-      if ((user as authenticationUser)?.accountStatus === 'suspended') {
-        return '/suspended';
-      }
-      if ((user as authenticationUser)?.accountStatus === 'banned') {
-        return '/banned';
-      }
-
-      return true;
-    },
     async jwt({ user, trigger, token, session }) {
-      const myUser = await prisma.user.findUnique({
-        where: {
-          email: user.email!,
-        },
-      });
-      token = { ...token, ...myUser };
+      if (user) {
+        const myUser = await prisma.user.findUnique({
+          where: {
+            email: user.email!,
+          },
+        });
+        token = { ...token, user: myUser! };
+      }
+      if (token.email) {
+        const myUser = await prisma.user.findUnique({
+          where: {
+            email: token.email!,
+          },
+        });
+        token = { ...token, user: myUser! };
+      }
 
       if (trigger === 'update') {
         token = { ...token, ...session };
@@ -80,7 +87,7 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      const myUser = { ...session.user, ...token } as authenticationUser;
+      const myUser = { ...session.user, ...token.user } as authenticationUser;
       session = {
         ...session,
         user: myUser,
