@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import Footer from '@/components/commun/layout/footer';
 import NextTopLoader from 'nextjs-toploader';
 import EventsHandler from '@/components/commun/events/EventsHandler';
+import { authOptions } from './api/auth/[...nextauth]/route';
 
 export const poppins = Poppins({
   weight: ['300', '400', '500', '600'],
@@ -24,7 +25,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en" className={`${poppins.variable}`}>
       <body>
@@ -33,7 +34,7 @@ export default async function RootLayout({
           <SessionProvider session={session}>
             {/* <EventTrigger /> */}
             <EventsHandler />
-            <Header />
+            <Header session={session} />
             <NextTopLoader showSpinner={false} color={'#e6a0ff'} height={5} />
             <Toaster containerClassName="text-sm sm:text-lg" />
             <main className="flex flex-col min-h-screen font-sans lg:max-w-[1600px] m-auto w-full pb-20 p-0 flex-grow  bg-white pt-24">

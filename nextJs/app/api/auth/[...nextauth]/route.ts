@@ -62,15 +62,7 @@ export const authOptions: AuthOptions = {
     signIn: '/login',
   },
   callbacks: {
-    async jwt({ user, trigger, token, session }) {
-      if (user) {
-        const myUser = await prisma.user.findUnique({
-          where: {
-            email: user.email!,
-          },
-        });
-        token = { ...token, user: myUser! };
-      }
+    async jwt({ trigger, token, session }) {
       if (token.email) {
         const myUser = await prisma.user.findUnique({
           where: {
@@ -87,13 +79,10 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      const myUser = { ...session.user, ...token.user } as authenticationUser;
-      session = {
+      return {
         ...session,
-        user: myUser,
+        user: token.user,
       };
-
-      return session;
     },
   },
 };

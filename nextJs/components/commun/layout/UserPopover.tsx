@@ -13,10 +13,10 @@ import Link from 'next/link';
 import { IoMdBookmark, IoMdLogOut, IoMdSettings } from 'react-icons/io';
 import { IoAnalyticsSharp, IoCloudUpload } from 'react-icons/io5';
 import { MdSpaceDashboard } from 'react-icons/md';
+import { Session } from 'next-auth';
 
-const UserPopover = () => {
+const UserPopover = ({ session }: { session: Session | null }) => {
   const router = useRouter();
-  const { data: session, status } = useSession();
 
   const pathname = usePathname();
 
