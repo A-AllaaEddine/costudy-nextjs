@@ -8,7 +8,6 @@ import { useEffect, useState } from 'react';
 import Logo from '../../../public/Logo.svg';
 
 import { Separator } from '@/components/ui/separator';
-import { useSession } from 'next-auth/react';
 import {
   IoLogoFacebook,
   IoLogoInstagram,
@@ -18,10 +17,10 @@ import {
 import UserPopover from './UserPopover';
 
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Session } from 'next-auth';
 
-const Header = () => {
+const Header = ({ session }: { session: Session | null }) => {
   const router = useRouter();
-  const { data: session } = useSession();
 
   const [hideNavbar, setHideNavbar] = useState<boolean>(false);
   const [lastScrollY, setLastScrollY] = useState<number>(0);
@@ -78,8 +77,8 @@ const Header = () => {
               className="flex flex-col justify-start items-center gap-3"
             >
               <p
-                className="w-full h-8 text-md font-normal
-              flex justify-start items-center"
+                className="w-full h-8 text-md font-semibold
+              flex justify-start items-center hover:cursor-pointer"
                 onClick={() => {
                   setIsMenuOpen(false);
                   router.push('/resources');
@@ -89,8 +88,8 @@ const Header = () => {
               </p>
               <Separator />
               <p
-                className="w-full h-8  text-md font-normal
-              flex justify-start items-center"
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center hover:cursor-pointer"
                 onClick={() => {
                   setIsMenuOpen(false);
                   router.push('/about');
@@ -99,8 +98,8 @@ const Header = () => {
                 About
               </p>
               <p
-                className="w-full h-8  text-md font-normal
-              flex justify-start items-center"
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center hover:cursor-pointer"
                 onClick={() => {
                   setIsMenuOpen(false);
                   router.push('/terms-and-conditions');
@@ -109,8 +108,8 @@ const Header = () => {
                 Terms and Conditions
               </p>
               <p
-                className="w-full h-8  text-md font-normal
-              flex justify-start items-center"
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center hover:cursor-pointer"
                 onClick={() => {
                   setIsMenuOpen(false);
                   router.push('/cookie-policy');
@@ -119,8 +118,8 @@ const Header = () => {
                 Cookie Policy
               </p>
               <p
-                className="w-full h-8  text-md font-normal
-              flex justify-start items-center"
+                className="w-full h-8  text-md font-semibold
+              flex justify-start items-center hover:cursor-pointer"
                 onClick={() => {
                   setIsMenuOpen(false);
                   router.push('/support');
@@ -141,7 +140,7 @@ const Header = () => {
                 </Link>
               </div>
               <div className="w-full h-10 mb-3 flex flex-row justify-start items-center">
-                <p className="text-black-txt text-sm  font-normal">
+                <p className="text-black-txt text-sm  font-semibold">
                   © 2023 CoStudy.
                 </p>
               </div>
@@ -159,7 +158,7 @@ const Header = () => {
             />
           </div>
           <div className="w-auto h-full flex flex-row justify-between items-center gap-2">
-            <UserPopover />
+            <UserPopover session={session} />
           </div>
         </div>
       </div>
@@ -267,7 +266,7 @@ const Header = () => {
                 </Link>
               </div>
             ) : (
-              <UserPopover />
+              <UserPopover session={session} />
             )}
           </div>
         </div>

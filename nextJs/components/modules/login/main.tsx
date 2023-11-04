@@ -75,9 +75,10 @@ const Main = () => {
         success: (data) => {
           resetFormFields();
           if (params.get('destination')) {
-            router.push(params.get('destination')!);
+            window.location.href = params.get('destination')!;
           } else {
-            router.push('/');
+            window.location.href = '/';
+            // router.push('/');
           }
 
           return 'Signed In';
