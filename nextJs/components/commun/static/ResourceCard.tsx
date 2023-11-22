@@ -68,13 +68,7 @@ const ResourceCard = forwardRef(
           <div className="h-6 flex gap-1">{badgeType[resource?.type]}</div>
         </CardHeader>
         <CardContent>
-          <p
-            className={`${
-              resource?.class?.length > 30
-                ? `  whitespace-nowrap animate-scrolling`
-                : ''
-            } text-sm`}
-          >
+          <p className="text-sm truncate">
             Class <span className="font-semibold">{resource?.class}</span>
           </p>
           <p
