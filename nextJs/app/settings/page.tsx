@@ -17,7 +17,6 @@ const Settings = async ({
   searchParams: { tab: string };
 }) => {
   await isLoggedIn({});
-  console.log(searchParams);
   return (
     <div
       className="w-4/5  min-h-screen flex flex-col  justify-start items-center gap-4  py-8 

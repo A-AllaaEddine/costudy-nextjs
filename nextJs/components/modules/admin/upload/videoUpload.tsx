@@ -220,6 +220,7 @@ const VideoUpload = () => {
         className="w-full  h-full mt-6 flex flex-col justify-start items-start gap-2"
         onSubmit={handleSubmit}
       >
+        <Label className="text-md font-semibold">Thumbnail</Label>
         <div className="w-full h-auto">
           <Input
             placeholder="Thumbnail"
